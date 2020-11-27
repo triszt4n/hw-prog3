@@ -1,6 +1,12 @@
 package pluto.views;
 
-public class DashboardView implements IView {
+import pluto.models.UserModel;
+
+public class DashboardView extends AbstractView {
+    public DashboardView(UserModel user) {
+
+    }
+
     @Override
     public void open() {
 

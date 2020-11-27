@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class RegistrationView implements IView {
+public class RegistrationView extends AbstractView {
     private JFrame main;
     private JButton backBtn;
     private JButton regBtn;
@@ -18,11 +18,38 @@ public class RegistrationView implements IView {
     private JTextField dobField;
     private JTextField addressField;
 
+    public char[] getPwField() {
+        return pwField.getPassword();
+    }
+
+    public String getEmailField() {
+        return emailField.getText();
+    }
+
+    public String getNameField() {
+        return nameField.getText();
+    }
+
+    public String getDobField() {
+        return dobField.getText();
+    }
+
+    public String getAddressField() {
+        return addressField.getText();
+    }
+
+    public boolean getIsInstructorCheck() {
+        return isInstructorCheck.isSelected();
+    }
+
+    private JCheckBox isInstructorCheck;
+
     private UserController userController;
 
     private void addComponents() {
         JLabel promptLabel = new JLabel("Please fill in the registration form");
         JPanel formPanel = new JPanel();
+
         JLabel emailLabel = new JLabel("Email address");
         emailField = new JTextField(30);
         JLabel pwLabel = new JLabel("Password");
@@ -33,11 +60,15 @@ public class RegistrationView implements IView {
         dobField = new JTextField(30);
         JLabel addressLabel = new JLabel("Address");
         addressField = new JTextField(30);
+
         backBtn = new JButton("Back");
         regBtn = new JButton("Register");
+
         Component paddingBox1 = Box.createRigidArea(new Dimension(30, 30));
         Component paddingBox2 = Box.createRigidArea(new Dimension(30, 30));
         Component paddingBox3 = Box.createRigidArea(new Dimension(30, 30));
+
+        isInstructorCheck = new JCheckBox("Request this user to be Instructor.");
 
         GroupLayout formLayout = new GroupLayout(formPanel);
         formPanel.setLayout(formLayout);
@@ -61,6 +92,7 @@ public class RegistrationView implements IView {
                                 .addComponent(nameField)
                                 .addComponent(dobField)
                                 .addComponent(addressField)
+                                .addComponent(isInstructorCheck)
                                 .addComponent(paddingBox2)
                                 .addComponent(regBtn, GroupLayout.Alignment.TRAILING)
                         )
@@ -91,6 +123,9 @@ public class RegistrationView implements IView {
                                 .addComponent(addressField)
                         )
                         .addGroup(formLayout.createParallelGroup()
+                                .addComponent(isInstructorCheck)
+                        )
+                        .addGroup(formLayout.createParallelGroup()
                                 .addComponent(paddingBox1)
                                 .addComponent(paddingBox2)
                         )
@@ -108,7 +143,6 @@ public class RegistrationView implements IView {
         backBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                close();
                 userController.login();
             }
         });
