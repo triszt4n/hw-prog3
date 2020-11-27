@@ -12,7 +12,7 @@ public class InstructorModel extends UserModel {
     }
 
     @Override
-    public void authorize(String pw) throws AuthorizationException {
+    public void authorize(String pw) throws AuthorizationException, ValidationException {
         if (!isAccepted) {
             throw new AuthorizationException("Your request to be an Instructor is not accepted yet");
         }

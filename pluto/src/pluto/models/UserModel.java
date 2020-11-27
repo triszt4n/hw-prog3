@@ -117,7 +117,12 @@ public class UserModel extends AbstractModel {
         plutoCode = pluto;
     }
 
-    public static UserModel get(String pluto) throws EntityNotFoundException {
+    public static UserModel get(String pluto) throws EntityNotFoundException, ValidationException {
+        StringValidator sv = new StringValidator();
+        sv.validate(pluto, "Pluto code")
+                .checkLength(PLUTO_CODE_LENGTH, PLUTO_CODE_LENGTH)
+                .checkRegex("[A-Z0-9]+$");
+
         UserModel result = db.getUserWherePlutoCode(pluto);
         if (result == null) {
             throw new EntityNotFoundException("No user found with entered Pluto code");
@@ -142,7 +147,11 @@ public class UserModel extends AbstractModel {
         PlutoConsole.taglessLog(this.toString());
     }
 
-    public void authorize(String pw) throws AuthorizationException {
+    public void authorize(String pw) throws AuthorizationException, ValidationException {
+        StringValidator sv = new StringValidator();
+        sv.validate(pw, "Password")
+                .checkLength(3, 200);
+
         MessageDigest md = null;
         try {
             md = MessageDigest.getInstance(ALGORITHM_FOR_PW_HASHING);

@@ -35,7 +35,7 @@ public class UserController extends AbstractController {
 
     @Override
     public void index() {
-        
+
     }
 
     @Override
@@ -118,7 +118,7 @@ public class UserController extends AbstractController {
             dashboard = new DashboardView(loggedInUser, this, new SubjectController(), new CourseController());
             loginPage.close();
             dashboard.open();
-        } catch (EntityNotFoundException | AuthorizationException e) {
+        } catch (EntityNotFoundException | AuthorizationException | ValidationException e) {
             JOptionPane.showMessageDialog(null, "Error at log in: " + e.getMessage(), "Wrong credentials", JOptionPane.ERROR_MESSAGE);
         }
     }
