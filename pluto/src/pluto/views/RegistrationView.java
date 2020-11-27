@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class RegistrationView extends AbstractView {
-    private JFrame main;
     private JButton backBtn;
     private JButton regBtn;
     private JPasswordField pwField;
@@ -46,7 +45,7 @@ public class RegistrationView extends AbstractView {
 
     private UserController userController;
 
-    private void addComponents() {
+    protected void addComponents() {
         JLabel promptLabel = new JLabel("Please fill in the registration form");
         JPanel formPanel = new JPanel();
 
@@ -137,6 +136,7 @@ public class RegistrationView extends AbstractView {
         );
         main.add(formPanel, BorderLayout.CENTER);
         setUpListeners();
+        main.getRootPane().setDefaultButton(regBtn);
     }
 
     private void setUpListeners() {
@@ -156,14 +156,13 @@ public class RegistrationView extends AbstractView {
     }
 
     public RegistrationView(UserController userCtrl) {
-        userController = userCtrl;
-
-        main = new PaddedFrame("Pluto | Register");
-        main.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        super();
+        main.setTitle("Pluto | Register");
         addComponents();
         main.pack();
         main.setLocationRelativeTo(null);
-        main.setVisible(false);
+
+        userController = userCtrl;
     }
 
     @Override

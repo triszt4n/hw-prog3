@@ -1,9 +1,9 @@
 package pluto.controllers;
 
-import jdk.jfr.StackTrace;
-import pluto.helpers.PlutoConsole;
+import pluto.app.PlutoConsole;
 import pluto.models.*;
-import pluto.views.AbstractView;
+import pluto.models.exceptions.EntityNotFoundException;
+import pluto.models.exceptions.ValidationException;
 import pluto.views.DashboardView;
 import pluto.views.LoginView;
 import pluto.views.RegistrationView;
@@ -48,7 +48,8 @@ public class UserController extends AbstractController {
                         regPage.getNameField(),
                         new String(regPage.getPwField()),
                         regPage.getDobField(),
-                        regPage.getAddressField()
+                        regPage.getAddressField(),
+                        false
                 );
             }
             else {
@@ -91,15 +92,18 @@ public class UserController extends AbstractController {
         try {
             user = UserModel.get(loginPage.getPlutoField());
             user.authorize(new String(loginPage.getPwField()));
+            loggedInUser = user;
+            dashboard = new DashboardView(loggedInUser, this, new SubjectController(), new CourseController());
+            loginPage.close();
+            dashboard.open();
         } catch (EntityNotFoundException | UserModel.AuthorizationException e) {
             JOptionPane.showMessageDialog(null, "Error at log in: " + e.getMessage(), "Wrong credentials", JOptionPane.ERROR_MESSAGE);
         }
-        loggedInUser = user;
-        dashboard = new DashboardView(loggedInUser);
-        loginPage.close();
-        dashboard.open();
     }
 
-    public void setUser(UserModel loggedInUser) {
+    public void logout() {
+        loggedInUser = null;
+        dashboard.close();
+        loginPage.open();
     }
 }

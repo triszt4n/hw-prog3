@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PaddedFrame extends JFrame {
-    public PaddedFrame(String title) {
-        super(title);
+    public PaddedFrame() {
+        super();
 
         /* Padding on top and bottom */
         JPanel jTop = new JPanel();

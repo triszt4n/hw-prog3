@@ -1,9 +1,8 @@
 package pluto.models.database;
 
-import pluto.helpers.PlutoConsole;
-import pluto.models.CourseModel;
-import pluto.models.SubjectModel;
-import pluto.models.UserModel;
+import pluto.app.PlutoConsole;
+import pluto.models.*;
+import pluto.models.exceptions.ValidationException;
 
 import javax.json.Json;
 import javax.json.JsonReader;
@@ -38,17 +37,11 @@ public class Database {
     }
 
     public static UserModel getUserWherePlutoCode(String pluto) {
-        UserModel user = null;
-        try {
-            user = users.get(
-                    Collections.binarySearch(users, new UserModel(pluto), new Comparator<UserModel>() {
-                        @Override
-                        public int compare(UserModel o1, UserModel o2) {
-                            return o1.getPlutoCode().compareTo(o2.getPlutoCode());
-                        }
-                    })
-            );
-        } catch (IndexOutOfBoundsException e) {
+        UserModel user = users.stream()
+                .filter(u -> { return u.getPlutoCode().equals(pluto); })
+                .findFirst()
+                .orElse(null);
+        if (user == null) {
             PlutoConsole.log("getUserWherePlutoCode couldn't find User!");
         }
         return user;
@@ -100,5 +93,19 @@ public class Database {
 
     public static void saveAll() {
 
+    }
+
+    public static void seed() {
+        try {
+            StudentModel user1 = new StudentModel("trisz@gmail.com", "Piller Trisztán", "123456", "1999-08-30", "Veszprém, Damjanich János utca 4/A");
+            AdministratorModel user2 = new AdministratorModel("admin@gmail.com", "Mr. Admin", "123456", "1989-08-20", "");
+            InstructorModel user3 = new InstructorModel("tasnadi@gmail.com", "Tasnadi Tamas", "123456", "1972-03-14", "", false);
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        }
+        PlutoConsole.log("number of users in db: " + users.size());
+        for (UserModel user : users) {
+            PlutoConsole.taglessLog(user.toString());
+        }
     }
 }

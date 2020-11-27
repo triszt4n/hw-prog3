@@ -1,8 +1,8 @@
-package pluto.controllers;
+package pluto.app;
 
 
-import pluto.helpers.PlutoConsole;
-import pluto.models.UserModel;
+import pluto.app.PlutoConsole;
+import pluto.controllers.UserController;
 import pluto.models.database.Database;
 
 /***
@@ -18,21 +18,22 @@ import pluto.models.database.Database;
  */
 public class Application {
     public static void main(String[] args) {
-        /* Database db = new Database();
+        Database db = new Database();
         try {
             db.loadAll();
         } catch (Database.DatabaseDamagedException | Database.DatabaseNotFound e) {
             e.printStackTrace();
-            System.exit(1);
-        } */
+            //System.exit(1);
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 PlutoConsole.log("Shutdown hook is running: Saving database files...");
-                //db.saveAll();
+                db.saveAll();
             }
         });
 
+        db.seed();
         UserController userController = new UserController();
         userController.login();
     }
