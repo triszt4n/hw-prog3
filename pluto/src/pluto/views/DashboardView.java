@@ -6,7 +6,6 @@ import pluto.controllers.UserController;
 import pluto.models.UserModel;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -34,6 +33,7 @@ public class DashboardView extends AbstractView {
     private JMenuItem reqBtn;
     private JMenuItem usersBtn;
     private JMenuItem seedBtn;
+    private JMenuItem resetBtn;
 
     private JPanel createDetailsPanel() {
         JLabel emailLabel = new JLabel("Email address");
@@ -45,7 +45,7 @@ public class DashboardView extends AbstractView {
         JLabel emailLabel2 = new JLabel(loggedInUser.getEmail());
         JLabel plutoLabel2 = new JLabel(loggedInUser.getPlutoCode());
         JLabel nameLabel2 = new JLabel(loggedInUser.getName());
-        JLabel dobLabel2 = new JLabel(loggedInUser.getDob().toString());
+        JLabel dobLabel2 = new JLabel(loggedInUser.getParsedDob().toString());
         JLabel addressLabel2 = new JLabel(loggedInUser.getAddress());
 
         JPanel formPanel = new JPanel();
@@ -126,21 +126,23 @@ public class DashboardView extends AbstractView {
         reqBtn = new JMenuItem("Instructor requests");
         usersBtn = new JMenuItem("Users");
         seedBtn = new JMenuItem("Set up seed");
+        resetBtn = new JMenuItem("Delete database");
         dbMenu.add(reqBtn);
         dbMenu.add(usersBtn);
         dbMenu.add(seedBtn);
+        dbMenu.add(resetBtn);
         mb.add(dbMenu);
 
         main.setJMenuBar(mb);
 
-        JLabel welcomeLabel = new JLabel("Hi, " + loggedInUser.getName());
-        welcomeLabel.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 24));
+        JLabel welcomeLabel = new JLabel("Hi, " + loggedInUser.getName() + "!");
+        welcomeLabel.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 30));
         JLabel promptLabel = new JLabel("Browse the menu bar for actions");
         JLabel userTitleLabel = new JLabel("/" + loggedInUser.getTitle() + "/");
         JPanel detailsPanel = createDetailsPanel();
 
         Component paddingBox1 = Box.createRigidArea(new Dimension(50, 50));
-        Component paddingBox2 = Box.createRigidArea(new Dimension(50, 50));
+        Component paddingBox2 = Box.createRigidArea(new Dimension(30, 30));
 
         JPanel mainPanel = new JPanel();
         GroupLayout layout = new GroupLayout(mainPanel);
@@ -179,6 +181,48 @@ public class DashboardView extends AbstractView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 userController.logout();
+            }
+        });
+
+        usersBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userController.index();
+            }
+        });
+
+        manageUserBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userController.edit();
+            }
+        });
+
+        manageSubjectBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                subjectController.index();
+            }
+        });
+
+        manageCourseBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                courseController.index();
+            }
+        });
+
+        seedBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userController.seed();
+            }
+        });
+
+        resetBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userController.dbReset();
             }
         });
     }

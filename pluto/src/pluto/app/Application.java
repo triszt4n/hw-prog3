@@ -4,6 +4,7 @@ package pluto.app;
 import pluto.app.PlutoConsole;
 import pluto.controllers.UserController;
 import pluto.models.database.Database;
+import pluto.models.exceptions.ValidationException;
 
 /***
  * Main class for starting up application. Application was developed under JDK 15 and JUnit 5.4.
@@ -33,8 +34,14 @@ public class Application {
             }
         });
 
-        db.seed();
-        UserController userController = new UserController();
+        // TEMPORARY
+        try {
+            db.seed();
+        } catch (ValidationException e) {
+            e.printStackTrace();
+        }
+        // --------
+        UserController userController = new UserController(db);
         userController.login();
     }
 }

@@ -1,5 +1,6 @@
 package pluto.models;
 
+import pluto.models.exceptions.AuthorizationException;
 import pluto.models.exceptions.ValidationException;
 
 public class InstructorModel extends UserModel {

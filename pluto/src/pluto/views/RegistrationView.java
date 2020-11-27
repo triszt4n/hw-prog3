@@ -1,7 +1,6 @@
 package pluto.views;
 
 import pluto.controllers.UserController;
-import pluto.views.helpers.PaddedFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,13 +8,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class RegistrationView extends AbstractView {
-    private JButton backBtn;
-    private JButton regBtn;
-    private JPasswordField pwField;
-    private JTextField emailField;
-    private JTextField nameField;
-    private JTextField dobField;
-    private JTextField addressField;
+    protected JButton backBtn;
+    protected JButton saveBtn;
+    protected JLabel promptLabel;
+    protected JPasswordField pwField;
+    protected JTextField emailField;
+    protected JTextField nameField;
+    protected JTextField dobField;
+    protected JTextField addressField;
+    protected JCheckBox isInstructorCheck;
+    protected UserController userController;
+    protected ActionListener backBtnListener;
+    protected ActionListener saveBtnListener;
 
     public char[] getPwField() {
         return pwField.getPassword();
@@ -41,12 +45,8 @@ public class RegistrationView extends AbstractView {
         return isInstructorCheck.isSelected();
     }
 
-    private JCheckBox isInstructorCheck;
-
-    private UserController userController;
-
     protected void addComponents() {
-        JLabel promptLabel = new JLabel("Please fill in the registration form");
+        promptLabel = new JLabel("Please fill in the registration form");
         JPanel formPanel = new JPanel();
 
         JLabel emailLabel = new JLabel("Email address");
@@ -61,7 +61,7 @@ public class RegistrationView extends AbstractView {
         addressField = new JTextField(30);
 
         backBtn = new JButton("Back");
-        regBtn = new JButton("Register");
+        saveBtn = new JButton("Register");
 
         Component paddingBox1 = Box.createRigidArea(new Dimension(30, 30));
         Component paddingBox2 = Box.createRigidArea(new Dimension(30, 30));
@@ -93,7 +93,7 @@ public class RegistrationView extends AbstractView {
                                 .addComponent(addressField)
                                 .addComponent(isInstructorCheck)
                                 .addComponent(paddingBox2)
-                                .addComponent(regBtn, GroupLayout.Alignment.TRAILING)
+                                .addComponent(saveBtn, GroupLayout.Alignment.TRAILING)
                         )
                 )
         );
@@ -130,29 +130,31 @@ public class RegistrationView extends AbstractView {
                         )
                         .addGroup(formLayout.createParallelGroup()
                                 .addComponent(backBtn)
-                                .addComponent(regBtn)
+                                .addComponent(saveBtn)
                         )
                 )
         );
         main.add(formPanel, BorderLayout.CENTER);
         setUpListeners();
-        main.getRootPane().setDefaultButton(regBtn);
+        main.getRootPane().setDefaultButton(saveBtn);
     }
 
     private void setUpListeners() {
-        backBtn.addActionListener(new ActionListener() {
+        backBtnListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 userController.login();
             }
-        });
+        };
+        backBtn.addActionListener(backBtnListener);
 
-        regBtn.addActionListener(new ActionListener() {
+        saveBtnListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 userController.create();
             }
-        });
+        };
+        saveBtn.addActionListener(saveBtnListener);
     }
 
     public RegistrationView(UserController userCtrl) {

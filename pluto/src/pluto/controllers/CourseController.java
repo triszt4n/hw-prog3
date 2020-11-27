@@ -2,7 +2,7 @@ package pluto.controllers;
 
 public class CourseController extends AbstractController {
     @Override
-    public void loadAll() {
+    public void index() {
 
     }
 
@@ -22,7 +22,7 @@ public class CourseController extends AbstractController {
     }
 
     @Override
-    public void update() {
+    public void update(boolean doUpdate) {
 
     }
 

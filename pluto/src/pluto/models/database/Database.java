@@ -7,10 +7,7 @@ import pluto.models.exceptions.ValidationException;
 import javax.json.Json;
 import javax.json.JsonReader;
 import java.io.*;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Database {
     private static List<UserModel> users = new LinkedList<>();
@@ -95,17 +92,29 @@ public class Database {
 
     }
 
-    public static void seed() {
-        try {
-            StudentModel user1 = new StudentModel("trisz@gmail.com", "Piller Trisztán", "123456", "1999-08-30", "Veszprém, Damjanich János utca 4/A");
-            AdministratorModel user2 = new AdministratorModel("admin@gmail.com", "Mr. Admin", "123456", "1989-08-20", "");
-            InstructorModel user3 = new InstructorModel("tasnadi@gmail.com", "Tasnadi Tamas", "123456", "1972-03-14", "", false);
-        } catch (ValidationException e) {
-            e.printStackTrace();
-        }
+    public static void seed() throws ValidationException {
+        StudentModel user1 = new StudentModel("trisz@gmail.com", "Piller Trisztán", "123456", "1999-08-30", "Veszprém, Damjanich János utca 4/A");
+        AdministratorModel user2 = new AdministratorModel("admin@gmail.com", "Mr. Admin", "123456", "1989-08-20", "");
+        InstructorModel user3 = new InstructorModel("tasnadi@gmail.com", "Tasnadi Tamas", "123456", "1972-03-14", "", false);
+
         PlutoConsole.log("number of users in db: " + users.size());
         for (UserModel user : users) {
             PlutoConsole.taglessLog(user.toString());
         }
+
+        PlutoConsole.log("Database seed has successfully run");
+    }
+
+    public static void reset() {
+        List<UserModel> nonAdmins = new LinkedList<>();
+        users.forEach(u -> {
+            if (u.getTitle() != "Administrator") {
+                nonAdmins.add(u);
+            }
+        });
+        users.removeAll(nonAdmins);
+        subjects.clear();
+        courses.clear();
+        PlutoConsole.log("Successfully deleted database");
     }
 }

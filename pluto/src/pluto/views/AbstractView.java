@@ -18,7 +18,12 @@ public abstract class AbstractView {
     public void open() {
         main.setVisible(true);
     }
-
+    public void disable() {
+        main.setEnabled(false);
+    }
+    public void enable() {
+        main.setEnabled(true);
+    }
     public void close() {
         main.setVisible(false);
     }

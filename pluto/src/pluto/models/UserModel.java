@@ -1,6 +1,7 @@
 package pluto.models;
 
 import pluto.app.PlutoConsole;
+import pluto.models.exceptions.AuthorizationException;
 import pluto.models.exceptions.EntityNotFoundException;
 import pluto.models.exceptions.ValidationException;
 import pluto.models.validators.StringValidator;
@@ -9,8 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
@@ -25,7 +24,7 @@ public class UserModel extends AbstractModel {
     private byte[] encryptedPassword;
     private byte[] salt;
     private String unparsedDob;
-    private Date dob;
+    private Date parsedDob;
     private String address;
 
     private List<SubjectModel> mySubjects;
@@ -40,8 +39,8 @@ public class UserModel extends AbstractModel {
     public String getName() {
         return name;
     }
-    public Date getDob() {
-        return dob;
+    public Date getParsedDob() {
+        return parsedDob;
     }
     public String getAddress() {
         return address;
@@ -78,7 +77,7 @@ public class UserModel extends AbstractModel {
                 .checkLength(3, 200);
         sv.validate(rawPassword, "Password")
                 .checkLength(3, 200);
-        dob = sv.validate(unparsedDob, "Date of birth")
+        parsedDob = sv.validate(unparsedDob, "Date of birth")
                 .checkDate("yyyy-MM-dd")
                 .returnCheckedDate();
         sv.validate(address, "Address")
@@ -92,20 +91,20 @@ public class UserModel extends AbstractModel {
                 generateSecurePw();
             }
             catch (NoSuchAlgorithmException e) {
-                throw new ValidationException("Couldn't encrypt password, no such algorithm: " + ALGORITHM_FOR_PW_HASHING);
+                throw new ValidationException("Couldn't encrypt password, no such algorithm: " + e.getMessage() + " " + ALGORITHM_FOR_PW_HASHING);
             }
         }
 
         db.addUser(this);
     }
 
-    public UserModel(String em, String na, String pw, String d, String addr) throws ValidationException {
+    public UserModel(String em, String na, String pw, String dob, String addr) throws ValidationException {
         plutoCode = null;
         email = em;
         name = na;
         encryptedPassword = null;
         rawPassword = pw;
-        unparsedDob = d;
+        unparsedDob = dob;
         address = addr;
         myCourses = new LinkedList<>();
         mySubjects = new LinkedList<>();
@@ -118,18 +117,29 @@ public class UserModel extends AbstractModel {
         plutoCode = pluto;
     }
 
-    public class AuthorizationException extends Exception {
-        public AuthorizationException(String msg) {
-            super(msg);
-        }
-    }
-
     public static UserModel get(String pluto) throws EntityNotFoundException {
         UserModel result = db.getUserWherePlutoCode(pluto);
         if (result == null) {
             throw new EntityNotFoundException("No user found with entered Pluto code");
         }
         return result;
+    }
+
+    public void update(String em, String na, String pw, String dob, String addr) throws ValidationException {
+        email = em;
+        name = na;
+        encryptedPassword = null;
+        rawPassword = pw;
+        unparsedDob = dob;
+        address = addr;
+        validate();
+        try {
+            generateSecurePw();
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new ValidationException("Couldn't encrypt password " + e.getMessage() + " " + ALGORITHM_FOR_PW_HASHING);
+        }
+        PlutoConsole.taglessLog(this.toString());
     }
 
     public void authorize(String pw) throws AuthorizationException {

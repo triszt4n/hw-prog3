@@ -4,7 +4,7 @@ import pluto.models.UserModel;
 
 public class SubjectController extends AbstractController {
     @Override
-    public void loadAll() {
+    public void index() {
 
     }
 
@@ -24,7 +24,7 @@ public class SubjectController extends AbstractController {
     }
 
     @Override
-    public void update() {
+    public void update(boolean doUpdate) {
 
     }
 
