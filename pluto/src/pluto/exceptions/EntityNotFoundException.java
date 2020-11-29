@@ -1,4 +1,4 @@
-package pluto.models.exceptions;
+package pluto.exceptions;
 
 public class EntityNotFoundException extends Exception {
     public EntityNotFoundException(String msg) {

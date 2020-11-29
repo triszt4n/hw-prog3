@@ -1,18 +1,28 @@
 package pluto.models;
 
-import pluto.models.exceptions.AuthorizationException;
-import pluto.models.exceptions.ValidationException;
+import pluto.exceptions.AuthorizationException;
+import pluto.exceptions.ValidationException;
+
+import java.security.NoSuchAlgorithmException;
 
 public class InstructorModel extends UserModel {
     private boolean isAccepted;
 
-    public InstructorModel(String em, String na, String pw, String d, String addr, boolean isAcc) throws ValidationException {
+    public boolean isAccepted() {
+        return isAccepted;
+    }
+
+    public void setAccepted(boolean isAccepted) {
+        this.isAccepted = isAccepted;
+    }
+
+    public InstructorModel(String em, String na, String pw, String d, String addr, boolean isAcc) throws ValidationException, NoSuchAlgorithmException {
         super(em, na, pw, d, addr);
         isAccepted = isAcc;
     }
 
     @Override
-    public void authorize(String pw) throws AuthorizationException, ValidationException {
+    public void authorize(String pw) throws AuthorizationException, ValidationException, NoSuchAlgorithmException {
         if (!isAccepted) {
             throw new AuthorizationException("Your request to be an Instructor is not accepted yet");
         }
@@ -24,5 +34,20 @@ public class InstructorModel extends UserModel {
     @Override
     public String getTitle() {
         return "Instructor";
+    }
+
+    @Override
+    public String getStatus() {
+        return isAccepted? "Accepted instructor" : "Non-accepted instructor";
+    }
+
+    @Override
+    protected void initMySubjects() {
+        super.initMySubjects();
+    }
+
+    @Override
+    protected void initMyCourses() {
+        super.initMyCourses();
     }
 }

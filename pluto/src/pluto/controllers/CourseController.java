@@ -1,13 +1,21 @@
 package pluto.controllers;
 
+import pluto.views.AbstractView;
+
+import java.util.Stack;
+
 public class CourseController extends AbstractController {
+    public CourseController(Stack<AbstractView> pageStack) {
+        super(pageStack);
+    }
+
     @Override
     public void index() {
 
     }
 
     @Override
-    public void form() {
+    public void build() {
 
     }
 
@@ -17,22 +25,22 @@ public class CourseController extends AbstractController {
     }
 
     @Override
-    public void edit() {
+    public void edit(int index) {
 
     }
 
     @Override
-    public void update(boolean doUpdate) {
+    public void update(int index) {
 
     }
 
     @Override
-    public void delete() {
+    public void delete(int index) {
 
     }
 
     @Override
-    public void show() {
+    public void show(int index) {
 
     }
 }

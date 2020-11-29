@@ -6,8 +6,6 @@ import java.awt.*;
 public class PaddedFrame extends JFrame {
     public PaddedFrame() {
         super();
-
-        /* Padding on top and bottom */
         JPanel jTop = new JPanel();
         JPanel jBottom = new JPanel();
         JPanel jLeft = new JPanel();

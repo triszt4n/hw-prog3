@@ -1,14 +1,28 @@
 package pluto.models;
 
-import pluto.models.database.Database;
-import pluto.models.exceptions.ValidationException;
+import java.security.SecureRandom;
 
 public abstract class AbstractModel {
-    protected long id;
-    protected static final Database db = new Database();
+    protected String plutoCode;
 
-    protected void validate() throws ValidationException { }
-    protected void save() throws ValidationException { }
+    protected static final int PLUTO_CODE_LENGTH = 12;
 
-    public static void delete(long id) { }
+    protected static final String PLUTO_CODE_CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    public String getPlutoCode() {
+        return plutoCode;
+    }
+
+    protected void generatePlutoCode() {
+        SecureRandom rnd = new SecureRandom();
+
+        StringBuilder sb = new StringBuilder(PLUTO_CODE_LENGTH);
+        for (int i = 0; i < PLUTO_CODE_LENGTH; i++) {
+            sb.append(PLUTO_CODE_CHARSET.charAt(rnd.nextInt(PLUTO_CODE_CHARSET.length())));
+        }
+        plutoCode = sb.toString();
+    }
+
+    public abstract int getIndex();
+    protected abstract void save();
 }

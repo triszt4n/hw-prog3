@@ -13,24 +13,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class DashboardView extends AbstractView {
-    private UserController userController;
-    private CourseController courseController;
-    private SubjectController subjectController;
-    private UserModel loggedInUser;
+    private final UserController userController;
+    private final CourseController courseController;
+    private final SubjectController subjectController;
+    private final UserModel loggedInUser;
 
-    private JMenu userMenu;
     private JMenuItem manageUserBtn;
     private JMenuItem logoutBtn;
 
-    private JMenu subjectMenu;
     private JMenuItem manageSubjectBtn;
-    private JMenuItem applyBtn;
 
-    private JMenu courseMenu;
     private JMenuItem manageCourseBtn;
+    private JMenuItem takeBtn;
 
-    private JMenu dbMenu;
-    private JMenuItem reqBtn;
     private JMenuItem usersBtn;
     private JMenuItem seedBtn;
     private JMenuItem resetBtn;
@@ -100,34 +95,32 @@ public class DashboardView extends AbstractView {
         return formPanel;
     }
 
-    protected void addComponents() {
+    protected void initComponents() {
         JMenuBar mb = new JMenuBar();
 
-        userMenu = new JMenu("User");
+        JMenu userMenu = new JMenu("User");
         manageUserBtn = new JMenuItem("Manage...");
         logoutBtn = new JMenuItem("Log out");
         userMenu.add(manageUserBtn);
         userMenu.add(logoutBtn);
         mb.add(userMenu);
 
-        subjectMenu = new JMenu("Subjects");
-        manageSubjectBtn = new JMenuItem("Manage...");
-        applyBtn = new JMenuItem("Apply for...");
+        JMenu subjectMenu = new JMenu("Subjects");
+        manageSubjectBtn = new JMenuItem("Manage my subjects...");
         subjectMenu.add(manageSubjectBtn);
-        subjectMenu.add(applyBtn);
         mb.add(subjectMenu);
 
-        courseMenu = new JMenu("Courses");
-        manageCourseBtn = new JMenuItem("Manage...");
+        JMenu courseMenu = new JMenu("Courses");
+        takeBtn = new JMenuItem("Take courses...");
+        manageCourseBtn = new JMenuItem("Manage my courses...");
+        courseMenu.add(takeBtn);
         courseMenu.add(manageCourseBtn);
         mb.add(courseMenu);
 
-        dbMenu = new JMenu("Database");
-        reqBtn = new JMenuItem("Instructor requests");
+        JMenu dbMenu = new JMenu("Database");
         usersBtn = new JMenuItem("Users");
         seedBtn = new JMenuItem("Set up seed");
         resetBtn = new JMenuItem("Delete database");
-        dbMenu.add(reqBtn);
         dbMenu.add(usersBtn);
         dbMenu.add(seedBtn);
         dbMenu.add(resetBtn);
@@ -173,10 +166,10 @@ public class DashboardView extends AbstractView {
                 )
         );
         main.add(mainPanel, BorderLayout.CENTER);
-        setUpListeners();
+        initListeners();
     }
 
-    private void setUpListeners() {
+    protected void initListeners() {
         logoutBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -194,11 +187,18 @@ public class DashboardView extends AbstractView {
         manageUserBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userController.edit();
+                userController.edit(-1);
             }
         });
 
         manageSubjectBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                subjectController.allForLoggedInUser();
+            }
+        });
+
+        takeBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 subjectController.index();
@@ -235,7 +235,7 @@ public class DashboardView extends AbstractView {
         courseController = courseCtrl;
 
         main.setTitle("Pluto | Dashboard");
-        addComponents();
+        initComponents();
         main.pack();
         main.setLocationRelativeTo(null);
     }

@@ -1,9 +1,10 @@
 package pluto.models;
 
 import pluto.app.PlutoConsole;
-import pluto.models.exceptions.AuthorizationException;
-import pluto.models.exceptions.EntityNotFoundException;
-import pluto.models.exceptions.ValidationException;
+import pluto.database.Database;
+import pluto.exceptions.AuthorizationException;
+import pluto.exceptions.EntityNotFoundException;
+import pluto.exceptions.ValidationException;
 import pluto.models.validators.StringValidator;
 
 import java.nio.charset.StandardCharsets;
@@ -16,8 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class UserModel extends AbstractModel {
-    private static final int PLUTO_CODE_LENGTH = 12;
-    private String plutoCode;
     private String email;
     private String name;
     private String rawPassword;
@@ -27,12 +26,61 @@ public class UserModel extends AbstractModel {
     private Date parsedDob;
     private String address;
 
-    private List<SubjectModel> mySubjects;
-    private List<CourseModel> myCourses;
-
-    public String getPlutoCode() {
-        return plutoCode;
+    public void setEmail(String email) throws ValidationException {
+        StringValidator sv = new StringValidator();
+        sv.validate(email, "Email address")
+                .checkLength(3, 200)
+                .checkRegex(StringValidator.EMAIL_REGEX_PATTERN);
+        this.email = email;
     }
+
+    public void setName(String name) throws ValidationException {
+        StringValidator sv = new StringValidator();
+        sv.validate(name, "Name")
+                .checkLength(3, 200);
+        this.name = name;
+    }
+
+    public void setDob(String dob) throws ValidationException {
+        StringValidator sv = new StringValidator();
+        parsedDob = sv.validate(dob, "Date of birth")
+                .checkDate("yyyy-MM-dd")
+                .returnCheckedDate();
+        unparsedDob = dob;
+    }
+
+    public void setAddress(String address) throws ValidationException {
+        StringValidator sv = new StringValidator();
+        sv.validate(address, "Address")
+                .checkLength(0, 200);
+        this.address = address;
+    }
+
+    public void setRawPassword(String rawPassword) throws ValidationException, NoSuchAlgorithmException {
+        /// No need to change password, if already exists and no new password passed
+        if (this.rawPassword != null && rawPassword.equals("")) {
+            return;
+        }
+
+        StringValidator sv = new StringValidator();
+        sv.validate(rawPassword, "Password")
+                .checkLength(3, 200);
+        this.rawPassword = rawPassword;
+
+        generateSecurePw();
+    }
+
+    protected List<SubjectModel> mySubjects;
+    protected List<CourseModel> myCourses;
+
+    public List<SubjectModel> getMySubjects() {
+        return mySubjects;
+    }
+
+    public List<CourseModel> getMyCourses() {
+        return myCourses;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -42,22 +90,14 @@ public class UserModel extends AbstractModel {
     public Date getParsedDob() {
         return parsedDob;
     }
+    public String getUnparsedDob() {
+        return unparsedDob;
+    }
     public String getAddress() {
         return address;
     }
 
-    private static final String PLUTO_CODE_CHARSET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String ALGORITHM_FOR_PW_HASHING = "SHA-256";
-
-    private void generatePlutoCode() {
-        SecureRandom rnd = new SecureRandom();
-
-        StringBuilder sb = new StringBuilder(PLUTO_CODE_LENGTH);
-        for (int i = 0; i < PLUTO_CODE_LENGTH; i++) {
-            sb.append(PLUTO_CODE_CHARSET.charAt(rnd.nextInt(PLUTO_CODE_CHARSET.length())));
-        }
-        plutoCode = sb.toString();
-    }
 
     private void generateSecurePw() throws NoSuchAlgorithmException {
         SecureRandom random = new SecureRandom();
@@ -68,53 +108,40 @@ public class UserModel extends AbstractModel {
         encryptedPassword = md.digest(rawPassword.getBytes(StandardCharsets.UTF_8));
     }
 
-    protected void validate() throws ValidationException {
-        StringValidator sv = new StringValidator();
-        sv.validate(email, "Email address")
-                .checkLength(3, 200)
-                .checkRegex("^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$");
-        sv.validate(name, "Name")
-                .checkLength(3, 200);
-        sv.validate(rawPassword, "Password")
-                .checkLength(3, 200);
-        parsedDob = sv.validate(unparsedDob, "Date of birth")
-                .checkDate("yyyy-MM-dd")
-                .returnCheckedDate();
-        sv.validate(address, "Address")
-                .checkLength(0, 200);
+    protected void initMySubjects() {
+        mySubjects = new LinkedList<>();
     }
 
-    public void save() throws ValidationException {
+    protected void initMyCourses() {
+        myCourses = new LinkedList<>();
+    }
+
+    @Override
+    public int getIndex() {
+        return Database.getCurrentIndexOfUser(this);
+    }
+
+    public void save() {
         if (plutoCode == null) {
             generatePlutoCode();
-            try {
-                generateSecurePw();
-            }
-            catch (NoSuchAlgorithmException e) {
-                throw new ValidationException("Couldn't encrypt password, no such algorithm: " + e.getMessage() + " " + ALGORITHM_FOR_PW_HASHING);
-            }
         }
 
-        db.addUser(this);
+        Database.addUser(this);
     }
 
-    public UserModel(String em, String na, String pw, String dob, String addr) throws ValidationException {
+    public UserModel(String email, String name, String pw, String dob, String addr) throws ValidationException, NoSuchAlgorithmException {
         plutoCode = null;
-        email = em;
-        name = na;
         encryptedPassword = null;
-        rawPassword = pw;
-        unparsedDob = dob;
-        address = addr;
-        myCourses = new LinkedList<>();
-        mySubjects = new LinkedList<>();
-        validate();
-        save();
-    }
 
-    //used by binarysearch in getting
-    public UserModel(String pluto) {
-        plutoCode = pluto;
+        setEmail(email);
+        setName(name);
+        setRawPassword(pw);
+        setAddress(addr);
+        setDob(dob);
+
+        initMySubjects();
+        initMyCourses();
+        save();
     }
 
     public static UserModel get(String pluto) throws EntityNotFoundException, ValidationException {
@@ -123,41 +150,49 @@ public class UserModel extends AbstractModel {
                 .checkLength(PLUTO_CODE_LENGTH, PLUTO_CODE_LENGTH)
                 .checkRegex("[A-Z0-9]+$");
 
-        UserModel result = db.getUserWherePlutoCode(pluto);
+        UserModel result = Database.getUserWherePlutoCode(pluto);
         if (result == null) {
             throw new EntityNotFoundException("No user found with entered Pluto code");
         }
         return result;
     }
 
-    public void update(String em, String na, String pw, String dob, String addr) throws ValidationException {
-        email = em;
-        name = na;
-        encryptedPassword = null;
-        rawPassword = pw;
-        unparsedDob = dob;
-        address = addr;
-        validate();
-        try {
-            generateSecurePw();
+    public static UserModel get(int index) throws EntityNotFoundException {
+        UserModel result = Database.getUserWhereIndex(index);
+        if (result == null) {
+            throw new EntityNotFoundException("No user found under this index");
         }
-        catch (NoSuchAlgorithmException e) {
-            throw new ValidationException("Couldn't encrypt password " + e.getMessage() + " " + ALGORITHM_FOR_PW_HASHING);
-        }
-        PlutoConsole.taglessLog(this.toString());
+        return result;
     }
 
-    public void authorize(String pw) throws AuthorizationException, ValidationException {
+    public static void delete(int index) throws EntityNotFoundException {
+        boolean success = Database.deleteUserWhereIndex(index);
+        if (!success) {
+            throw new EntityNotFoundException("Couldn't delete user, not found under index");
+        }
+    }
+
+    public static List<UserModel> all() {
+        return Database.getUsers();
+    }
+
+    public void update(String email, String name, String pw, String dob, String addr) throws ValidationException, NoSuchAlgorithmException {
+        encryptedPassword = null;
+
+        setEmail(email);
+        setName(name);
+        setRawPassword(pw);
+        setAddress(addr);
+        setDob(dob);
+    }
+
+    public void authorize(String pw) throws AuthorizationException, ValidationException, NoSuchAlgorithmException {
         StringValidator sv = new StringValidator();
         sv.validate(pw, "Password")
                 .checkLength(3, 200);
 
         MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance(ALGORITHM_FOR_PW_HASHING);
-        } catch (NoSuchAlgorithmException e) {
-            throw new AuthorizationException("Couldn't encrypt password, no such algorithm: " + ALGORITHM_FOR_PW_HASHING);
-        }
+        md = MessageDigest.getInstance(ALGORITHM_FOR_PW_HASHING);
         md.update(salt);
         byte[] pwToCheck = md.digest(pw.getBytes(StandardCharsets.UTF_8));
 
@@ -168,6 +203,10 @@ public class UserModel extends AbstractModel {
 
     public String getTitle() {
         return null;
+    }
+
+    public String getStatus() {
+        return "";
     }
 
     @Override

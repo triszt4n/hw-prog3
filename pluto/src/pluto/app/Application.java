@@ -1,10 +1,15 @@
 package pluto.app;
 
 
-import pluto.app.PlutoConsole;
 import pluto.controllers.UserController;
-import pluto.models.database.Database;
-import pluto.models.exceptions.ValidationException;
+import pluto.database.Database;
+import pluto.exceptions.DatabaseDamagedException;
+import pluto.exceptions.DatabaseNotFound;
+import pluto.exceptions.ValidationException;
+import pluto.views.AbstractView;
+
+import java.security.NoSuchAlgorithmException;
+import java.util.Stack;
 
 /***
  * Main class for starting up application. Application was developed under JDK 15 and JUnit 5.4.
@@ -19,10 +24,9 @@ import pluto.models.exceptions.ValidationException;
  */
 public class Application {
     public static void main(String[] args) {
-        Database db = new Database();
         try {
-            db.loadAll();
-        } catch (Database.DatabaseDamagedException | Database.DatabaseNotFound e) {
+            Database.loadAll();
+        } catch (DatabaseDamagedException | DatabaseNotFound e) {
             e.printStackTrace();
             //System.exit(1);
         }
@@ -30,18 +34,20 @@ public class Application {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 PlutoConsole.log("Shutdown hook is running: Saving database files...");
-                db.saveAll();
+                Database.saveAll();
             }
         });
 
         // TEMPORARY
         try {
-            db.seed();
-        } catch (ValidationException e) {
+            Database.seed();
+        } catch (ValidationException | NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         // --------
-        UserController userController = new UserController(db);
+
+        Stack<AbstractView> pageStack = new Stack<>();
+        UserController userController = new UserController(pageStack);
         userController.login();
     }
 }

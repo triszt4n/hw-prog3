@@ -1,6 +1,6 @@
 package pluto.models.validators;
 
-import pluto.models.exceptions.ValidationException;
+import pluto.exceptions.ValidationException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,6 +10,8 @@ public class StringValidator {
     private String data;
     private Date formatted;
     private String variName;
+
+    public static final String EMAIL_REGEX_PATTERN = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
 
     public StringValidator() {
         formatted = null;

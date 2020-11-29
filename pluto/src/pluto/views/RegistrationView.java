@@ -18,8 +18,7 @@ public class RegistrationView extends AbstractView {
     protected JTextField addressField;
     protected JCheckBox isInstructorCheck;
     protected UserController userController;
-    protected ActionListener backBtnListener;
-    protected ActionListener saveBtnListener;
+    protected JLabel pwLabel;
 
     public char[] getPwField() {
         return pwField.getPassword();
@@ -45,13 +44,13 @@ public class RegistrationView extends AbstractView {
         return isInstructorCheck.isSelected();
     }
 
-    protected void addComponents() {
+    protected void initComponents() {
         promptLabel = new JLabel("Please fill in the registration form");
         JPanel formPanel = new JPanel();
 
         JLabel emailLabel = new JLabel("Email address");
         emailField = new JTextField(30);
-        JLabel pwLabel = new JLabel("Password");
+        pwLabel = new JLabel("Password");
         pwField = new JPasswordField(30);
         JLabel nameLabel = new JLabel("Name");
         nameField = new JTextField(30);
@@ -135,32 +134,30 @@ public class RegistrationView extends AbstractView {
                 )
         );
         main.add(formPanel, BorderLayout.CENTER);
-        setUpListeners();
+        initListeners();
         main.getRootPane().setDefaultButton(saveBtn);
     }
 
-    private void setUpListeners() {
-        backBtnListener = new ActionListener() {
+    protected void initListeners() {
+        backBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userController.login();
+                userController.back();
             }
-        };
-        backBtn.addActionListener(backBtnListener);
+        });
 
-        saveBtnListener = new ActionListener() {
+        saveBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 userController.create();
             }
-        };
-        saveBtn.addActionListener(saveBtnListener);
+        });
     }
 
     public RegistrationView(UserController userCtrl) {
         super();
         main.setTitle("Pluto | Register");
-        addComponents();
+        initComponents();
         main.pack();
         main.setLocationRelativeTo(null);
 

@@ -1,7 +1,6 @@
 package pluto.views;
 
 import pluto.controllers.UserController;
-import pluto.views.helpers.PaddedFrame;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +23,7 @@ public class LoginView extends AbstractView {
 
     private UserController userController;
 
-    protected void addComponents() {
+    protected void initComponents() {
         JLabel welcomeLabel = new JLabel("Welcome to Pluto Course Manager");
         welcomeLabel.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 24));
 
@@ -92,24 +91,24 @@ public class LoginView extends AbstractView {
                         )
                 )
         );
-        setUpListeners();
+        initListeners();
         main.add(formPanel, BorderLayout.CENTER);
 
         main.getRootPane().setDefaultButton(loginBtn);
     }
 
-    private void setUpListeners() {
+    protected void initListeners() {
         loginBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userController.show();
+                userController.auth();
             }
         });
 
         regBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userController.form();
+                userController.build();
             }
         });
     }
@@ -118,7 +117,7 @@ public class LoginView extends AbstractView {
         super();
         main.setTitle("Pluto | Log in");
         main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        addComponents();
+        initComponents();
         main.pack();
         main.setLocationRelativeTo(null);
 
