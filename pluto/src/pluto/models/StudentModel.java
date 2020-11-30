@@ -1,8 +1,10 @@
 package pluto.models;
 
+import pluto.database.Database;
 import pluto.exceptions.ValidationException;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 public class StudentModel extends UserModel {
     public StudentModel(String em, String na, String pw, String d, String addr) throws ValidationException, NoSuchAlgorithmException {
@@ -15,12 +17,7 @@ public class StudentModel extends UserModel {
     }
 
     @Override
-    protected void initMySubjects() {
-        super.initMySubjects();
-    }
-
-    @Override
-    protected void initMyCourses() {
-        super.initMyCourses();
+    public void initMyCoursesAndSubjects(List<String> plutoCodes) {
+        myCourses = Database.getCoursesWherePlutoCodeIn(plutoCodes);
     }
 }

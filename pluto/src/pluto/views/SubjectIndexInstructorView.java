@@ -1,9 +1,10 @@
 package pluto.views;
 
-import pluto.controllers.UserController;
-import pluto.models.InstructorModel;
+import pluto.controllers.SubjectController;
+import pluto.exceptions.ValidationException;
+import pluto.models.SubjectModel;
 import pluto.models.UserModel;
-import pluto.views.helpers.UsersTableModel;
+import pluto.views.helpers.SubjectsTableModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,27 +17,28 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public class UserIndexView extends AbstractView {
-    private final List<UserModel> users;
-    private final UserController userController;
-    private UsersTableModel data;
+public class SubjectIndexInstructorView extends AbstractView {
+    private final SubjectController subjectController;
+    private final UserModel user;
+    private final List<SubjectModel> subjects;
+    private SubjectsTableModel data;
     private JTable table;
     private JButton backBtn;
     private JButton deleteBtn;
     private JButton editBtn;
-    private JCheckBox acceptCheck;
-    private JLabel plutoLabel;
+    private JCheckBox openCheck;
+    private JLabel nameLabel;
 
     @Override
     protected void initComponents() {
         JPanel promptPanel = new JPanel();
-        JLabel promptLabel = new JLabel("Administrator dashboard - Modify users");
+        JLabel promptLabel = new JLabel("Manage subjects where you are the coordinator!");
         promptPanel.add(promptLabel);
         promptPanel.setMinimumSize(new Dimension(200, 80));
         main.add(promptPanel, BorderLayout.NORTH);
 
         table = new JTable();
-        data = new UsersTableModel(users);
+        data = new SubjectsTableModel(subjects);
         table.setModel(data);
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -49,22 +51,22 @@ public class UserIndexView extends AbstractView {
         modifyPanel.setMinimumSize(new Dimension(600, 80));
 
         backBtn = new JButton("Back");
-        plutoLabel = new JLabel("", JLabel.RIGHT);
+        nameLabel = new JLabel("", JLabel.RIGHT);
 
         JPanel actionPanel = new JPanel();
-        acceptCheck = new JCheckBox("Set as accepted");
+        openCheck = new JCheckBox("Open for taking courses");
         deleteBtn = new JButton("Delete");
         editBtn = new JButton("Edit");
-        actionPanel.add(acceptCheck);
+        actionPanel.add(openCheck);
         actionPanel.add(editBtn);
         actionPanel.add(deleteBtn);
 
         editBtn.setEnabled(false);
         deleteBtn.setEnabled(false);
-        acceptCheck.setEnabled(false);
+        openCheck.setEnabled(false);
 
         modifyPanel.add(backBtn, BorderLayout.WEST);
-        modifyPanel.add(plutoLabel, BorderLayout.CENTER);
+        modifyPanel.add(nameLabel, BorderLayout.CENTER);
         modifyPanel.add(actionPanel, BorderLayout.EAST);
 
         modifyPanel.setBorder(
@@ -81,18 +83,18 @@ public class UserIndexView extends AbstractView {
         selectionModel.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 if (table.getSelectedRow() != -1) {
+                    openCheck.setEnabled(true);
                     deleteBtn.setEnabled(true);
                     editBtn.setEnabled(true);
-                    UserModel user = users.get(table.getSelectedRow());
-                    plutoLabel.setText(user.getName() + " - " + user.getTitle());
-                    acceptCheck.setEnabled(user.getTitle() == "Instructor");
-                    acceptCheck.setSelected(user.getTitle() == "Instructor" && ((InstructorModel)user).isAccepted());
+                    SubjectModel subject = subjects.get(table.getSelectedRow());
+                    nameLabel.setText(subject.getName() + " - " + (subject.isOpened()? "Opened" : "Closed"));
+                    openCheck.setSelected(subject.isOpened());
                 }
                 else {
                     deleteBtn.setEnabled(false);
                     editBtn.setEnabled(false);
-                    plutoLabel.setText("");
-                    acceptCheck.setEnabled(false);
+                    nameLabel.setText("");
+                    openCheck.setEnabled(false);
                 }
             }
         });
@@ -101,34 +103,37 @@ public class UserIndexView extends AbstractView {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    String pluto = (String) table.getValueAt(table.getSelectedRow(), UsersTableModel.UserColumn.PLUTO.ordinal());
-                    userController.edit(pluto);
+                    String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
+                    subjectController.edit(pluto);
                 }
             }
         });
 
-        acceptCheck.addActionListener(new ActionListener() {
+        openCheck.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                InstructorModel user = (InstructorModel) users.get(table.getSelectedRow());
-                user.setAccepted(acceptCheck.isSelected());
-                data.fireTableDataChanged();
+                SubjectModel subject = subjects.get(table.getSelectedRow());
+                try {
+                    subject.setOpened(openCheck.isSelected(), user);
+                } catch (ValidationException exception) {
+                    JOptionPane.showMessageDialog(null, exception.getMessage(), "Validation error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
         editBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String pluto = (String) table.getValueAt(table.getSelectedRow(), UsersTableModel.UserColumn.PLUTO.ordinal());
-                userController.edit(pluto);
+                String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
+                subjectController.edit(pluto);
             }
         });
 
         deleteBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String pluto = (String) table.getValueAt(table.getSelectedRow(), UsersTableModel.UserColumn.PLUTO.ordinal());
-                userController.delete(pluto);
+                String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
+                subjectController.delete(pluto);
                 data.fireTableDataChanged();
             }
         });
@@ -136,16 +141,17 @@ public class UserIndexView extends AbstractView {
         backBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userController.back();
+                subjectController.back();
             }
         });
     }
 
-    public UserIndexView(List<UserModel> users, UserController userCtrl) {
+    public SubjectIndexInstructorView(List<SubjectModel> subjects, UserModel user, SubjectController subjCtrl) {
         super();
-        this.users = users;
-        userController = userCtrl;
-        main.setTitle("Pluto | Administration: Users");
+        subjectController = subjCtrl;
+        this.user = user;
+        this.subjects = subjects;
+        main.setTitle("Pluto | Administration: Your subjects");
         main.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         main.setMinimumSize(new Dimension(800, 560));
         initComponents();

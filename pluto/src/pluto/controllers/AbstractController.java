@@ -6,16 +6,12 @@ import pluto.views.AbstractView;
 import java.util.Stack;
 
 public abstract class AbstractController {
-    protected Stack<AbstractView> pageStack;
+    protected static Stack<AbstractView> pageStack = new Stack<>();
 
     /***
      * The session's stored user, that logged in.
      */
     protected static UserModel loggedInUser;
-
-    public AbstractController(Stack<AbstractView> pageStack) {
-        this.pageStack = pageStack;
-    }
 
     protected void changePage(AbstractView newPage) {
         AbstractView oldPage = pageStack.pop();
@@ -43,8 +39,8 @@ public abstract class AbstractController {
     public abstract void index();
     public abstract void build();
     public abstract void create();
-    public abstract void edit(int index);
-    public abstract void update(int index);
-    public abstract void delete(int index);
-    public abstract void show(int index);
+    public abstract void edit(String pluto);
+    public abstract void update(String pluto);
+    public abstract void delete(String pluto);
+    public abstract void show(String pluto);
 }

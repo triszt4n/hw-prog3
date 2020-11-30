@@ -81,6 +81,11 @@ public class UserModel extends AbstractModel {
         return myCourses;
     }
 
+    public void initMyCoursesAndSubjects(List<String> plutoCodes) {
+        mySubjects = new LinkedList<>();
+        myCourses = new LinkedList<>();
+    }
+
     public String getEmail() {
         return email;
     }
@@ -108,19 +113,6 @@ public class UserModel extends AbstractModel {
         encryptedPassword = md.digest(rawPassword.getBytes(StandardCharsets.UTF_8));
     }
 
-    protected void initMySubjects() {
-        mySubjects = new LinkedList<>();
-    }
-
-    protected void initMyCourses() {
-        myCourses = new LinkedList<>();
-    }
-
-    @Override
-    public int getIndex() {
-        return Database.getCurrentIndexOfUser(this);
-    }
-
     public void save() {
         if (plutoCode == null) {
             generatePlutoCode();
@@ -138,10 +130,8 @@ public class UserModel extends AbstractModel {
         setRawPassword(pw);
         setAddress(addr);
         setDob(dob);
-
-        initMySubjects();
-        initMyCourses();
         save();
+        initMyCoursesAndSubjects(null);
     }
 
     public static UserModel get(String pluto) throws EntityNotFoundException, ValidationException {
@@ -157,23 +147,13 @@ public class UserModel extends AbstractModel {
         return result;
     }
 
-    public static UserModel get(int index) throws EntityNotFoundException {
-        UserModel result = Database.getUserWhereIndex(index);
-        if (result == null) {
-            throw new EntityNotFoundException("No user found under this index");
-        }
-        return result;
-    }
-
-    public static void delete(int index) throws EntityNotFoundException {
-        boolean success = Database.deleteUserWhereIndex(index);
-        if (!success) {
-            throw new EntityNotFoundException("Couldn't delete user, not found under index");
-        }
+    public static void delete(String pluto) throws EntityNotFoundException, ValidationException {
+        UserModel result = get(pluto);
+        Database.removeUser(result);
     }
 
     public static List<UserModel> all() {
-        return Database.getUsers();
+        return Database.getAllUsers();
     }
 
     public void update(String email, String name, String pw, String dob, String addr) throws ValidationException, NoSuchAlgorithmException {

@@ -23,6 +23,5 @@ public abstract class AbstractModel {
         plutoCode = sb.toString();
     }
 
-    public abstract int getIndex();
     protected abstract void save();
 }

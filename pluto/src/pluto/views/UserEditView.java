@@ -8,13 +8,19 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 
 public class UserEditView extends RegistrationView {
-    private UserModel user;
-    private int userIndex;
+    private final UserModel user;
 
     private void editComponents() {
+        emailField.setText(user.getEmail());
+        addressField.setText(user.getAddress());
+        dobField.setText((new SimpleDateFormat("yyyy-MM-dd")).format(user.getParsedDob()));
+        nameField.setText(user.getName());
+        isInstructorCheck.setVisible(false);
+
+        main.setTitle("Pluto | Edit user");
         promptLabel.setText("Fill in the form to edit user data");
         saveBtn.setText("Save");
-        initListeners();
+        main.getRootPane().setDefaultButton(saveBtn);
     }
 
     @Override
@@ -29,27 +35,19 @@ public class UserEditView extends RegistrationView {
         saveBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userController.update(user.getIndex());
+                userController.update(user.getPlutoCode());
             }
         });
     }
 
     public UserEditView(UserModel user, UserController userCtrl, boolean canChangePassword) {
         super(userCtrl);
-        main.setTitle("Pluto | Edit user");
         this.user = user;
-        emailField.setText(user.getEmail());
-        addressField.setText(user.getAddress());
-        dobField.setText((new SimpleDateFormat("yyyy-MM-dd")).format(user.getParsedDob()));
-        nameField.setText(user.getName());
-
-        isInstructorCheck.setVisible(false);
+        editComponents();
         if (!canChangePassword) {
             pwField.setVisible(false);
             pwLabel.setVisible(false);
         }
-
-        editComponents();
         main.pack();
     }
 }

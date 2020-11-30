@@ -1,9 +1,12 @@
 package pluto.models;
 
+import pluto.database.Database;
 import pluto.exceptions.AuthorizationException;
 import pluto.exceptions.ValidationException;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class InstructorModel extends UserModel {
     private boolean isAccepted;
@@ -42,12 +45,8 @@ public class InstructorModel extends UserModel {
     }
 
     @Override
-    protected void initMySubjects() {
-        super.initMySubjects();
-    }
-
-    @Override
-    protected void initMyCourses() {
-        super.initMyCourses();
+    public void initMyCoursesAndSubjects(List<String> plutoCodes) {
+        myCourses = new LinkedList<>();
+        mySubjects = Database.getSubjectsWhereCreatorUser(this);
     }
 }

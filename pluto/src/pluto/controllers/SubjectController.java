@@ -1,17 +1,17 @@
 package pluto.controllers;
 
+import pluto.exceptions.EntityNotFoundException;
+import pluto.exceptions.ValidationException;
 import pluto.models.SubjectModel;
-import pluto.views.AbstractView;
+import pluto.views.SubjectBuildView;
+import pluto.views.SubjectIndexInstructorView;
+import pluto.views.SubjectIndexStudentView;
 import pluto.views.SubjectIndexView;
 
-import java.util.Stack;
+import javax.swing.*;
 
 public class SubjectController extends AbstractController {
     private CourseController courseController;
-
-    public SubjectController(Stack<AbstractView> pageStack) {
-        super(pageStack);
-    }
 
     public void setCourseController(CourseController courseController) {
         this.courseController = courseController;
@@ -19,40 +19,71 @@ public class SubjectController extends AbstractController {
 
     @Override
     public void index() {
-        openChildPage(new SubjectIndexView(SubjectModel.all(), loggedInUser, this));
+        openChildPage(new SubjectIndexView(SubjectModel.all(), this));
     }
 
     public void allForLoggedInUser() {
-        openChildPage(new SubjectIndexView(loggedInUser.getMySubjects(), loggedInUser, this));
+        if (loggedInUser.getTitle() == "Instructor") {
+            openChildPage(new SubjectIndexInstructorView(loggedInUser.getMySubjects(), loggedInUser, this));
+        }
+        else if (loggedInUser.getTitle() == "Student") {
+            openChildPage(new SubjectIndexStudentView(loggedInUser.getMySubjects(), loggedInUser, this));
+        }
+        else {
+            openChildPage(new SubjectIndexInstructorView(SubjectModel.all(), loggedInUser, this));
+        }
     }
 
     @Override
     public void build() {
-
+        if (loggedInUser.getTitle() == "Student") {
+            JOptionPane.showMessageDialog(null, "Can't create subject as a student!", "No permission", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else {
+            openChildPage(new SubjectBuildView(this));
+        }
     }
 
     @Override
     public void create() {
+        SubjectBuildView buildPage = (SubjectBuildView) pageStack.peek();
+        try {
+            new SubjectModel(
+                    buildPage.getNameField(),
+                    buildPage.getCreditField(),
+                    buildPage.getReqField(),
+                    buildPage.getSemesterField(),
+                    loggedInUser,
+                    buildPage.getIsOpenedCheck()
+            );
+            JOptionPane.showMessageDialog(null, "Subject successfully created");
+            closeChildPage();
+        } catch (ValidationException e) {
+            JOptionPane.showMessageDialog(null, "Error creating subject: " + e.getMessage(), "Validation error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    @Override
+    public void edit(String pluto) {
+        try {
+            SubjectModel subject = SubjectModel.get(pluto);
+        } catch (EntityNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Error editing subject: " + e.getMessage(), "Validation error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    @Override
+    public void update(String pluto) {
 
     }
 
     @Override
-    public void edit(int index) {
+    public void delete(String pluto) {
 
     }
 
     @Override
-    public void update(int index) {
-
-    }
-
-    @Override
-    public void delete(int index) {
-
-    }
-
-    @Override
-    public void show(int index) {
+    public void show(String pluto) {
 
     }
 }

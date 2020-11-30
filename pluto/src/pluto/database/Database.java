@@ -11,20 +11,18 @@ import javax.json.JsonReader;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Database {
     private static final List<UserModel> users = new LinkedList<>();
     private static final List<SubjectModel> subjects = new LinkedList<>();
     private static final List<CourseModel> courses = new LinkedList<>();
 
-    public static List<UserModel> getUsers() {
+    public static List<UserModel> getAllUsers() {
         return users;
     }
-    public static List<SubjectModel> getSubjects() {
+    public static List<SubjectModel> getAllSubjects() {
         return subjects;
-    }
-    public static List<CourseModel> getCourses() {
-        return courses;
     }
 
     private static AbstractModel getEntityWherePlutoCode(String pluto, List<? extends AbstractModel> list) {
@@ -50,6 +48,7 @@ public class Database {
         return (CourseModel) getEntityWherePlutoCode(pluto, courses);
     }
 
+    /*
     private static AbstractModel getEntityWhereIndex(int index, List<? extends AbstractModel> list) {
         AbstractModel result;
         try {
@@ -76,6 +75,9 @@ public class Database {
         return (CourseModel) getEntityWhereIndex(index, courses);
     }
 
+     */
+
+    /*
     public static int getCurrentIndexOfUser(UserModel user) {
         return users.indexOf(user);
     }
@@ -87,7 +89,9 @@ public class Database {
     public static int getCurrentIndexOfCourse(CourseModel course) {
         return courses.indexOf(course);
     }
+     */
 
+    /*
     private static boolean deleteEntityWhereIndex(int index, List<? extends AbstractModel> list) {
         try {
             list.remove(index);
@@ -109,6 +113,7 @@ public class Database {
     public static boolean deleteCourseWhereIndex(int index) {
         return deleteEntityWhereIndex(index, courses);
     }
+    */
 
     public static void addUser(UserModel user) {
         users.add(user);
@@ -122,7 +127,37 @@ public class Database {
         courses.add(course);
     }
 
-    public static void loadAll() throws DatabaseDamagedException, DatabaseNotFound {
+    public static boolean removeUser(UserModel user) {
+        return users.remove(user);
+    }
+
+    public static boolean removeSubject(SubjectModel subject) {
+        return subjects.remove(subject);
+    }
+
+    public static boolean removeCourse(CourseModel course) {
+        return courses.remove(course);
+    }
+
+    public static List<CourseModel> getCoursesWherePlutoCodeIn(List<String> plutoCodes) {
+        return courses.stream()
+                .filter(c -> plutoCodes.contains(c.getPlutoCode()))
+                .collect(Collectors.toList());
+    }
+
+    public static List<SubjectModel> getSubjectsWhereCreatorUser(UserModel user) {
+        return subjects.stream()
+                .filter(s -> s.getCoordinator() == user)
+                .collect(Collectors.toList());
+    }
+
+    public static List<CourseModel> getCoursesWhereSubject(SubjectModel subject) {
+        return courses.stream()
+                .filter(c -> c.getSubject() == subject)
+                .collect(Collectors.toList());
+    }
+
+    public static void loadFromJsonFiles() throws DatabaseDamagedException, DatabaseNotFound {
         JsonReader readerUsers = null;
         JsonReader readerSubjects = null;
         JsonReader readerCourses = null;
@@ -160,18 +195,36 @@ public class Database {
         readerCourses.close();
     }
 
-    public static void saveAll() {
+    public static void saveToJsonFiles() {
 
     }
 
     public static void seed() throws ValidationException, NoSuchAlgorithmException {
-        StudentModel user1 = new StudentModel("trisz@gmail.com", "Piller Trisztán", "123456", "1999-08-30", "Veszprém, Damjanich János utca 4/A");
-        AdministratorModel user2 = new AdministratorModel("admin@gmail.com", "Mr. Admin", "123456", "1989-08-20", "");
-        InstructorModel user3 = new InstructorModel("tasnadi@gmail.com", "Tasnadi Tamas", "123456", "1972-03-14", "", false);
+        StudentModel user1 = new StudentModel("piller.trisztan@simonyi.bme.hu", "Piller Trisztán", "123456", "1999-08-30", "Veszprém, Damjanich János utca 4/A");
+        AdministratorModel user2 = new AdministratorModel("admin@pluto.com", "Adam Ministrator", "123456", "1989-08-20", "");
+        InstructorModel user3 = new InstructorModel("tasnadi@math.bme.hu", "Tasnádi Tamás", "123456", "1972-03-14", "", false);
+        InstructorModel user4 = new InstructorModel("gajdos@db.bme.hu", "Gajdos Sándor", "123456", "1961-10-10", "", true);
+        InstructorModel user5 = new InstructorModel("youknowwho@slytherin.edu", "Lord Voldemort", "123456", "1972-12-20", "", true);
 
         PlutoConsole.log("number of users in db: " + users.size());
         for (UserModel user : users) {
             PlutoConsole.taglessLog(user.toString());
+        }
+
+        SubjectModel subj1 = new SubjectModel("Adatbázisok", String.valueOf(5), "2/1/1/v", String.valueOf(3), user4, true);
+        SubjectModel subj2 = new SubjectModel("Analízis 1 informatikusoknak", String.valueOf(6), "4/2/0/v", String.valueOf(1), user3, true);
+        SubjectModel subj3 = new SubjectModel("Analízis 2 keresztfélév", String.valueOf(6), "4/2/0/f", String.valueOf(3), user3, true);
+        SubjectModel subj4 = new SubjectModel("Sötét bűbájok", String.valueOf(4), "2/0/2/s", String.valueOf(5), user5, false);
+
+        PlutoConsole.log("number of subjects in db: " + subjects.size());
+        for (SubjectModel subject : subjects) {
+            PlutoConsole.taglessLog(subject.toString());
+        }
+
+        //CourseModel
+
+        for (UserModel user : users) {
+            //user.initMyCoursesAndSubjects();
         }
 
         PlutoConsole.log("Database seed has successfully run");

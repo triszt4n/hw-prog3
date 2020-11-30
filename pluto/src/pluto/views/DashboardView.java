@@ -16,7 +16,7 @@ public class DashboardView extends AbstractView {
     private final UserController userController;
     private final CourseController courseController;
     private final SubjectController subjectController;
-    private final UserModel loggedInUser;
+    private final UserModel user;
 
     private JMenuItem manageUserBtn;
     private JMenuItem logoutBtn;
@@ -29,6 +29,7 @@ public class DashboardView extends AbstractView {
     private JMenuItem usersBtn;
     private JMenuItem seedBtn;
     private JMenuItem resetBtn;
+    private JMenuItem newSubjectBtn;
 
     private JPanel createDetailsPanel() {
         JLabel emailLabel = new JLabel("Email address");
@@ -37,11 +38,11 @@ public class DashboardView extends AbstractView {
         JLabel dobLabel = new JLabel("Date of birth");
         JLabel addressLabel = new JLabel("Address");
 
-        JLabel emailLabel2 = new JLabel(loggedInUser.getEmail());
-        JLabel plutoLabel2 = new JLabel(loggedInUser.getPlutoCode());
-        JLabel nameLabel2 = new JLabel(loggedInUser.getName());
-        JLabel dobLabel2 = new JLabel(loggedInUser.getParsedDob().toString());
-        JLabel addressLabel2 = new JLabel(loggedInUser.getAddress());
+        JLabel emailLabel2 = new JLabel(user.getEmail());
+        JLabel plutoLabel2 = new JLabel(user.getPlutoCode());
+        JLabel nameLabel2 = new JLabel(user.getName());
+        JLabel dobLabel2 = new JLabel(user.getParsedDob().toString());
+        JLabel addressLabel2 = new JLabel(user.getAddress());
 
         JPanel formPanel = new JPanel();
         GroupLayout formLayout = new GroupLayout(formPanel);
@@ -95,6 +96,7 @@ public class DashboardView extends AbstractView {
         return formPanel;
     }
 
+    @Override
     protected void initComponents() {
         JMenuBar mb = new JMenuBar();
 
@@ -107,7 +109,9 @@ public class DashboardView extends AbstractView {
 
         JMenu subjectMenu = new JMenu("Subjects");
         manageSubjectBtn = new JMenuItem("Manage my subjects...");
+        newSubjectBtn = new JMenuItem("New subject");
         subjectMenu.add(manageSubjectBtn);
+        subjectMenu.add(newSubjectBtn);
         mb.add(subjectMenu);
 
         JMenu courseMenu = new JMenu("Courses");
@@ -124,14 +128,17 @@ public class DashboardView extends AbstractView {
         dbMenu.add(usersBtn);
         dbMenu.add(seedBtn);
         dbMenu.add(resetBtn);
+        if (user.getTitle() != "Administrator") {
+            dbMenu.setVisible(false);
+        }
         mb.add(dbMenu);
 
         main.setJMenuBar(mb);
 
-        JLabel welcomeLabel = new JLabel("Hi, " + loggedInUser.getName() + "!");
+        JLabel welcomeLabel = new JLabel("Hi, " + user.getName() + "!");
         welcomeLabel.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 30));
         JLabel promptLabel = new JLabel("Browse the menu bar for actions");
-        JLabel userTitleLabel = new JLabel("/" + loggedInUser.getTitle() + "/");
+        JLabel userTitleLabel = new JLabel("/ " + user.getTitle() + " /");
         JPanel detailsPanel = createDetailsPanel();
 
         Component paddingBox1 = Box.createRigidArea(new Dimension(50, 50));
@@ -169,6 +176,7 @@ public class DashboardView extends AbstractView {
         initListeners();
     }
 
+    @Override
     protected void initListeners() {
         logoutBtn.addActionListener(new ActionListener() {
             @Override
@@ -187,7 +195,7 @@ public class DashboardView extends AbstractView {
         manageUserBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userController.edit(-1);
+                userController.edit(null);
             }
         });
 
@@ -195,6 +203,13 @@ public class DashboardView extends AbstractView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 subjectController.allForLoggedInUser();
+            }
+        });
+
+        newSubjectBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                subjectController.build();
             }
         });
 
@@ -229,7 +244,7 @@ public class DashboardView extends AbstractView {
 
     public DashboardView(UserModel user, UserController userCtrl, SubjectController subjectCtrl, CourseController courseCtrl) {
         super();
-        loggedInUser = user;
+        this.user = user;
         userController = userCtrl;
         subjectController = subjectCtrl;
         courseController = courseCtrl;

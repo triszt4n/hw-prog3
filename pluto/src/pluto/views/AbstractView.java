@@ -28,4 +28,9 @@ public abstract class AbstractView {
     public void enable() {
         main.setEnabled(true);
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().toString();
+    }
 }

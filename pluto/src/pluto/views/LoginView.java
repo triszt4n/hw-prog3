@@ -21,8 +21,9 @@ public class LoginView extends AbstractView {
         return plutoField.getText();
     }
 
-    private UserController userController;
+    private final UserController userController;
 
+    @Override
     protected void initComponents() {
         JLabel welcomeLabel = new JLabel("Welcome to Pluto Course Manager");
         welcomeLabel.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 24));
@@ -97,6 +98,7 @@ public class LoginView extends AbstractView {
         main.getRootPane().setDefaultButton(loginBtn);
     }
 
+    @Override
     protected void initListeners() {
         loginBtn.addActionListener(new ActionListener() {
             @Override

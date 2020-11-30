@@ -2,23 +2,18 @@ package pluto.controllers;
 
 import pluto.app.PlutoConsole;
 import pluto.database.Database;
-import pluto.models.InstructorModel;
-import pluto.models.StudentModel;
-import pluto.models.UserModel;
 import pluto.exceptions.AuthorizationException;
 import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
+import pluto.models.InstructorModel;
+import pluto.models.StudentModel;
+import pluto.models.UserModel;
 import pluto.views.*;
 
 import javax.swing.*;
 import java.security.NoSuchAlgorithmException;
-import java.util.Stack;
 
 public class UserController extends AbstractController {
-    public UserController(Stack<AbstractView> pageStack) {
-        super(pageStack);
-    }
-
     public void login() {
         pageStack.push(new LoginView(this));
         pageStack.peek().open();
@@ -68,15 +63,20 @@ public class UserController extends AbstractController {
     }
 
     @Override
-    public void edit(int index) {
-        UserModel user = (index == -1)? loggedInUser : Database.getUserWhereIndex(index);
-        openChildPage(new UserEditView(user, this, index == -1));
+    public void edit(String pluto) {
+        UserModel user = null;
+        try {
+            user = (pluto == null)? loggedInUser : UserModel.get(pluto);
+            openChildPage(new UserEditView(user, this, user == loggedInUser));
+        } catch (EntityNotFoundException | ValidationException e) {
+            JOptionPane.showMessageDialog(null, "Error editing user: " + e.getMessage(), "Not found error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
-    public void update(int index) {
+    public void update(String pluto) {
         UserEditView editPage = (UserEditView) pageStack.peek();
-        UserModel user = (index == -1)? loggedInUser : Database.getUserWhereIndex(index);
+        UserModel user = (pluto == null)? loggedInUser : Database.getUserWherePlutoCode(pluto);
         try {
             user.update(
                     editPage.getEmailField(),
@@ -92,21 +92,19 @@ public class UserController extends AbstractController {
     }
 
     @Override
-    public void delete(int index) {
+    public void delete(String pluto) {
         int input = JOptionPane.showConfirmDialog(null, "Confirm deleting selected user?");
         if (input == JOptionPane.OK_OPTION) {
             try {
-                UserModel.delete(index);
-            } catch (EntityNotFoundException e) {
+                UserModel.delete(pluto);
+            } catch (EntityNotFoundException | ValidationException e) {
                 JOptionPane.showMessageDialog(null, "Error deleting user: " + e.getMessage(), "Not found error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     @Override
-    public void show(int index) {
-
-    }
+    public void show(String pluto) { }
 
     public void auth() {
         LoginView loginPage = (LoginView) pageStack.peek();
@@ -115,8 +113,8 @@ public class UserController extends AbstractController {
             user = UserModel.get(loginPage.getPlutoField());
             user.authorize(new String(loginPage.getPwField()));
             loggedInUser = user;
-            SubjectController subjCtrl = new SubjectController(pageStack);
-            CourseController courseCtrl = new CourseController(pageStack);
+            SubjectController subjCtrl = new SubjectController();
+            CourseController courseCtrl = new CourseController();
             subjCtrl.setCourseController(courseCtrl);
             changePage(new DashboardView(loggedInUser, this, subjCtrl, courseCtrl));
         } catch (EntityNotFoundException | AuthorizationException | ValidationException | NoSuchAlgorithmException e) {

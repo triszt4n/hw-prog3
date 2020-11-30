@@ -6,10 +6,8 @@ import pluto.database.Database;
 import pluto.exceptions.DatabaseDamagedException;
 import pluto.exceptions.DatabaseNotFound;
 import pluto.exceptions.ValidationException;
-import pluto.views.AbstractView;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Stack;
 
 /***
  * Main class for starting up application. Application was developed under JDK 15 and JUnit 5.4.
@@ -25,7 +23,7 @@ import java.util.Stack;
 public class Application {
     public static void main(String[] args) {
         try {
-            Database.loadAll();
+            Database.loadFromJsonFiles();
         } catch (DatabaseDamagedException | DatabaseNotFound e) {
             e.printStackTrace();
             //System.exit(1);
@@ -34,7 +32,7 @@ public class Application {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 PlutoConsole.log("Shutdown hook is running: Saving database files...");
-                Database.saveAll();
+                Database.saveToJsonFiles();
             }
         });
 
@@ -46,8 +44,7 @@ public class Application {
         }
         // --------
 
-        Stack<AbstractView> pageStack = new Stack<>();
-        UserController userController = new UserController(pageStack);
+        UserController userController = new UserController();
         userController.login();
     }
 }

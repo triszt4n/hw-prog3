@@ -1,10 +1,11 @@
 package pluto.models;
 
 public class CourseModel extends AbstractModel {
-    @Override
-    public int getIndex() {
-        return 0;
-    }
+    private String shortCode;
+    private CourseType type;
+    private String notes;
+
+    private SubjectModel subject;
 
     @Override
     protected void save() {

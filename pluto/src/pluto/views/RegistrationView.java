@@ -44,6 +44,7 @@ public class RegistrationView extends AbstractView {
         return isInstructorCheck.isSelected();
     }
 
+    @Override
     protected void initComponents() {
         promptLabel = new JLabel("Please fill in the registration form");
         JPanel formPanel = new JPanel();
@@ -138,6 +139,7 @@ public class RegistrationView extends AbstractView {
         main.getRootPane().setDefaultButton(saveBtn);
     }
 
+    @Override
     protected void initListeners() {
         backBtn.addActionListener(new ActionListener() {
             @Override
@@ -156,12 +158,12 @@ public class RegistrationView extends AbstractView {
 
     public RegistrationView(UserController userCtrl) {
         super();
+        userController = userCtrl;
+
         main.setTitle("Pluto | Register");
         initComponents();
         main.pack();
         main.setLocationRelativeTo(null);
-
-        userController = userCtrl;
     }
 
     @Override

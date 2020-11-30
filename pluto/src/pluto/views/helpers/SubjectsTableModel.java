@@ -52,7 +52,15 @@ public class SubjectsTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return null;
+        SubjectModel subject = subjects.get(rowIndex);
+        switch(columnIndex) {
+            case 1: return subject.getName();
+            case 2: return subject.getCredit();
+            case 3: return subject.getRequirements();
+            case 4: return subject.getSemester();
+            case 5: return subject.getCoordinator().getName();
+            default: return subject.getPlutoCode();
+        }
     }
 
     @Override

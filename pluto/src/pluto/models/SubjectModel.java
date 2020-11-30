@@ -4,6 +4,7 @@ import pluto.app.PlutoConsole;
 import pluto.database.Database;
 import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
+import pluto.models.validators.StringValidator;
 
 import java.util.List;
 
@@ -15,56 +16,73 @@ public class SubjectModel extends AbstractModel {
     private UserModel coordinator;
     private boolean isOpened;
 
-    public String getPlutoCode() {
-        return plutoCode;
-    }
-
-    public void setPlutoCode(String plutoCode) {
-        this.plutoCode = plutoCode;
-    }
+    private List<CourseModel> courses;
 
     public String getName() {
         return name;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int getCredit() {
         return credit;
     }
-
-    public void setCredit(int credit) {
-        this.credit = credit;
-    }
-
     public String getRequirements() {
         return requirements;
     }
-
-    public void setRequirements(String requirements) {
-        this.requirements = requirements;
-    }
-
     public int getSemester() {
         return semester;
     }
-
-    public void setSemester(int semester) {
-        this.semester = semester;
-    }
-
     public UserModel getCoordinator() {
         return coordinator;
+    }
+    public boolean isOpened() {
+        return isOpened;
+    }
+
+    public void setName(String name) throws ValidationException {
+        StringValidator sv = new StringValidator();
+        sv.validate(name, "Name")
+                .checkLength(3, 200);
+        this.name = name;
+    }
+
+    public void setCredit(String credit) throws ValidationException {
+        int cr;
+        try {
+            cr = Integer.parseInt(credit);
+        }
+        catch (NumberFormatException e) {
+            throw new ValidationException("Credit: " + e.getMessage());
+        }
+
+        if (cr > 100) {
+            throw new ValidationException("Are you sure about the number of credits?");
+        }
+        this.credit = cr;
+    }
+
+    public void setRequirements(String requirements) throws ValidationException {
+        StringValidator sv = new StringValidator();
+        sv.validate(requirements, "Requirements")
+                .checkRegex("[0-9]/[0-9]/[0-9]/[fsv]$");
+        this.requirements = requirements;
+    }
+
+    public void setSemester(String semester) throws ValidationException {
+        int sem;
+        try {
+            sem = Integer.parseInt(semester);
+        }
+        catch (NumberFormatException e) {
+            throw new ValidationException("Semester: " + e.getMessage());
+        }
+
+        if (sem > 14) {
+            throw new ValidationException("Are you sure about the recommended semester number?");
+        }
+        this.semester = sem;
     }
 
     public void setCoordinator(UserModel coordinator) {
         this.coordinator = coordinator;
-    }
-
-    public boolean isOpened() {
-        return isOpened;
     }
 
     public void setOpened(boolean opened, UserModel user) throws ValidationException {
@@ -77,16 +95,30 @@ public class SubjectModel extends AbstractModel {
     }
 
     @Override
-    public int getIndex() {
-        return Database.getCurrentIndexOfSubject(this);
-    }
-
-    @Override
     protected void save() {
+        if (plutoCode == null) {
+            generatePlutoCode();
+        }
 
+        Database.addSubject(this);
     }
 
-    public static SubjectModel get(String pluto) throws EntityNotFoundException, ValidationException {
+    public SubjectModel(String name, String credit, String requirements, String semester, UserModel coordinator, boolean isOpened) throws ValidationException {
+        plutoCode = null;
+        setName(name);
+        setCredit(credit);
+        setRequirements(requirements);
+        setSemester(semester);
+        setCoordinator(coordinator);
+        setOpened(isOpened, coordinator);
+        save();
+    }
+
+    public void initCourses() {
+        courses = Database.getCoursesWhereSubject(this);
+    }
+
+    public static SubjectModel get(String pluto) throws EntityNotFoundException {
         SubjectModel result = Database.getSubjectWherePlutoCode(pluto);
         if (result == null) {
             throw new EntityNotFoundException("No subject found with Pluto code");
@@ -94,8 +126,13 @@ public class SubjectModel extends AbstractModel {
         return result;
     }
 
+    public static void delete(String pluto) throws EntityNotFoundException {
+        SubjectModel result = get(pluto);
+        Database.removeSubject(result);
+    }
+
     public static List<SubjectModel> all() {
-        return Database.getSubjects();
+        return Database.getAllSubjects();
     }
 
     @Override
