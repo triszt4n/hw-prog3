@@ -9,10 +9,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.List;
 
 public class SubjectIndexView extends AbstractView {
@@ -114,6 +111,13 @@ public class SubjectIndexView extends AbstractView {
         main.setMinimumSize(new Dimension(800, 560));
         initComponents();
         main.setLocationRelativeTo(null);
+
+        main.addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e){
+                subjectController.back();
+            }
+        });
     }
 
     @Override

@@ -61,7 +61,7 @@ public class UserController extends AbstractController {
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, null);
             JOptionPane.showMessageDialog(null, "Successful registration, your Pluto code is copied to the clipboard! " + pluto);
-            PlutoConsole.msg("Your Pluto code is ready, copy here: \u001B[32m" + pluto + "\u001B[0m");
+            PlutoConsole.msg("Your Pluto code is ready, copy here: " + PlutoConsole.ANSI_CYAN + pluto + PlutoConsole.ANSI_RESET);
             closeChildPage();
         } catch (ValidationException | NoSuchAlgorithmException e) {
             JOptionPane.showMessageDialog(null, "Error creating user: " + e.getMessage(), "Validation error", JOptionPane.ERROR_MESSAGE);

@@ -249,8 +249,6 @@ public class UserModel extends AbstractModel {
         md.update(salt);
         byte[] pwToCheck = md.digest(pw.getBytes(StandardCharsets.UTF_8));
 
-        PlutoConsole.log(new String(pwToCheck), new String(encryptedPassword));
-
         if (!Arrays.equals(pwToCheck, encryptedPassword)) {
             throw new AuthorizationException("Wrong password");
         }

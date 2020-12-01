@@ -1,20 +1,29 @@
 package pluto.app;
 
-public class PlutoConsole {
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_BLACK = "\u001B[30m";
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_GREEN = "\u001B[32m";
-    private static final String ANSI_YELLOW = "\u001B[33m";
-    private static final String ANSI_BLUE = "\u001B[34m";
-    private static final String ANSI_PURPLE = "\u001B[35m";
-    private static final String ANSI_CYAN = "\u001B[36m";
-    private static final String ANSI_WHITE = "\u001B[37m";
-    private static final String TAG_PLUTO = ANSI_CYAN + "[PLUTO]" + ANSI_RESET;
-    private static final String TAG_DEV = ANSI_YELLOW + "[DEV]" + ANSI_RESET;
-    private static final String TAG_ERROR = ANSI_RED + "[ERROR]" + ANSI_RESET;
+import io.github.cdimascio.dotenv.Dotenv;
 
-    private static final boolean isDevEnv = true;
+public class PlutoConsole {
+    public static String ANSI_RESET;
+    public static String ANSI_RED;
+    public static String ANSI_YELLOW;
+    public static String ANSI_CYAN;
+    private static String TAG_PLUTO;
+    private static String TAG_DEV;
+    private static String TAG_ERROR;
+    private static boolean isDevEnv = true;
+
+    public static void setup() {
+        Dotenv dotenv = Dotenv.load();
+        boolean useColor = dotenv.get("PLUTO_CONSOLE_COLORFUL").equals("TRUE");
+        isDevEnv = dotenv.get("PLUTO_ENVIRONMENT").equals("DEV");
+        ANSI_RESET = useColor? "\u001B[0m" : "";
+        ANSI_RED = useColor? "\u001B[31m" : "";
+        ANSI_YELLOW = useColor? "\u001B[33m" : "";
+        ANSI_CYAN = useColor? "\u001B[36m" : "";
+        TAG_PLUTO = ANSI_CYAN + "[PLUTO]" + ANSI_RESET;
+        TAG_DEV = ANSI_YELLOW + "[DEV]" + ANSI_RESET;
+        TAG_ERROR = ANSI_RED + "[ERROR]" + ANSI_RESET;
+    }
 
     public static void log(String... messages) {
         if (isDevEnv) {

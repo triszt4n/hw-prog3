@@ -13,10 +13,9 @@ import java.util.List;
 
 public class CourseOfSubjectInstructorView extends CourseIndexInstructorView {
     private final SubjectModel subject;
-    private JButton createBtn;
 
     protected void editComponents() {
-        createBtn = new JButton("New course");
+        JButton createBtn = new JButton("New course");
         promptPanel = new JPanel(new BorderLayout());
         promptPanel.setMinimumSize(new Dimension(200, 160));
         JLabel subjectLabel = new JLabel("Courses of Subject: " + subject.getName() +

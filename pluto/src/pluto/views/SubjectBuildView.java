@@ -6,6 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class SubjectBuildView extends AbstractView {
     protected final SubjectController subjectController;
@@ -42,6 +44,13 @@ public class SubjectBuildView extends AbstractView {
         initComponents();
         main.pack();
         main.setLocationRelativeTo(null);
+
+        main.addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e){
+                subjectController.back();
+            }
+        });
     }
 
     @Override

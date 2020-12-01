@@ -280,6 +280,7 @@ public class DashboardView extends AbstractView {
         courseController = courseCtrl;
 
         main.setTitle("Pluto | Dashboard");
+        main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
         main.pack();
         main.setLocationRelativeTo(null);

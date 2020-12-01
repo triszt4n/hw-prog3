@@ -26,7 +26,7 @@ public class SubjectController extends AbstractController {
             openChildPage(new SubjectIndexInstructorView(loggedInUser.getMySubjects(), loggedInUser, this));
         }
         else if (loggedInUser.getTitle().equals("Student")) {
-            openChildPage(new SubjectIndexStudentView(loggedInUser.getMySubjects(), loggedInUser, this));
+            openChildPage(new SubjectIndexStudentView(loggedInUser.getMySubjects(), this));
         }
         else {
             openChildPage(new SubjectIndexInstructorView(SubjectModel.all(), loggedInUser, this));

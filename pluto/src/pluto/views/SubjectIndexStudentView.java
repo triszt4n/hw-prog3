@@ -2,7 +2,6 @@ package pluto.views;
 
 import pluto.controllers.SubjectController;
 import pluto.models.SubjectModel;
-import pluto.models.UserModel;
 import pluto.views.helpers.SubjectsTableModel;
 
 import javax.swing.*;
@@ -10,15 +9,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.List;
 
 public class SubjectIndexStudentView extends AbstractView {
     private final SubjectController subjectController;
-    private final UserModel user;
     private final List<SubjectModel> subjects;
     private SubjectsTableModel data;
     private JTable table;
@@ -126,16 +121,22 @@ public class SubjectIndexStudentView extends AbstractView {
         });
     }
 
-    public SubjectIndexStudentView(List<SubjectModel> subjects, UserModel user, SubjectController subjCtrl) {
+    public SubjectIndexStudentView(List<SubjectModel> subjects, SubjectController subjCtrl) {
         super();
         subjectController = subjCtrl;
-        this.user = user;
         this.subjects = subjects;
         main.setTitle("Pluto | Administration: Your subjects");
         main.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         main.setMinimumSize(new Dimension(800, 560));
         initComponents();
         main.setLocationRelativeTo(null);
+
+        main.addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e){
+                subjectController.back();
+            }
+        });
     }
 
     @Override

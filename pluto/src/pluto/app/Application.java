@@ -24,6 +24,8 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Application {
     public static void main(String[] args) {
+        PlutoConsole.setup();
+
         try {
             Database.loadFromJsonFiles();
         } catch (DatabaseDamagedException dde) {
