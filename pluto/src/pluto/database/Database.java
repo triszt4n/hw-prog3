@@ -39,26 +39,34 @@ public class Database {
     }
 
     private static AbstractModel getEntityWherePlutoCode(String pluto, List<? extends AbstractModel> list) {
-        AbstractModel result = list.stream()
+        return list.stream()
                 .filter(e -> e.getPlutoCode().equals(pluto))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public static UserModel getUserWherePlutoCode(String pluto) {
+        UserModel result = (UserModel) getEntityWherePlutoCode(pluto, users);
         if (result == null) {
-            PlutoConsole.log("getEntityWherePlutoCode couldn't find Entity!");
+            PlutoConsole.log("getUserWherePlutoCode couldn't find User!", pluto);
         }
         return result;
     }
 
-    public static UserModel getUserWherePlutoCode(String pluto) {
-        return (UserModel) getEntityWherePlutoCode(pluto, users);
-    }
-
     public static SubjectModel getSubjectWherePlutoCode(String pluto) {
-        return (SubjectModel) getEntityWherePlutoCode(pluto, subjects);
+        SubjectModel result = (SubjectModel) getEntityWherePlutoCode(pluto, subjects);
+        if (result == null) {
+            PlutoConsole.log("getSubjectWherePlutoCode couldn't find Subject!", pluto);
+        }
+        return result;
     }
 
     public static CourseModel getCourseWherePlutoCode(String pluto) {
-        return (CourseModel) getEntityWherePlutoCode(pluto, courses);
+        CourseModel result = (CourseModel) getEntityWherePlutoCode(pluto, courses);
+        if (result == null) {
+            PlutoConsole.log("getCourseWherePlutoCode couldn't find Course!", pluto);
+        }
+        return result;
     }
 
     public static void addUser(UserModel user) {
@@ -97,44 +105,11 @@ public class Database {
                 .collect(Collectors.toList());
     }
 
-    public static List<CourseModel> getCoursesWhereInstructor(InstructorModel instructor) {
-        return courses.stream()
-                .filter(c -> c.getInstructor() == instructor)
-                .collect(Collectors.toList());
-    }
-
-    public static List<CourseModel> getCoursesWhereSubject(SubjectModel subject) {
-        return courses.stream()
-                .filter(c -> c.getSubject() == subject)
-                .collect(Collectors.toList());
-    }
-
     public static List<StudentModel> getStudentsWhereMyCoursesHas(CourseModel course) {
         return users.stream()
                 .filter(u -> u.getTitle().equals("Student") && u.getMyCourses().contains(course))
                 .map(u -> (StudentModel) u)
                 .collect(Collectors.toList());
-    }
-
-    public static void removeCoursesWhereSubject(SubjectModel subject) {
-        List<CourseModel> deletables = new LinkedList<>();
-        courses.forEach(c -> {
-            if (c.getSubject() == subject) {
-                deletables.add(c);
-            }
-        });
-        courses.removeAll(deletables);
-    }
-
-    public static void removeSubjectsAndTheirCoursesWhereCoordinator(UserModel user) {
-        List<SubjectModel> deletables = new LinkedList<>();
-        subjects.forEach(s -> {
-            if (s.getCoordinator() == user) {
-                deletables.add(s);
-                removeCoursesWhereSubject(s);
-            }
-        });
-        subjects.removeAll(deletables);
     }
 
     private static void manageUserJson(JsonObject object) throws ValidationException {
@@ -192,14 +167,20 @@ public class Database {
         PlutoConsole.log("Database successfully loaded from files! :-)");
     }
 
-    public static void loadFromDotEnv() throws ValidationException, NoSuchAlgorithmException, DotenvException {
+    public static void loadAdmin() throws ValidationException, NoSuchAlgorithmException, DotenvException {
         Dotenv dotenv = Dotenv.load();
         String pluto = dotenv.get("PLUTO_ADMIN_CODE");
-        String name = dotenv.get("PLUTO_ADMIN_NAME");
-        String email = dotenv.get("PLUTO_ADMIN_EMAIL");
-        String password = dotenv.get("PLUTO_ADMIN_PASSWORD");
-        new AdministratorModel(pluto, email, name, password, "1970-01-01", "");
-        PlutoConsole.log("Administrator successfully extracted from environment variables! :-)");
+        try {
+            UserModel.get(pluto);
+            PlutoConsole.log("Administrator found in database!");
+        } catch (EntityNotFoundException e) {
+            PlutoConsole.log("Administrator not found in database, will fetch from environment...");
+            String name = dotenv.get("PLUTO_ADMIN_NAME");
+            String email = dotenv.get("PLUTO_ADMIN_EMAIL");
+            String password = dotenv.get("PLUTO_ADMIN_PASSWORD");
+            new AdministratorModel(pluto, email, name, password, "1970-01-01", "");
+            PlutoConsole.log("Administrator created from environment variables! :-)");
+        }
     }
 
     private static void saveToJsonFile(String fileName, List<? extends AbstractModel> list) throws DatabasePersistenceException {
@@ -256,8 +237,9 @@ public class Database {
             course.initStudents();
         }
 
-        PlutoConsole.log("Database seed has successfully run! :-)", "Here's one student to start testing with:");
+        PlutoConsole.log("Database seed has successfully run! :-)", "Here's some users to start testing with:");
         PlutoConsole.taglessLog(user1.toString());
+        PlutoConsole.taglessLog(user4.toString());
     }
 
     public static void reset() {

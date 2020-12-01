@@ -25,16 +25,19 @@ import java.security.NoSuchAlgorithmException;
 public class Application {
     public static void main(String[] args) {
         try {
-            Database.loadFromDotEnv();
-        } catch (NoSuchAlgorithmException | ValidationException | DotenvException e) {
-            e.printStackTrace();
+            Database.loadFromJsonFiles();
+        } catch (DatabaseDamagedException dde) {
+            dde.printStackTrace();
+            System.exit(1);
+        } catch (DatabaseNotFound dnf) {
+            PlutoConsole.err("Initialization failed: " + dnf.getMessage());
+            PlutoConsole.log("Continuing with fetching administrator...");
         }
 
         try {
-            Database.loadFromJsonFiles();
-        } catch (DatabaseDamagedException | DatabaseNotFound e) {
+            Database.loadAdmin();
+        } catch (NoSuchAlgorithmException | ValidationException | DotenvException e) {
             e.printStackTrace();
-            System.exit(1);
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {

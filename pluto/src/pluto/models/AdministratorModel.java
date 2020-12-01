@@ -7,7 +7,8 @@ import pluto.exceptions.ValidationException;
 import javax.json.Json;
 import javax.json.JsonObject;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 
 public class AdministratorModel extends UserModel {
     public AdministratorModel(String pluto, String em, String na, String pw, String d, String addr) throws ValidationException, NoSuchAlgorithmException {
@@ -39,25 +40,20 @@ public class AdministratorModel extends UserModel {
 
     @Override
     public void manageSubjectsAndCoursesBeforeDelete() throws EntityNotFoundException {
-        for (SubjectModel s : mySubjects) {
+        LinkedList<SubjectModel> shallowCopySubjects = new LinkedList<>(mySubjects);
+        Collections.copy(shallowCopySubjects, mySubjects);
+
+        for (SubjectModel s : shallowCopySubjects) {
             SubjectModel.delete(s.getPlutoCode());
         }
     }
 
     @Override
     public JsonObject jsonify() {
+        JsonObject userObject = super.jsonify();
         return Json.createObjectBuilder()
                 .add("type", "Administrator")
-                .add("pluto", plutoCode)
-                .add("email", email)
-                .add("name", name)
-                .add("dob", unparsedDob)
-                .add("address", address)
-                .add("credentials", Json.createObjectBuilder()
-                        .add("password", Arrays.toString(encryptedPassword))
-                        .add("salt", Arrays.toString(salt))
-                        .build()
-                )
+                .add("details", userObject)
                 .build();
     }
 }

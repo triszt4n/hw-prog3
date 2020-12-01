@@ -8,7 +8,8 @@ import pluto.exceptions.ValidationException;
 import javax.json.Json;
 import javax.json.JsonObject;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
 
 public class InstructorModel extends UserModel {
     private boolean isAccepted;
@@ -58,29 +59,27 @@ public class InstructorModel extends UserModel {
 
     @Override
     public void manageSubjectsAndCoursesBeforeDelete() throws EntityNotFoundException {
-        for (CourseModel c : myCourses) {
+        LinkedList<CourseModel> shallowCopyCourses = new LinkedList<>(myCourses);
+        LinkedList<SubjectModel> shallowCopySubjects = new LinkedList<>(mySubjects);
+        Collections.copy(shallowCopyCourses, myCourses);
+        Collections.copy(shallowCopySubjects, mySubjects);
+
+        for (CourseModel c : shallowCopyCourses) {
             CourseModel.delete(c.getPlutoCode());
         }
-        for (SubjectModel s : mySubjects) {
+
+        for (SubjectModel s : shallowCopySubjects) {
             SubjectModel.delete(s.getPlutoCode());
         }
     }
 
     @Override
     public JsonObject jsonify() {
+        JsonObject userObject = super.jsonify();
         return Json.createObjectBuilder()
                 .add("type", "Instructor")
-                .add("pluto", plutoCode)
-                .add("email", email)
-                .add("name", name)
-                .add("dob", unparsedDob)
-                .add("address", address)
                 .add("isAccepted", isAccepted)
-                .add("credentials", Json.createObjectBuilder()
-                        .add("password", Arrays.toString(encryptedPassword))
-                        .add("salt", Arrays.toString(salt))
-                        .build()
-                )
+                .add("details", userObject)
                 .build();
     }
 }

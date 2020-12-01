@@ -7,7 +7,7 @@ import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
 import pluto.models.helpers.StringValidator;
 
-import javax.json.JsonObject;
+import javax.json.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserModel extends AbstractModel {
     protected String email;
@@ -158,15 +159,31 @@ public class UserModel extends AbstractModel {
     }
 
     public UserModel(JsonObject json) throws ValidationException {
-        plutoCode = json.getString("pluto");
-        setEmail(json.getString("email"));
-        setName(json.getString("name"));
-        setAddress(json.getString("address"));
-        setDob(json.getString("dob"));
-        JsonObject credentials = json.getJsonObject("credentials");
+        JsonObject userObject = json.getJsonObject("details");
 
-        encryptedPassword = credentials.getString("password").getBytes();
-        this.salt = credentials.getString("salt").getBytes();
+        plutoCode = userObject.getString("pluto");
+        setEmail(userObject.getString("email"));
+        setName(userObject.getString("name"));
+        setAddress(userObject.getString("address"));
+        setDob(userObject.getString("dob"));
+
+        JsonObject credentialsObject = userObject.getJsonObject("credentials");
+
+        List<Byte> pwList = credentialsObject.getJsonArray("password").stream()
+                .map(b -> Byte.parseByte(b.toString()))
+                .collect(Collectors.toList());
+        encryptedPassword = new byte[pwList.size()];
+        for (int i = 0; i < pwList.size(); ++i) {
+            encryptedPassword[i] = pwList.get(i);
+        }
+
+        List<Byte> saltList = credentialsObject.getJsonArray("salt").stream()
+                .map(b -> Byte.parseByte(b.toString()))
+                .collect(Collectors.toList());
+        salt = new byte[saltList.size()];
+        for (int i = 0; i < saltList.size(); ++i) {
+            salt[i] = saltList.get(i);
+        }
         save();
 
         mySubjects = new LinkedList<>();
@@ -232,6 +249,8 @@ public class UserModel extends AbstractModel {
         md.update(salt);
         byte[] pwToCheck = md.digest(pw.getBytes(StandardCharsets.UTF_8));
 
+        PlutoConsole.log(new String(pwToCheck), new String(encryptedPassword));
+
         if (!Arrays.equals(pwToCheck, encryptedPassword)) {
             throw new AuthorizationException("Wrong password");
         }
@@ -244,6 +263,26 @@ public class UserModel extends AbstractModel {
 
     @Override
     public JsonObject jsonify() {
-        return null;
+        JsonArrayBuilder pwBuilder = Json.createArrayBuilder();
+        JsonArrayBuilder saltBuilder = Json.createArrayBuilder();
+        for (byte b : encryptedPassword) {
+            pwBuilder.add(b);
+        }
+        for (byte b : salt) {
+            saltBuilder.add(b);
+        }
+
+        return Json.createObjectBuilder()
+                .add("pluto", plutoCode)
+                .add("email", email)
+                .add("name", name)
+                .add("dob", unparsedDob)
+                .add("address", address)
+                .add("credentials", Json.createObjectBuilder()
+                        .add("password", pwBuilder.build())
+                        .add("salt", saltBuilder.build())
+                        .build()
+                )
+                .build();
     }
 }

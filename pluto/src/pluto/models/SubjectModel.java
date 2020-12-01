@@ -8,8 +8,10 @@ import pluto.models.helpers.StringValidator;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SubjectModel extends AbstractModel {
     private String name;
@@ -177,16 +179,24 @@ public class SubjectModel extends AbstractModel {
 
     public static void delete(String pluto) throws EntityNotFoundException {
         SubjectModel subject = get(pluto);
-
-        subject.getCoordinator().removeSubject(subject);
         List<StudentModel> students = new LinkedList<>();
-        for (CourseModel c : subject.getCourses()) {
+        List<CourseModel> shallowCopyCourses = new LinkedList<>(subject.getCourses());
+        Collections.copy(shallowCopyCourses, subject.getCourses());
+
+        for (CourseModel c : shallowCopyCourses) {
             students.addAll(c.getStudents());
             CourseModel.delete(c.getPlutoCode());
         }
-        students.stream()
-            .distinct()
-            .forEach(s -> s.removeSubject(subject));
+
+        List<StudentModel> distinctStudents = students.stream()
+                .distinct()
+                .collect(Collectors.toList());
+
+        for (StudentModel s : distinctStudents) {
+            s.removeSubject(subject);
+        }
+
+        subject.getCoordinator().removeSubject(subject);
         Database.removeSubject(subject);
     }
 

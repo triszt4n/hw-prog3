@@ -6,7 +6,6 @@ import pluto.exceptions.ValidationException;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -29,7 +28,10 @@ public class StudentModel extends UserModel {
     public StudentModel(JsonObject json) throws ValidationException {
         super(json);
         this.coursePlutoCodes = json.getJsonArray("courses").stream()
-                .map(JsonValue::toString)
+                .map(item -> {
+                    String value = item.toString();
+                    return value.substring(1, value.length() - 1);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -49,11 +51,15 @@ public class StudentModel extends UserModel {
 
     @Override
     public void manageSubjectsAndCoursesBeforeDelete() {
-        myCourses.forEach(c -> c.removeStudent(this));
+        for (CourseModel c : myCourses) {
+            c.removeStudent(this);
+        }
     }
 
     @Override
     public JsonObject jsonify() {
+        JsonObject userObject = super.jsonify();
+
         JsonArrayBuilder takenCoursesBuilder = Json.createArrayBuilder();
         for (CourseModel c : myCourses) {
             takenCoursesBuilder.add(c.getPlutoCode());
@@ -61,17 +67,8 @@ public class StudentModel extends UserModel {
 
         return Json.createObjectBuilder()
                 .add("type", "Student")
-                .add("pluto", plutoCode)
-                .add("email", email)
-                .add("name", name)
-                .add("dob", unparsedDob)
-                .add("address", address)
-                .add("credentials", Json.createObjectBuilder()
-                        .add("password", Arrays.toString(encryptedPassword))
-                        .add("salt", Arrays.toString(salt))
-                        .build()
-                )
                 .add("courses", takenCoursesBuilder.build())
+                .add("details", userObject)
                 .build();
     }
 }

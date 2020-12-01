@@ -111,7 +111,7 @@ public class CourseIndexInstructorView extends AbstractView {
             public void mousePressed(MouseEvent mouseEvent) {
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     String pluto = (String) table.getValueAt(table.getSelectedRow(), CoursesTableModel.CourseColumn.PLUTO.ordinal());
-                    courseController.edit(pluto);
+                    courseController.show(pluto);
                 }
             }
         });

@@ -74,5 +74,6 @@ public class CourseShowView extends UserIndexView {
         super(course.getStudents(), null);
         this.course = course;
         this.courseController = courseController;
+        editComponents();
     }
 }

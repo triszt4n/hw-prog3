@@ -110,7 +110,7 @@ public class SubjectIndexInstructorView extends AbstractView {
             public void mousePressed(MouseEvent mouseEvent) {
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
-                    subjectController.edit(pluto);
+                    subjectController.show(pluto);
                 }
             }
         });

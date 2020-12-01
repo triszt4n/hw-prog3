@@ -109,7 +109,13 @@ public class DashboardView extends AbstractView {
         mb.add(userMenu);
 
         JMenu subjectMenu = new JMenu("Subjects menu");
-        manageSubjectBtn = new JMenuItem(user.getTitle().equals("Student")? "Subjects of taken courses" : "Subjects coordinated by me");
+        manageSubjectBtn = new JMenuItem();
+        switch (user.getTitle()) {
+            case "Student": manageSubjectBtn.setText("Subjects of taken courses"); break;
+            case "Instructor": manageSubjectBtn.setText("Subjects coordinated by me"); break;
+            default: manageSubjectBtn.setText("All subjects");
+        }
+
         newSubjectBtn = new JMenuItem("Create new subject");
         regPeriodBtn = new JMenuItem("Stop registration period");
         subjectMenu.add(manageSubjectBtn);
@@ -119,7 +125,13 @@ public class DashboardView extends AbstractView {
 
         JMenu courseMenu = new JMenu("Courses menu");
         takeBtn = new JMenuItem("Browse subjects for taking courses...");
-        manageCourseBtn = new JMenuItem(user.getTitle().equals("Student")? "Courses taken" : "Courses instructed by me");
+        manageCourseBtn = new JMenuItem();
+        switch (user.getTitle()) {
+            case "Student": manageCourseBtn.setText("Courses taken"); break;
+            case "Instructor": manageCourseBtn.setText("Courses instructed by me"); break;
+            default: manageCourseBtn.setText("All courses");
+        }
+
         courseMenu.add(takeBtn);
         courseMenu.add(manageCourseBtn);
         mb.add(courseMenu);

@@ -150,9 +150,14 @@ public class CourseModel extends AbstractModel {
     public static void delete(String pluto) throws EntityNotFoundException {
         CourseModel course = get(pluto);
 
+        List<StudentModel> students = course.getStudents();
+        for (StudentModel student : students) {
+            student.removeCourse(course);
+        }
+
         course.getSubject().removeCourse(course);
         course.getInstructor().removeCourse(course);
-        course.getStudents().forEach(s -> s.removeCourse(course));
+
         Database.removeCourse(course);
     }
 
@@ -182,7 +187,6 @@ public class CourseModel extends AbstractModel {
 
     public void removeStudent(StudentModel student) {
         students.remove(student);
-        student.removeCourse(this);
     }
 
     @Override
