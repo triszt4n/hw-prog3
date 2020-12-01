@@ -7,6 +7,8 @@ import pluto.exceptions.ValidationException;
 import pluto.models.helpers.CourseType;
 import pluto.models.helpers.StringValidator;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -103,6 +105,22 @@ public class CourseModel extends AbstractModel {
         students = new LinkedList<>();
     }
 
+    public CourseModel(String shortCode, int type, String maxStudents, String notes, String pluto, String subjectPluto, String instructorPluto) throws ValidationException, EntityNotFoundException {
+        plutoCode = pluto;
+        SubjectModel subject = SubjectModel.get(subjectPluto);
+        InstructorModel instructor = (InstructorModel) UserModel.get(instructorPluto);
+
+        setShortCode(shortCode);
+        setType(CourseType.values()[type]);
+        setMaxStudents(maxStudents);
+        setNotes(notes);
+        setSubject(subject);
+        setInstructor(instructor);
+        save();
+
+        students = new LinkedList<>();
+    }
+
     public static CourseModel get(String pluto) throws EntityNotFoundException {
         CourseModel result = Database.getCourseWherePlutoCode(pluto);
         if (result == null) {
@@ -173,5 +191,18 @@ public class CourseModel extends AbstractModel {
                 instructor.getName(),
                 subject.getName()
         );
+    }
+
+    @Override
+    public JsonObject jsonify() {
+        return Json.createObjectBuilder()
+                .add("pluto", plutoCode)
+                .add("shortCode", shortCode)
+                .add("type", type.ordinal())
+                .add("maxStudents", maxStudents)
+                .add("notes", notes)
+                .add("subject", subject.getPlutoCode())
+                .add("instructor", instructor.getPlutoCode())
+                .build();
     }
 }

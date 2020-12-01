@@ -6,6 +6,8 @@ import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
 import pluto.models.helpers.StringValidator;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -122,6 +124,20 @@ public class SubjectModel extends AbstractModel {
         courses = new LinkedList<>();
     }
 
+    public SubjectModel(String name, String credit, String requirements, String semester, String coordinatorPluto, boolean isOpened, String pluto) throws ValidationException, EntityNotFoundException {
+        plutoCode = pluto;
+        UserModel coordinator = UserModel.get(coordinatorPluto);
+        setName(name);
+        setCredit(credit);
+        setRequirements(requirements);
+        setSemester(semester);
+        setCoordinator(coordinator);
+        setOpened(isOpened, coordinator);
+        save();
+
+        courses = new LinkedList<>();
+    }
+
     public void addCourse(CourseModel course) {
         courses.add(course);
     }
@@ -176,5 +192,18 @@ public class SubjectModel extends AbstractModel {
                 coordinator.getName(),
                 String.valueOf(isOpened)
         );
+    }
+
+    @Override
+    public JsonObject jsonify() {
+        return Json.createObjectBuilder()
+                .add("pluto", plutoCode)
+                .add("name", name)
+                .add("credit", credit)
+                .add("requirements", requirements)
+                .add("semester", semester)
+                .add("coordinator", coordinator.getPlutoCode())
+                .add("isOpened", isOpened)
+                .build();
     }
 }

@@ -2,6 +2,7 @@
 * Controllers get data through a model, that validates and represents the used entities in the db app.
 * Controllers are de facto singleton classes, instantiated once, passed only if needed.
 * Database is a de jure singleton class, realized its singletonness through the static fields and methods, like the linkedlists it stores during a session.
+* A jelszó titkosítása valójában egy vicc, mert a program eltárolja a nyers jelszót nagyon sok helyen is, így prone to memory extraction attacks.
 
 QUESTIONS:
 * Okoz-e problémát, hogy ennyire ráerőltettem-e a dologra az MVC megközelítést és a rétegezést? (sok view fieldje van UserControllernek) --> cél: bővíthetőség

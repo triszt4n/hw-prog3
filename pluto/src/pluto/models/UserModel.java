@@ -7,6 +7,7 @@ import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
 import pluto.models.helpers.StringValidator;
 
+import javax.json.JsonObject;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,14 +18,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class UserModel extends AbstractModel {
-    private String email;
-    private String name;
+    protected String email;
+    protected String name;
     private String rawPassword;
-    private byte[] encryptedPassword;
-    private byte[] salt;
-    private String unparsedDob;
+    protected byte[] encryptedPassword;
+    protected byte[] salt;
+    protected String unparsedDob;
     private Date parsedDob;
-    private String address;
+    protected String address;
 
     protected List<SubjectModel> mySubjects;
     protected List<CourseModel> myCourses;
@@ -76,9 +77,11 @@ public class UserModel extends AbstractModel {
     public List<SubjectModel> getMySubjects() {
         return mySubjects;
     }
+
     public List<CourseModel> getMyCourses() {
         return myCourses;
     }
+
     public String getEmail() {
         return email;
     }
@@ -133,6 +136,20 @@ public class UserModel extends AbstractModel {
         setRawPassword(pw);
         setAddress(addr);
         setDob(dob);
+        save();
+
+        mySubjects = new LinkedList<>();
+        myCourses = new LinkedList<>();
+    }
+
+    public UserModel(String email, String name, String dob, String addr, String pluto, String encryptedPw, String salt) throws ValidationException {
+        setEmail(email);
+        setName(name);
+        setAddress(addr);
+        setDob(dob);
+        plutoCode = pluto;
+        encryptedPassword = encryptedPw.getBytes();
+        this.salt = salt.getBytes();
         save();
 
         mySubjects = new LinkedList<>();
@@ -206,5 +223,10 @@ public class UserModel extends AbstractModel {
     @Override
     public String toString() {
         return PlutoConsole.createLog("[USER] " + plutoCode, email, name, rawPassword, address);
+    }
+
+    @Override
+    public JsonObject jsonify() {
+        return null;
     }
 }

@@ -1,5 +1,6 @@
 package pluto.models;
 
+import javax.json.JsonObject;
 import java.security.SecureRandom;
 
 public abstract class AbstractModel {
@@ -24,4 +25,6 @@ public abstract class AbstractModel {
     }
 
     protected abstract void save();
+
+    public abstract JsonObject jsonify();
 }

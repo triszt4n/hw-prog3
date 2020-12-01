@@ -3,12 +3,12 @@ package pluto.database;
 import pluto.app.PlutoConsole;
 import pluto.exceptions.DatabaseDamagedException;
 import pluto.exceptions.DatabaseNotFound;
+import pluto.exceptions.DatabasePersistenceException;
 import pluto.models.*;
 import pluto.exceptions.ValidationException;
 import pluto.models.helpers.CourseType;
 
-import javax.json.Json;
-import javax.json.JsonReader;
+import javax.json.*;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -175,8 +175,28 @@ public class Database {
         readerCourses.close();
     }
 
-    public static void saveToJsonFiles() {
+    private static void saveToJsonFile(String fileName, List<? extends AbstractModel> list) throws DatabasePersistenceException {
+        JsonWriter writer = null;
+        try {
+            File target = new File("data" + File.separator + fileName + ".json");
+            boolean newFileCreated = target.createNewFile();
+            PlutoConsole.log(newFileCreated? "New file created: " + fileName + ".json" : "File already exists: " + fileName + ".json");
+            writer = Json.createWriter(new FileWriter(target));
+            JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+            list.forEach(item -> arrayBuilder.add(item.jsonify()));
+            writer.writeArray(arrayBuilder.build());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new DatabasePersistenceException("Database couldn't save data! Persistence lost!");
+        } finally {
+            if (writer != null) writer.close();
+        }
+    }
 
+    public static void saveToJsonFiles() throws DatabasePersistenceException {
+        saveToJsonFile("users", users);
+        saveToJsonFile("subjects", subjects);
+        saveToJsonFile("courses", courses);
     }
 
     public static void seed() throws ValidationException, NoSuchAlgorithmException {
@@ -231,7 +251,7 @@ public class Database {
     public static void reset() {
         List<UserModel> nonAdmins = new LinkedList<>();
         users.forEach(u -> {
-            if (u.getTitle() != "Administrator") {
+            if (!u.getTitle().equals("Administrator")) {
                 nonAdmins.add(u);
             }
         });

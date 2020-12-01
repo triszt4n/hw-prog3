@@ -5,6 +5,7 @@ import pluto.controllers.UserController;
 import pluto.database.Database;
 import pluto.exceptions.DatabaseDamagedException;
 import pluto.exceptions.DatabaseNotFound;
+import pluto.exceptions.DatabasePersistenceException;
 import pluto.exceptions.ValidationException;
 
 import java.security.NoSuchAlgorithmException;
@@ -32,7 +33,11 @@ public class Application {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 PlutoConsole.log("Shutdown hook is running: Saving database files...");
-                Database.saveToJsonFiles();
+                try {
+                    Database.saveToJsonFiles();
+                } catch (DatabasePersistenceException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
