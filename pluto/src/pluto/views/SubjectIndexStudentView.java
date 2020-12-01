@@ -78,9 +78,9 @@ public class SubjectIndexStudentView extends AbstractView {
         selectionModel.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 if (table.getSelectedRow() != -1) {
-                    dropBtn.setEnabled(true);
-                    changeBtn.setEnabled(true);
                     SubjectModel subject = subjects.get(table.getSelectedRow());
+                    dropBtn.setEnabled(subject.isOpened());
+                    changeBtn.setEnabled(subject.isOpened());
                     nameLabel.setText(subject.getName() + " - " + (subject.isOpened()? "Opened" : "Closed"));
                 }
                 else {
@@ -95,7 +95,8 @@ public class SubjectIndexStudentView extends AbstractView {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    //subjectController.changeTaken(table.getSelectedRow());
+                    String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
+                    subjectController.show(pluto);
                 }
             }
         });
@@ -103,14 +104,16 @@ public class SubjectIndexStudentView extends AbstractView {
         changeBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //subjectController.changeTaken(table.getSelectedRow());
+                String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
+                subjectController.show(pluto);
             }
         });
 
         dropBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //subjectController.drop(table.getSelectedRow());
+                String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
+                subjectController.drop(pluto);
                 data.fireTableDataChanged();
             }
         });

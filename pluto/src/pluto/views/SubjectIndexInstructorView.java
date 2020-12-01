@@ -28,6 +28,7 @@ public class SubjectIndexInstructorView extends AbstractView {
     private JButton editBtn;
     private JCheckBox openCheck;
     private JLabel nameLabel;
+    private JButton showCoursesBtn;
 
     @Override
     protected void initComponents() {
@@ -57,11 +58,14 @@ public class SubjectIndexInstructorView extends AbstractView {
         openCheck = new JCheckBox("Open for taking courses");
         deleteBtn = new JButton("Delete");
         editBtn = new JButton("Edit");
+        showCoursesBtn = new JButton("Show courses");
         actionPanel.add(openCheck);
         actionPanel.add(editBtn);
+        actionPanel.add(showCoursesBtn);
         actionPanel.add(deleteBtn);
 
         editBtn.setEnabled(false);
+        showCoursesBtn.setEnabled(false);
         deleteBtn.setEnabled(false);
         openCheck.setEnabled(false);
 
@@ -85,6 +89,7 @@ public class SubjectIndexInstructorView extends AbstractView {
                 if (table.getSelectedRow() != -1) {
                     openCheck.setEnabled(true);
                     deleteBtn.setEnabled(true);
+                    showCoursesBtn.setEnabled(true);
                     editBtn.setEnabled(true);
                     SubjectModel subject = subjects.get(table.getSelectedRow());
                     nameLabel.setText(subject.getName() + " - " + (subject.isOpened()? "Opened" : "Closed"));
@@ -92,6 +97,7 @@ public class SubjectIndexInstructorView extends AbstractView {
                 }
                 else {
                     deleteBtn.setEnabled(false);
+                    showCoursesBtn.setEnabled(false);
                     editBtn.setEnabled(false);
                     nameLabel.setText("");
                     openCheck.setEnabled(false);
@@ -118,6 +124,8 @@ public class SubjectIndexInstructorView extends AbstractView {
                 } catch (ValidationException exception) {
                     JOptionPane.showMessageDialog(null, exception.getMessage(), "Validation error", JOptionPane.ERROR_MESSAGE);
                 }
+                nameLabel.setText(subject.getName() + " - " + (subject.isOpened()? "Opened" : "Closed"));
+                data.fireTableDataChanged();
             }
         });
 
@@ -126,6 +134,14 @@ public class SubjectIndexInstructorView extends AbstractView {
             public void actionPerformed(ActionEvent e) {
                 String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
                 subjectController.edit(pluto);
+            }
+        });
+
+        showCoursesBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
+                subjectController.show(pluto);
             }
         });
 
@@ -146,9 +162,9 @@ public class SubjectIndexInstructorView extends AbstractView {
         });
     }
 
-    public SubjectIndexInstructorView(List<SubjectModel> subjects, UserModel user, SubjectController subjCtrl) {
+    public SubjectIndexInstructorView(List<SubjectModel> subjects, UserModel user, SubjectController subjectController) {
         super();
-        subjectController = subjCtrl;
+        this.subjectController = subjectController;
         this.user = user;
         this.subjects = subjects;
         main.setTitle("Pluto | Administration: Your subjects");

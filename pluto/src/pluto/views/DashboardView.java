@@ -30,6 +30,7 @@ public class DashboardView extends AbstractView {
     private JMenuItem seedBtn;
     private JMenuItem resetBtn;
     private JMenuItem newSubjectBtn;
+    private JMenuItem regPeriodBtn;
 
     private JPanel createDetailsPanel() {
         JLabel emailLabel = new JLabel("Email address");
@@ -100,37 +101,46 @@ public class DashboardView extends AbstractView {
     protected void initComponents() {
         JMenuBar mb = new JMenuBar();
 
-        JMenu userMenu = new JMenu("User");
-        manageUserBtn = new JMenuItem("Manage...");
+        JMenu userMenu = new JMenu("My profile");
+        manageUserBtn = new JMenuItem("Edit profile");
         logoutBtn = new JMenuItem("Log out");
         userMenu.add(manageUserBtn);
         userMenu.add(logoutBtn);
         mb.add(userMenu);
 
-        JMenu subjectMenu = new JMenu("Subjects");
-        manageSubjectBtn = new JMenuItem("Manage my subjects...");
-        newSubjectBtn = new JMenuItem("New subject");
+        JMenu subjectMenu = new JMenu("Subjects menu");
+        manageSubjectBtn = new JMenuItem(user.getTitle().equals("Student")? "Subjects of taken courses" : "Subjects coordinated by me");
+        newSubjectBtn = new JMenuItem("Create new subject");
+        regPeriodBtn = new JMenuItem("Stop registration period");
         subjectMenu.add(manageSubjectBtn);
         subjectMenu.add(newSubjectBtn);
+        subjectMenu.add(regPeriodBtn);
         mb.add(subjectMenu);
 
-        JMenu courseMenu = new JMenu("Courses");
-        takeBtn = new JMenuItem("Take courses...");
-        manageCourseBtn = new JMenuItem("Manage my courses...");
+        JMenu courseMenu = new JMenu("Courses menu");
+        takeBtn = new JMenuItem("Browse subjects for taking courses...");
+        manageCourseBtn = new JMenuItem(user.getTitle().equals("Student")? "Courses taken" : "Courses instructed by me");
         courseMenu.add(takeBtn);
         courseMenu.add(manageCourseBtn);
         mb.add(courseMenu);
 
         JMenu dbMenu = new JMenu("Database");
-        usersBtn = new JMenuItem("Users");
-        seedBtn = new JMenuItem("Set up seed");
-        resetBtn = new JMenuItem("Delete database");
+        usersBtn = new JMenuItem("Browse all users");
+        seedBtn = new JMenuItem("Set up seed in database");
+        resetBtn = new JMenuItem("Purge database");
         dbMenu.add(usersBtn);
         dbMenu.add(seedBtn);
         dbMenu.add(resetBtn);
-        if (user.getTitle() != "Administrator") {
+
+        // Restrict view:
+        if (!user.getTitle().equals("Administrator")) {
             dbMenu.setVisible(false);
+            regPeriodBtn.setVisible(false);
         }
+        if (user.getTitle().equals("Student")) {
+            newSubjectBtn.setVisible(false);
+        }
+
         mb.add(dbMenu);
 
         main.setJMenuBar(mb);
@@ -138,7 +148,8 @@ public class DashboardView extends AbstractView {
         JLabel welcomeLabel = new JLabel("Hi, " + user.getName() + "!");
         welcomeLabel.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 30));
         JLabel promptLabel = new JLabel("Browse the menu bar for actions");
-        JLabel userTitleLabel = new JLabel("/ " + user.getTitle() + " /");
+        JLabel userTitleLabel = new JLabel(user.getTitle() + " ");
+        userTitleLabel.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 20));
         JPanel detailsPanel = createDetailsPanel();
 
         Component paddingBox1 = Box.createRigidArea(new Dimension(50, 50));
@@ -238,6 +249,13 @@ public class DashboardView extends AbstractView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 userController.dbReset();
+            }
+        });
+
+        regPeriodBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                subjectController.closeAll();
             }
         });
     }

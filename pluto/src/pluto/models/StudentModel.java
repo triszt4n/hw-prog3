@@ -1,10 +1,12 @@
 package pluto.models;
 
 import pluto.database.Database;
+import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StudentModel extends UserModel {
     public StudentModel(String em, String na, String pw, String d, String addr) throws ValidationException, NoSuchAlgorithmException {
@@ -17,7 +19,16 @@ public class StudentModel extends UserModel {
     }
 
     @Override
-    public void initMyCoursesAndSubjects(List<String> plutoCodes) {
+    public void initCoursesAndSubjects(List<String> plutoCodes) {
         myCourses = Database.getCoursesWherePlutoCodeIn(plutoCodes);
+        mySubjects = myCourses.stream()
+                .map(CourseModel::getSubject)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void manageSubjectsAndCoursesBeforeDelete() throws EntityNotFoundException {
+        myCourses.forEach(c -> c.removeStudent(this));
     }
 }

@@ -5,7 +5,7 @@ import pluto.database.Database;
 import pluto.exceptions.AuthorizationException;
 import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
-import pluto.models.validators.StringValidator;
+import pluto.models.helpers.StringValidator;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -25,6 +25,9 @@ public class UserModel extends AbstractModel {
     private String unparsedDob;
     private Date parsedDob;
     private String address;
+
+    protected List<SubjectModel> mySubjects;
+    protected List<CourseModel> myCourses;
 
     public void setEmail(String email) throws ValidationException {
         StringValidator sv = new StringValidator();
@@ -70,22 +73,12 @@ public class UserModel extends AbstractModel {
         generateSecurePw();
     }
 
-    protected List<SubjectModel> mySubjects;
-    protected List<CourseModel> myCourses;
-
     public List<SubjectModel> getMySubjects() {
         return mySubjects;
     }
-
     public List<CourseModel> getMyCourses() {
         return myCourses;
     }
-
-    public void initMyCoursesAndSubjects(List<String> plutoCodes) {
-        mySubjects = new LinkedList<>();
-        myCourses = new LinkedList<>();
-    }
-
     public String getEmail() {
         return email;
     }
@@ -101,6 +94,12 @@ public class UserModel extends AbstractModel {
     public String getAddress() {
         return address;
     }
+    public String getTitle() {
+        return null;
+    }
+    public String getStatus() {
+        return "";
+    }
 
     private static final String ALGORITHM_FOR_PW_HASHING = "SHA-256";
 
@@ -112,6 +111,10 @@ public class UserModel extends AbstractModel {
         md.update(salt);
         encryptedPassword = md.digest(rawPassword.getBytes(StandardCharsets.UTF_8));
     }
+
+    public void initCoursesAndSubjects(List<String> plutoCodes) { }
+
+    public void manageSubjectsAndCoursesBeforeDelete() throws EntityNotFoundException { }
 
     public void save() {
         if (plutoCode == null) {
@@ -131,7 +134,25 @@ public class UserModel extends AbstractModel {
         setAddress(addr);
         setDob(dob);
         save();
-        initMyCoursesAndSubjects(null);
+
+        mySubjects = new LinkedList<>();
+        myCourses = new LinkedList<>();
+    }
+
+    public void addCourse(CourseModel course) {
+        myCourses.add(course);
+    }
+
+    public void addSubject(SubjectModel subject) {
+        mySubjects.add(subject);
+    }
+
+    public void removeCourse(CourseModel course) {
+        myCourses.remove(course);
+    }
+
+    public void removeSubject(SubjectModel subject) {
+        mySubjects.remove(subject);
     }
 
     public static UserModel get(String pluto) throws EntityNotFoundException, ValidationException {
@@ -148,8 +169,9 @@ public class UserModel extends AbstractModel {
     }
 
     public static void delete(String pluto) throws EntityNotFoundException, ValidationException {
-        UserModel result = get(pluto);
-        Database.removeUser(result);
+        UserModel user = get(pluto);
+        user.manageSubjectsAndCoursesBeforeDelete();
+        Database.removeUser(user);
     }
 
     public static List<UserModel> all() {
@@ -179,14 +201,6 @@ public class UserModel extends AbstractModel {
         if (!Arrays.equals(pwToCheck, encryptedPassword)) {
             throw new AuthorizationException("Wrong password");
         }
-    }
-
-    public String getTitle() {
-        return null;
-    }
-
-    public String getStatus() {
-        return "";
     }
 
     @Override

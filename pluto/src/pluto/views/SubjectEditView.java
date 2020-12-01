@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class SubjectEditView extends SubjectBuildView {
-    private SubjectModel subject;
+    private final SubjectModel subject;
 
     public SubjectEditView(SubjectModel subject, SubjectController subjectController) {
         super(subjectController);
@@ -16,7 +16,13 @@ public class SubjectEditView extends SubjectBuildView {
     }
 
     private void editComponents() {
-        promptLabel.setText("Editing subject");
+        main.setTitle("Pluto | Edit subject");
+        promptLabel.setText("Editing subject: " + subject.getPlutoCode());
+        reqField.setText(subject.getRequirements());
+        nameField.setText(subject.getName());
+        creditField.setText(String.valueOf(subject.getCredit()));
+        semesterField.setText(String.valueOf(subject.getSemester()));
+        isOpenedCheck.setSelected(subject.isOpened());
     }
 
     @Override

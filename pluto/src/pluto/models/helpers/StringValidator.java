@@ -1,4 +1,4 @@
-package pluto.models.validators;
+package pluto.models.helpers;
 
 import pluto.exceptions.ValidationException;
 

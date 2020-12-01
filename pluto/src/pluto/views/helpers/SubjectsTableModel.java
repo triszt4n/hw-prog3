@@ -6,32 +6,33 @@ import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class SubjectsTableModel extends AbstractTableModel {
-    private List<SubjectModel> subjects;
+    private final List<SubjectModel> subjects;
 
-    private static final int DATA_COLUMN_COUNT = 6;
+    private static final int DATA_COLUMN_COUNT = 7;
     public enum SubjectColumn {
         PLUTO("Pluto code", String.class),
         NAME("Name", String.class),
         CREDIT("Credit", Integer.class),
         REQUIREMENTS("Requirements", String.class),
         SEMESTER("Semester", Integer.class),
-        COORDINATOR("Coordinator", String.class);
+        COORDINATOR("Coordinator", String.class),
+        MORE("More", String.class);
 
         private final String column;
-        private final Class _class;
+        private final Class<?> _class;
 
-        SubjectColumn(String c, Class cl) {
+        SubjectColumn(String c, Class<?> cl) {
             this.column = c;
             this._class = cl;
         }
 
         public static String getColumnAt(int index) {
-            SubjectsTableModel.SubjectColumn[] array = SubjectsTableModel.SubjectColumn.values();
+            SubjectColumn[] array = SubjectColumn.values();
             return array[index].column;
         }
 
-        public static Class getClassAt(int index) {
-            SubjectsTableModel.SubjectColumn[] array = SubjectsTableModel.SubjectColumn.values();
+        public static Class<?> getClassAt(int index) {
+            SubjectColumn[] array = SubjectColumn.values();
             return array[index]._class;
         }
     }
@@ -59,18 +60,19 @@ public class SubjectsTableModel extends AbstractTableModel {
             case 3: return subject.getRequirements();
             case 4: return subject.getSemester();
             case 5: return subject.getCoordinator().getName();
+            case 6: return subject.isOpened()? "Open" : "Closed";
             default: return subject.getPlutoCode();
         }
     }
 
     @Override
     public String getColumnName(int column) {
-        return SubjectsTableModel.SubjectColumn.getColumnAt(column);
+        return SubjectColumn.getColumnAt(column);
     }
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        return SubjectsTableModel.SubjectColumn.getClassAt(columnIndex);
+        return SubjectColumn.getClassAt(columnIndex);
     }
 
     @Override

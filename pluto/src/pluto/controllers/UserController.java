@@ -11,6 +11,9 @@ import pluto.models.UserModel;
 import pluto.views.*;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.security.NoSuchAlgorithmException;
 
 public class UserController extends AbstractController {
@@ -54,7 +57,10 @@ public class UserController extends AbstractController {
                 );
             }
             String pluto = user.getPlutoCode();
-            JOptionPane.showMessageDialog(null, "Successful registration, your Pluto code: " + pluto);
+            StringSelection stringSelection = new StringSelection(pluto);
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(stringSelection, null);
+            JOptionPane.showMessageDialog(null, "Successful registration, your Pluto code is copied to the clipboard! " + pluto);
             PlutoConsole.msg("Your Pluto code is ready, copy here: \u001B[32m" + pluto + "\u001B[0m");
             closeChildPage();
         } catch (ValidationException | NoSuchAlgorithmException e) {
@@ -93,8 +99,9 @@ public class UserController extends AbstractController {
 
     @Override
     public void delete(String pluto) {
-        int input = JOptionPane.showConfirmDialog(null, "Confirm deleting selected user?");
-        if (input == JOptionPane.OK_OPTION) {
+        int input = JOptionPane.showConfirmDialog(null, "I hope you know what you are doing... Delete user?",
+                "DELETING USER", JOptionPane.YES_NO_CANCEL_OPTION);
+        if (input == JOptionPane.YES_OPTION) {
             try {
                 UserModel.delete(pluto);
             } catch (EntityNotFoundException | ValidationException e) {
@@ -116,6 +123,7 @@ public class UserController extends AbstractController {
             SubjectController subjCtrl = new SubjectController();
             CourseController courseCtrl = new CourseController();
             subjCtrl.setCourseController(courseCtrl);
+            courseCtrl.setSubjectController(subjCtrl);
             changePage(new DashboardView(loggedInUser, this, subjCtrl, courseCtrl));
         } catch (EntityNotFoundException | AuthorizationException | ValidationException | NoSuchAlgorithmException e) {
             JOptionPane.showMessageDialog(null, "Error at log in: " + e.getMessage(), "Wrong credentials", JOptionPane.ERROR_MESSAGE);
@@ -128,16 +136,19 @@ public class UserController extends AbstractController {
     }
 
     public void seed() {
-        try {
-            Database.seed();
-        } catch (ValidationException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Error at db seed: " + e.getMessage(), "Seed aborted", JOptionPane.ERROR_MESSAGE);
+        int input = JOptionPane.showConfirmDialog(null, "This action will add mocked data to the database. Continue?");
+        if (input == JOptionPane.YES_OPTION) {
+            try {
+                Database.seed();
+            } catch (ValidationException | NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error at db seed: " + e.getMessage(), "Seed aborted", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
     public void dbReset() {
         int input = JOptionPane.showConfirmDialog(null, "Are you sure? This action will delete everything except Administrators");
-        if (input == JOptionPane.OK_OPTION) Database.reset();
+        if (input == JOptionPane.YES_OPTION) Database.reset();
     }
 }

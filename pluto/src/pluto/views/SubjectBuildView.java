@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.NumberFormat;
 
 public class SubjectBuildView extends AbstractView {
     protected final SubjectController subjectController;
@@ -14,11 +13,11 @@ public class SubjectBuildView extends AbstractView {
     protected JButton backBtn;
     protected JButton saveBtn;
     protected JLabel promptLabel;
-    private JTextField reqField;
-    private JTextField nameField;
-    private JFormattedTextField creditField;
-    private JFormattedTextField semesterField;
-    private JCheckBox isOpenedCheck;
+    protected JTextField reqField;
+    protected JTextField nameField;
+    protected JTextField creditField;
+    protected JTextField semesterField;
+    protected JCheckBox isOpenedCheck;
 
     public String getReqField() {
         return reqField.getText();
@@ -57,18 +56,16 @@ public class SubjectBuildView extends AbstractView {
         reqField.setText("0/0/0/[fvs]");
 
         JLabel creditLabel = new JLabel("Credit");
-        creditField = new JFormattedTextField(NumberFormat.getNumberInstance());
-        creditField.setColumns(3);
+        creditField = new JTextField(3);
         JLabel semesterLabel = new JLabel("Recommended semester");
-        semesterField = new JFormattedTextField(NumberFormat.getNumberInstance());
-        semesterField.setColumns(2);
+        semesterField = new JTextField(2);
 
         backBtn = new JButton("Back");
         saveBtn = new JButton("Save");
 
         Component paddingBox1 = Box.createRigidArea(new Dimension(30, 30));
         Component paddingBox2 = Box.createRigidArea(new Dimension(30, 30));
-        Component paddingBox3 = Box.createRigidArea(new Dimension(30, 30));
+        Component paddingBox3 = Box.createRigidArea(new Dimension(30, 10));
 
         isOpenedCheck = new JCheckBox("Set subject to be open for students");
 

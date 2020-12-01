@@ -57,6 +57,8 @@ public class RegistrationView extends AbstractView {
         nameField = new JTextField(30);
         JLabel dobLabel = new JLabel("Date of birth");
         dobField = new JTextField(30);
+        JLabel dobFormatLabel = new JLabel("Format: yyyy-mm-dd, e.g.: 1989-09-10");
+        dobFormatLabel.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 9));
         JLabel addressLabel = new JLabel("Address");
         addressField = new JTextField(30);
 
@@ -65,7 +67,7 @@ public class RegistrationView extends AbstractView {
 
         Component paddingBox1 = Box.createRigidArea(new Dimension(30, 30));
         Component paddingBox2 = Box.createRigidArea(new Dimension(30, 30));
-        Component paddingBox3 = Box.createRigidArea(new Dimension(30, 30));
+        Component paddingBox3 = Box.createRigidArea(new Dimension(30, 10));
 
         isInstructorCheck = new JCheckBox("Request this user to be Instructor.");
 
@@ -90,6 +92,7 @@ public class RegistrationView extends AbstractView {
                                 .addComponent(pwField)
                                 .addComponent(nameField)
                                 .addComponent(dobField)
+                                .addComponent(dobFormatLabel)
                                 .addComponent(addressField)
                                 .addComponent(isInstructorCheck)
                                 .addComponent(paddingBox2)
@@ -117,6 +120,7 @@ public class RegistrationView extends AbstractView {
                                 .addComponent(dobLabel)
                                 .addComponent(dobField)
                         )
+                        .addComponent(dobFormatLabel)
                         .addGroup(formLayout.createParallelGroup()
                                 .addComponent(addressLabel)
                                 .addComponent(addressField)

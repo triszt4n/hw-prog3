@@ -1,10 +1,10 @@
 package pluto.models;
 
 import pluto.database.Database;
+import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.LinkedList;
 import java.util.List;
 
 public class AdministratorModel extends UserModel {
@@ -23,8 +23,14 @@ public class AdministratorModel extends UserModel {
     }
 
     @Override
-    public void initMyCoursesAndSubjects(List<String> plutoCodes) {
-        myCourses = new LinkedList<>();
+    public void initCoursesAndSubjects(List<String> plutoCodes) {
         mySubjects = Database.getSubjectsWhereCreatorUser(this);
+    }
+
+    @Override
+    public void manageSubjectsAndCoursesBeforeDelete() throws EntityNotFoundException {
+        for (SubjectModel s : mySubjects) {
+            SubjectModel.delete(s.getPlutoCode());
+        }
     }
 }

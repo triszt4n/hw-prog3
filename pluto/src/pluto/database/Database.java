@@ -5,6 +5,7 @@ import pluto.exceptions.DatabaseDamagedException;
 import pluto.exceptions.DatabaseNotFound;
 import pluto.models.*;
 import pluto.exceptions.ValidationException;
+import pluto.models.helpers.CourseType;
 
 import javax.json.Json;
 import javax.json.JsonReader;
@@ -21,8 +22,20 @@ public class Database {
     public static List<UserModel> getAllUsers() {
         return users;
     }
+
+    public static List<InstructorModel> getAllInstructors() {
+        return users.stream()
+                .filter(u -> u.getTitle().equals("Instructor"))
+                .map(u -> (InstructorModel)u)
+                .collect(Collectors.toList());
+    }
+
     public static List<SubjectModel> getAllSubjects() {
         return subjects;
+    }
+
+    public static List<CourseModel> getAllCourses() {
+        return courses;
     }
 
     private static AbstractModel getEntityWherePlutoCode(String pluto, List<? extends AbstractModel> list) {
@@ -48,73 +61,6 @@ public class Database {
         return (CourseModel) getEntityWherePlutoCode(pluto, courses);
     }
 
-    /*
-    private static AbstractModel getEntityWhereIndex(int index, List<? extends AbstractModel> list) {
-        AbstractModel result;
-        try {
-            result = list.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            PlutoConsole.log("getEntityWhereIndex: " + e.getMessage());
-            result = null;
-        }
-        if (result == null) {
-            PlutoConsole.log("getEntityWhereIndex couldn't find Entity!");
-        }
-        return result;
-    }
-
-    public static UserModel getUserWhereIndex(int index) {
-        return (UserModel) getEntityWhereIndex(index, users);
-    }
-
-    public static SubjectModel getSubjectWhereIndex(int index) {
-        return (SubjectModel) getEntityWhereIndex(index, subjects);
-    }
-
-    public static CourseModel getCourseWhereIndex(int index) {
-        return (CourseModel) getEntityWhereIndex(index, courses);
-    }
-
-     */
-
-    /*
-    public static int getCurrentIndexOfUser(UserModel user) {
-        return users.indexOf(user);
-    }
-
-    public static int getCurrentIndexOfSubject(SubjectModel subject) {
-        return subjects.indexOf(subject);
-    }
-
-    public static int getCurrentIndexOfCourse(CourseModel course) {
-        return courses.indexOf(course);
-    }
-     */
-
-    /*
-    private static boolean deleteEntityWhereIndex(int index, List<? extends AbstractModel> list) {
-        try {
-            list.remove(index);
-        } catch (IndexOutOfBoundsException e) {
-            PlutoConsole.log("deleteEntityWhereIndex: " + e.getMessage());
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean deleteUserWhereIndex(int index) {
-        return deleteEntityWhereIndex(index, users);
-    }
-
-    public static boolean deleteSubjectWhereIndex(int index) {
-        return deleteEntityWhereIndex(index, subjects);
-    }
-
-    public static boolean deleteCourseWhereIndex(int index) {
-        return deleteEntityWhereIndex(index, courses);
-    }
-    */
-
     public static void addUser(UserModel user) {
         users.add(user);
     }
@@ -127,16 +73,16 @@ public class Database {
         courses.add(course);
     }
 
-    public static boolean removeUser(UserModel user) {
-        return users.remove(user);
+    public static void removeUser(UserModel user) {
+        users.remove(user);
     }
 
-    public static boolean removeSubject(SubjectModel subject) {
-        return subjects.remove(subject);
+    public static void removeSubject(SubjectModel subject) {
+        subjects.remove(subject);
     }
 
-    public static boolean removeCourse(CourseModel course) {
-        return courses.remove(course);
+    public static void removeCourse(CourseModel course) {
+        courses.remove(course);
     }
 
     public static List<CourseModel> getCoursesWherePlutoCodeIn(List<String> plutoCodes) {
@@ -151,10 +97,44 @@ public class Database {
                 .collect(Collectors.toList());
     }
 
+    public static List<CourseModel> getCoursesWhereInstructor(InstructorModel instructor) {
+        return courses.stream()
+                .filter(c -> c.getInstructor() == instructor)
+                .collect(Collectors.toList());
+    }
+
     public static List<CourseModel> getCoursesWhereSubject(SubjectModel subject) {
         return courses.stream()
                 .filter(c -> c.getSubject() == subject)
                 .collect(Collectors.toList());
+    }
+
+    public static List<StudentModel> getStudentsWhereMyCoursesHas(CourseModel course) {
+        return users.stream()
+                .filter(u -> u.getTitle().equals("Student") && u.getMyCourses().contains(course))
+                .map(u -> (StudentModel) u)
+                .collect(Collectors.toList());
+    }
+
+    public static void removeCoursesWhereSubject(SubjectModel subject) {
+        List<CourseModel> deletables = new LinkedList<>();
+        courses.forEach(c -> {
+            if (c.getSubject() == subject) {
+                deletables.add(c);
+            }
+        });
+        courses.removeAll(deletables);
+    }
+
+    public static void removeSubjectsAndTheirCoursesWhereCoordinator(UserModel user) {
+        List<SubjectModel> deletables = new LinkedList<>();
+        subjects.forEach(s -> {
+            if (s.getCoordinator() == user) {
+                deletables.add(s);
+                removeCoursesWhereSubject(s);
+            }
+        });
+        subjects.removeAll(deletables);
     }
 
     public static void loadFromJsonFiles() throws DatabaseDamagedException, DatabaseNotFound {
@@ -205,6 +185,7 @@ public class Database {
         InstructorModel user3 = new InstructorModel("tasnadi@math.bme.hu", "Tasnádi Tamás", "123456", "1972-03-14", "", false);
         InstructorModel user4 = new InstructorModel("gajdos@db.bme.hu", "Gajdos Sándor", "123456", "1961-10-10", "", true);
         InstructorModel user5 = new InstructorModel("youknowwho@slytherin.edu", "Lord Voldemort", "123456", "1972-12-20", "", true);
+        InstructorModel user6 = new InstructorModel("gyakvez@best.com", "Kovács Gyak Vezető", "123456", "1989-09-11", "Budapest 1111, Vezér utca 1.", true);
 
         PlutoConsole.log("number of users in db: " + users.size());
         for (UserModel user : users) {
@@ -221,10 +202,27 @@ public class Database {
             PlutoConsole.taglessLog(subject.toString());
         }
 
-        //CourseModel
+        CourseModel c1 = new CourseModel("E1", CourseType.LECTURE, String.valueOf(200), "This is the main lecture", subj1, user4);
+        CourseModel c2 = new CourseModel("G1", CourseType.PRACTICE, String.valueOf(32), "", subj1, user6);
+        CourseModel c3 = new CourseModel("L1", CourseType.LABORATORY, String.valueOf(16), "Only for students with signature", subj1, user6);
+        CourseModel c4 = new CourseModel("E1", CourseType.LECTURE, String.valueOf(120), "Only for students of BME VIK", subj3, user3);
+
+        List<String> myCourses = new LinkedList<>();
+        myCourses.add(c1.getPlutoCode());
+        myCourses.add(c3.getPlutoCode());
 
         for (UserModel user : users) {
-            //user.initMyCoursesAndSubjects();
+            user.initCoursesAndSubjects(myCourses);
+            PlutoConsole.log("init courses or subjects of user: " + user.getName());
+            user.getMyCourses().forEach(c -> PlutoConsole.log("[MYCOURSE] " + c.getShortCode()));
+        }
+
+        PlutoConsole.log("number of courses in db: " + courses.size() + "\n");
+        for (CourseModel course : courses) {
+            PlutoConsole.taglessLog(course.toString());
+            course.initStudents();
+            PlutoConsole.log("init students of course: ", course.getShortCode());
+            course.getStudents().forEach(s -> PlutoConsole.log("[ATTENDEE] " + s.getName()));
         }
 
         PlutoConsole.log("Database seed has successfully run");

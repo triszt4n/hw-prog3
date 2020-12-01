@@ -6,7 +6,7 @@ import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
 public class UsersTableModel extends AbstractTableModel {
-    private List<UserModel> users;
+    private final List<? extends UserModel> users;
 
     private static final int DATA_COLUMN_COUNT = 6;
     public enum UserColumn {
@@ -18,9 +18,9 @@ public class UsersTableModel extends AbstractTableModel {
         MORE("More", String.class);
 
         private final String column;
-        private final Class _class;
+        private final Class<?> _class;
 
-        UserColumn(String c, Class cl) {
+        UserColumn(String c, Class<?> cl) {
             this.column = c;
             this._class = cl;
         }
@@ -30,13 +30,13 @@ public class UsersTableModel extends AbstractTableModel {
             return array[index].column;
         }
 
-        public static Class getClassAt(int index) {
+        public static Class<?> getClassAt(int index) {
             UserColumn[] array = UserColumn.values();
             return array[index]._class;
         }
     }
 
-    public UsersTableModel(List<UserModel> data) {
+    public UsersTableModel(List<? extends UserModel> data) {
         users = data;
     }
 

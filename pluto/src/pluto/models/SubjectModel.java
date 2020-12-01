@@ -4,8 +4,9 @@ import pluto.app.PlutoConsole;
 import pluto.database.Database;
 import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
-import pluto.models.validators.StringValidator;
+import pluto.models.helpers.StringValidator;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class SubjectModel extends AbstractModel {
@@ -16,7 +17,7 @@ public class SubjectModel extends AbstractModel {
     private UserModel coordinator;
     private boolean isOpened;
 
-    private List<CourseModel> courses;
+    private final List<CourseModel> courses;
 
     public String getName() {
         return name;
@@ -35,6 +36,10 @@ public class SubjectModel extends AbstractModel {
     }
     public boolean isOpened() {
         return isOpened;
+    }
+
+    public List<CourseModel> getCourses() {
+        return courses;
     }
 
     public void setName(String name) throws ValidationException {
@@ -86,8 +91,8 @@ public class SubjectModel extends AbstractModel {
     }
 
     public void setOpened(boolean opened, UserModel user) throws ValidationException {
-        if (user != coordinator) {
-            throw new ValidationException("You are not the coordinator of this subject!");
+        if (!(user == coordinator || user.getTitle().equals("Administrator"))) {
+            throw new ValidationException("You have no permission to change this subject!");
         }
         else {
             isOpened = opened;
@@ -101,6 +106,7 @@ public class SubjectModel extends AbstractModel {
         }
 
         Database.addSubject(this);
+        coordinator.addSubject(this);
     }
 
     public SubjectModel(String name, String credit, String requirements, String semester, UserModel coordinator, boolean isOpened) throws ValidationException {
@@ -112,10 +118,24 @@ public class SubjectModel extends AbstractModel {
         setCoordinator(coordinator);
         setOpened(isOpened, coordinator);
         save();
+
+        courses = new LinkedList<>();
     }
 
-    public void initCourses() {
-        courses = Database.getCoursesWhereSubject(this);
+    public void addCourse(CourseModel course) {
+        courses.add(course);
+    }
+
+    public void removeCourse(CourseModel course) {
+        courses.remove(course);
+    }
+
+    public void update(String name, String credit, String requirements, String semester, boolean isOpened) throws ValidationException {
+        setName(name);
+        setCredit(credit);
+        setRequirements(requirements);
+        setSemester(semester);
+        setOpened(isOpened, coordinator);
     }
 
     public static SubjectModel get(String pluto) throws EntityNotFoundException {
@@ -127,8 +147,18 @@ public class SubjectModel extends AbstractModel {
     }
 
     public static void delete(String pluto) throws EntityNotFoundException {
-        SubjectModel result = get(pluto);
-        Database.removeSubject(result);
+        SubjectModel subject = get(pluto);
+
+        subject.getCoordinator().removeSubject(subject);
+        List<StudentModel> students = new LinkedList<>();
+        for (CourseModel c : subject.getCourses()) {
+            students.addAll(c.getStudents());
+            CourseModel.delete(c.getPlutoCode());
+        }
+        students.stream()
+            .distinct()
+            .forEach(s -> s.removeSubject(subject));
+        Database.removeSubject(subject);
     }
 
     public static List<SubjectModel> all() {

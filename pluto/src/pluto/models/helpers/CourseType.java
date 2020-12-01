@@ -1,4 +1,4 @@
-package pluto.models;
+package pluto.models.helpers;
 
 public enum CourseType {
     LECTURE("Lecture"),
@@ -6,13 +6,15 @@ public enum CourseType {
     SEMINAR("Seminar"),
     LABORATORY("Laboratory");
 
-    private String name;
+    private final String name;
+    public static int COURSE_TYPE_NUMBER = 4;
 
     CourseType(String name) {
-        this.name = name();
+        this.name = name;
     }
 
-    public String getName() {
+    @Override
+    public String toString() {
         return name;
     }
 }

@@ -17,20 +17,21 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class UserIndexView extends AbstractView {
-    private final List<UserModel> users;
+    protected final List<? extends UserModel> users;
     private final UserController userController;
-    private UsersTableModel data;
-    private JTable table;
-    private JButton backBtn;
-    private JButton deleteBtn;
-    private JButton editBtn;
-    private JCheckBox acceptCheck;
-    private JLabel plutoLabel;
+    protected UsersTableModel data;
+    protected JTable table;
+    protected JButton backBtn;
+    protected JButton deleteBtn;
+    protected JButton editBtn;
+    protected JCheckBox acceptCheck;
+    protected JLabel plutoLabel;
+    protected JLabel promptLabel;
 
     @Override
     protected void initComponents() {
         JPanel promptPanel = new JPanel();
-        JLabel promptLabel = new JLabel("Administrator dashboard - Modify users");
+        promptLabel = new JLabel("Administrator dashboard - Modify users");
         promptPanel.add(promptLabel);
         promptPanel.setMinimumSize(new Dimension(200, 80));
         main.add(promptPanel, BorderLayout.NORTH);
@@ -67,9 +68,7 @@ public class UserIndexView extends AbstractView {
         modifyPanel.add(plutoLabel, BorderLayout.CENTER);
         modifyPanel.add(actionPanel, BorderLayout.EAST);
 
-        modifyPanel.setBorder(
-                new EmptyBorder(20,50,20,50)
-        );
+        modifyPanel.setBorder(new EmptyBorder(20,50,20,50));
 
         main.add(modifyPanel, BorderLayout.SOUTH);
         initListeners();
@@ -85,8 +84,8 @@ public class UserIndexView extends AbstractView {
                     editBtn.setEnabled(true);
                     UserModel user = users.get(table.getSelectedRow());
                     plutoLabel.setText(user.getName() + " - " + user.getTitle());
-                    acceptCheck.setEnabled(user.getTitle() == "Instructor");
-                    acceptCheck.setSelected(user.getTitle() == "Instructor" && ((InstructorModel)user).isAccepted());
+                    acceptCheck.setEnabled(user.getTitle().equals("Instructor"));
+                    acceptCheck.setSelected(user.getTitle().equals("Instructor") && ((InstructorModel)user).isAccepted());
                 }
                 else {
                     deleteBtn.setEnabled(false);
@@ -141,7 +140,7 @@ public class UserIndexView extends AbstractView {
         });
     }
 
-    public UserIndexView(List<UserModel> users, UserController userCtrl) {
+    public UserIndexView(List<? extends UserModel> users, UserController userCtrl) {
         super();
         this.users = users;
         userController = userCtrl;

@@ -53,12 +53,12 @@ public class PlutoConsole {
 
     public static String createLog(String... messages) {
         if (isDevEnv) {
-            String result = new String();
+            String result = "";
             for (String msg : messages) {
                 result += TAG_PLUTO + " " + TAG_DEV + " " + msg + "\n";
             }
             return result;
         }
-        return new String();
+        return "";
     }
 }

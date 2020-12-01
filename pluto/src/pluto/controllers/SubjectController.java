@@ -1,12 +1,11 @@
 package pluto.controllers;
 
+import pluto.database.Database;
 import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
+import pluto.models.StudentModel;
 import pluto.models.SubjectModel;
-import pluto.views.SubjectBuildView;
-import pluto.views.SubjectIndexInstructorView;
-import pluto.views.SubjectIndexStudentView;
-import pluto.views.SubjectIndexView;
+import pluto.views.*;
 
 import javax.swing.*;
 
@@ -23,10 +22,10 @@ public class SubjectController extends AbstractController {
     }
 
     public void allForLoggedInUser() {
-        if (loggedInUser.getTitle() == "Instructor") {
+        if (loggedInUser.getTitle().equals("Instructor")) {
             openChildPage(new SubjectIndexInstructorView(loggedInUser.getMySubjects(), loggedInUser, this));
         }
-        else if (loggedInUser.getTitle() == "Student") {
+        else if (loggedInUser.getTitle().equals("Student")) {
             openChildPage(new SubjectIndexStudentView(loggedInUser.getMySubjects(), loggedInUser, this));
         }
         else {
@@ -36,7 +35,7 @@ public class SubjectController extends AbstractController {
 
     @Override
     public void build() {
-        if (loggedInUser.getTitle() == "Student") {
+        if (loggedInUser.getTitle().equals("Student")) {
             JOptionPane.showMessageDialog(null, "Can't create subject as a student!", "No permission", JOptionPane.INFORMATION_MESSAGE);
         }
         else {
@@ -67,6 +66,7 @@ public class SubjectController extends AbstractController {
     public void edit(String pluto) {
         try {
             SubjectModel subject = SubjectModel.get(pluto);
+            openChildPage(new SubjectEditView(subject, this));
         } catch (EntityNotFoundException e) {
             JOptionPane.showMessageDialog(null, "Error editing subject: " + e.getMessage(), "Validation error", JOptionPane.ERROR_MESSAGE);
         }
@@ -74,16 +74,74 @@ public class SubjectController extends AbstractController {
 
     @Override
     public void update(String pluto) {
-
+        SubjectEditView editPage = (SubjectEditView) pageStack.peek();
+        try {
+            SubjectModel subject = SubjectModel.get(pluto);
+            subject.update(
+                    editPage.getNameField(),
+                    editPage.getCreditField(),
+                    editPage.getReqField(),
+                    editPage.getSemesterField(),
+                    editPage.getIsOpenedCheck()
+            );
+            closeChildPage();
+        } catch (ValidationException | EntityNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Error updating subject: " + e.getMessage(), "Validation error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
     public void delete(String pluto) {
-
+        int input = JOptionPane.showConfirmDialog(null, "Confirm deleting selected subject?");
+        if (input == JOptionPane.YES_OPTION) {
+            try {
+                SubjectModel.delete(pluto);
+            } catch (EntityNotFoundException e) {
+                JOptionPane.showMessageDialog(null, "Error deleting subject: " + e.getMessage(), "Not found error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     @Override
     public void show(String pluto) {
+        try {
+            SubjectModel subject = SubjectModel.get(pluto);
 
+            if (loggedInUser.getTitle().equals("Student")) {
+                openChildPage(new CourseOfSubjectStudentView(subject.getCourses(), subject, courseController, (StudentModel)loggedInUser));
+            }
+            else {
+                openChildPage(new CourseOfSubjectInstructorView(subject.getCourses(), subject, courseController));
+            }
+        } catch (EntityNotFoundException e) {
+            JOptionPane.showMessageDialog(null, "Error showing courses of subject: " + e.getMessage(), "Not found error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void closeAll() {
+        int input = JOptionPane.showConfirmDialog(null, "This action will close all Subject for taking courses in. Continue?");
+        if (input == JOptionPane.YES_OPTION) {
+            try {
+                for (SubjectModel s : Database.getAllSubjects()) {
+                    s.setOpened(false, loggedInUser);
+                }
+            } catch (ValidationException e) {
+                JOptionPane.showMessageDialog(null, "Can't close subject: " + e.getMessage(), "No permission", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    public void drop(String pluto) {
+        int input = JOptionPane.showConfirmDialog(null,
+                "Are you sure you want to drop every course you've taken under this subject?");
+        if (input == JOptionPane.YES_OPTION) {
+            try {
+                SubjectModel subject = SubjectModel.get(pluto);
+                subject.getCourses().forEach(c -> c.removeStudent((StudentModel) loggedInUser));
+                loggedInUser.removeSubject(subject);
+            } catch (EntityNotFoundException e) {
+                JOptionPane.showMessageDialog(null, "Can't drop subject: " + e.getMessage(), "Not found", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }

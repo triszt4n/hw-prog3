@@ -1,8 +1,10 @@
 package pluto.views;
 
+import pluto.controllers.CourseController;
 import pluto.controllers.SubjectController;
-import pluto.models.SubjectModel;
-import pluto.views.helpers.SubjectsTableModel;
+import pluto.models.CourseModel;
+import pluto.models.StudentModel;
+import pluto.views.helpers.CoursesTableModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,25 +17,30 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public class SubjectIndexView extends AbstractView {
-    private final SubjectController subjectController;
-    private final List<SubjectModel> subjects;
-    private SubjectsTableModel data;
-    private JTable table;
-    private JButton backBtn;
-    private JButton takeBtn;
-    private JLabel nameLabel;
+public class CourseIndexStudentView extends AbstractView {
+    protected final List<CourseModel> courses;
+    protected final CourseController courseController;
+    protected final SubjectController subjectController;
+    protected final StudentModel student;
+    protected CoursesTableModel data;
+    protected JTable table;
+    protected JButton backBtn;
+    protected JButton dropBtn;
+    protected JButton showSubjectBtn;
+    protected JLabel nameLabel;
+    protected JPanel promptPanel;
+    protected JPanel actionPanel;
 
     @Override
     protected void initComponents() {
-        JPanel promptPanel = new JPanel();
-        JLabel promptLabel = new JLabel("Subjects dashboard - Take courses...");
+        promptPanel = new JPanel();
+        JLabel promptLabel = new JLabel("Courses you've already taken");
         promptPanel.add(promptLabel);
         promptPanel.setMinimumSize(new Dimension(200, 80));
         main.add(promptPanel, BorderLayout.NORTH);
 
         table = new JTable();
-        data = new SubjectsTableModel(subjects);
+        data = new CoursesTableModel(courses, student);
         table.setModel(data);
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -47,12 +54,19 @@ public class SubjectIndexView extends AbstractView {
 
         backBtn = new JButton("Back");
         nameLabel = new JLabel("", JLabel.RIGHT);
-        takeBtn = new JButton("Show subject");
-        takeBtn.setEnabled(false);
+
+        actionPanel = new JPanel();
+        dropBtn = new JButton("Drop course");
+        showSubjectBtn = new JButton("Show subject");
+        actionPanel.add(showSubjectBtn);
+        actionPanel.add(dropBtn);
+
+        showSubjectBtn.setEnabled(false);
+        dropBtn.setEnabled(false);
 
         modifyPanel.add(backBtn, BorderLayout.WEST);
         modifyPanel.add(nameLabel, BorderLayout.CENTER);
-        modifyPanel.add(takeBtn, BorderLayout.EAST);
+        modifyPanel.add(actionPanel, BorderLayout.EAST);
 
         modifyPanel.setBorder(
                 new EmptyBorder(20,50,20,50)
@@ -68,12 +82,14 @@ public class SubjectIndexView extends AbstractView {
         selectionModel.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 if (table.getSelectedRow() != -1) {
-                    SubjectModel subject = subjects.get(table.getSelectedRow());
-                    takeBtn.setEnabled(subject.isOpened());
-                    nameLabel.setText(subject.getName() + (subject.isOpened()? "" : " CLOSED FOR STUDENTS"));
+                    dropBtn.setEnabled(true);
+                    showSubjectBtn.setEnabled(true);
+                    CourseModel course = courses.get(table.getSelectedRow());
+                    nameLabel.setText(course.getShortCode() + " (" + course.getType().toString() + ")" + " - by " + course.getInstructor().getName());
                 }
                 else {
-                    takeBtn.setEnabled(false);
+                    dropBtn.setEnabled(false);
+                    showSubjectBtn.setEnabled(false);
                     nameLabel.setText("");
                 }
             }
@@ -83,33 +99,44 @@ public class SubjectIndexView extends AbstractView {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
+                    String pluto = courses.get(table.getSelectedRow()).getSubject().getPlutoCode();
                     subjectController.show(pluto);
                 }
-            }
-        });
-
-        takeBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());
-                subjectController.show(pluto);
             }
         });
 
         backBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                subjectController.back();
+                courseController.back();
+            }
+        });
+
+        showSubjectBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String pluto = courses.get(table.getSelectedRow()).getSubject().getPlutoCode();
+                subjectController.show(pluto);
+            }
+        });
+
+        dropBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String pluto = (String) table.getValueAt(table.getSelectedRow(), CoursesTableModel.CourseColumn.PLUTO.ordinal());
+                courseController.drop(pluto);
+                data.fireTableDataChanged();
             }
         });
     }
 
-    public SubjectIndexView(List<SubjectModel> subjects, SubjectController subjCtrl) {
+    public CourseIndexStudentView(List<CourseModel> courses, CourseController courseController, SubjectController subjectController, StudentModel student) {
         super();
-        subjectController = subjCtrl;
-        this.subjects = subjects;
-        main.setTitle("Pluto | Taking courses: Subject list");
+        this.courses = courses;
+        this.courseController = courseController;
+        this.subjectController = subjectController;
+        this.student = student;
+        main.setTitle("Pluto | Administration: Your courses (Student mode)");
         main.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         main.setMinimumSize(new Dimension(800, 560));
         initComponents();
