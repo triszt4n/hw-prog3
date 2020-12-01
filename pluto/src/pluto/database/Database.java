@@ -1,17 +1,17 @@
 package pluto.database;
 
+import io.github.cdimascio.dotenv.Dotenv;
+import io.github.cdimascio.dotenv.DotenvException;
 import pluto.app.PlutoConsole;
-import pluto.exceptions.DatabaseDamagedException;
-import pluto.exceptions.DatabaseNotFound;
-import pluto.exceptions.DatabasePersistenceException;
+import pluto.exceptions.*;
 import pluto.models.*;
-import pluto.exceptions.ValidationException;
 import pluto.models.helpers.CourseType;
 
 import javax.json.*;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Database {
@@ -137,42 +137,69 @@ public class Database {
         subjects.removeAll(deletables);
     }
 
+    private static void manageUserJson(JsonObject object) throws ValidationException {
+        if (object.getString("type").equals("Student")) {
+            new StudentModel(object);
+        }
+        else if (object.getString("type").equals("Instructor")) {
+            new InstructorModel(object);
+        }
+        else {
+            new AdministratorModel(object);
+        }
+    }
+
+    private static void manageSubjectJson(JsonObject object) throws ValidationException, EntityNotFoundException {
+        new SubjectModel(object);
+    }
+
+    private static void manageCourseJson(JsonObject object) throws ValidationException, EntityNotFoundException {
+        new CourseModel(object);
+    }
+
+    private static void loadFromJsonFile(String fileName, ManagerFunction<JsonObject> managerFunction) throws DatabaseNotFound, DatabaseDamagedException {
+        JsonReader reader = null;
+        try {
+            File source = new File("data" + File.separator + fileName + ".json");
+            reader = Json.createReader(new FileReader(source));
+
+            JsonArray resultArray = reader.readArray();
+            for (JsonValue value : resultArray) {
+                managerFunction.apply(value.asJsonObject());
+            }
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+            throw new DatabaseNotFound("Database connection failed, files not found!");
+        } catch (ValidationException | EntityNotFoundException exception) {
+            exception.printStackTrace();
+            throw new DatabaseDamagedException("Json object is corrupted, database damaged, couldn't be read!");
+        }
+        finally {
+            if (reader != null) reader.close();
+        }
+    }
+
     public static void loadFromJsonFiles() throws DatabaseDamagedException, DatabaseNotFound {
-        JsonReader readerUsers = null;
-        JsonReader readerSubjects = null;
-        JsonReader readerCourses = null;
-        try {
-            readerUsers = Json.createReader(new FileReader(new File("users.json")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new DatabaseNotFound("Database connection failed, files not found!");
+        loadFromJsonFile("users", Database::manageUserJson);
+        loadFromJsonFile("subjects", Database::manageSubjectJson);
+        loadFromJsonFile("courses", Database::manageCourseJson);
+        for (UserModel user : users) {
+            user.initCoursesAndSubjects();
         }
-
-
-
-        readerUsers.close();
-
-        try {
-            readerSubjects = Json.createReader(new FileReader(new File("subjects.json")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new DatabaseNotFound("Database connection failed, files not found!");
+        for (CourseModel course : courses) {
+            course.initStudents();
         }
+        PlutoConsole.log("Database successfully loaded from files! :-)");
+    }
 
-
-
-        readerSubjects.close();
-
-        try {
-            readerCourses = Json.createReader(new FileReader(new File("courses.json")));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new DatabaseNotFound("Database connection failed, files not found!");
-        }
-
-
-
-        readerCourses.close();
+    public static void loadFromDotEnv() throws ValidationException, NoSuchAlgorithmException, DotenvException {
+        Dotenv dotenv = Dotenv.load();
+        String pluto = dotenv.get("PLUTO_ADMIN_CODE");
+        String name = dotenv.get("PLUTO_ADMIN_NAME");
+        String email = dotenv.get("PLUTO_ADMIN_EMAIL");
+        String password = dotenv.get("PLUTO_ADMIN_PASSWORD");
+        new AdministratorModel(pluto, email, name, password, "1970-01-01", "");
+        PlutoConsole.log("Administrator successfully extracted from environment variables! :-)");
     }
 
     private static void saveToJsonFile(String fileName, List<? extends AbstractModel> list) throws DatabasePersistenceException {
@@ -181,6 +208,7 @@ public class Database {
             File target = new File("data" + File.separator + fileName + ".json");
             boolean newFileCreated = target.createNewFile();
             PlutoConsole.log(newFileCreated? "New file created: " + fileName + ".json" : "File already exists: " + fileName + ".json");
+
             writer = Json.createWriter(new FileWriter(target));
             JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
             list.forEach(item -> arrayBuilder.add(item.jsonify()));
@@ -197,55 +225,39 @@ public class Database {
         saveToJsonFile("users", users);
         saveToJsonFile("subjects", subjects);
         saveToJsonFile("courses", courses);
+        PlutoConsole.log("Database successfully saved to files! :-)");
     }
 
     public static void seed() throws ValidationException, NoSuchAlgorithmException {
-        StudentModel user1 = new StudentModel("piller.trisztan@simonyi.bme.hu", "Piller Trisztán", "123456", "1999-08-30", "Veszprém, Damjanich János utca 4/A");
         AdministratorModel user2 = new AdministratorModel("admin@pluto.com", "Adam Ministrator", "123456", "1989-08-20", "");
         InstructorModel user3 = new InstructorModel("tasnadi@math.bme.hu", "Tasnádi Tamás", "123456", "1972-03-14", "", false);
         InstructorModel user4 = new InstructorModel("gajdos@db.bme.hu", "Gajdos Sándor", "123456", "1961-10-10", "", true);
         InstructorModel user5 = new InstructorModel("youknowwho@slytherin.edu", "Lord Voldemort", "123456", "1972-12-20", "", true);
         InstructorModel user6 = new InstructorModel("gyakvez@best.com", "Kovács Gyak Vezető", "123456", "1989-09-11", "Budapest 1111, Vezér utca 1.", true);
 
-        PlutoConsole.log("number of users in db: " + users.size());
-        for (UserModel user : users) {
-            PlutoConsole.taglessLog(user.toString());
-        }
-
         SubjectModel subj1 = new SubjectModel("Adatbázisok", String.valueOf(5), "2/1/1/v", String.valueOf(3), user4, true);
         SubjectModel subj2 = new SubjectModel("Analízis 1 informatikusoknak", String.valueOf(6), "4/2/0/v", String.valueOf(1), user3, true);
         SubjectModel subj3 = new SubjectModel("Analízis 2 keresztfélév", String.valueOf(6), "4/2/0/f", String.valueOf(3), user3, true);
         SubjectModel subj4 = new SubjectModel("Sötét bűbájok", String.valueOf(4), "2/0/2/s", String.valueOf(5), user5, false);
-
-        PlutoConsole.log("number of subjects in db: " + subjects.size());
-        for (SubjectModel subject : subjects) {
-            PlutoConsole.taglessLog(subject.toString());
-        }
 
         CourseModel c1 = new CourseModel("E1", CourseType.LECTURE, String.valueOf(200), "This is the main lecture", subj1, user4);
         CourseModel c2 = new CourseModel("G1", CourseType.PRACTICE, String.valueOf(32), "", subj1, user6);
         CourseModel c3 = new CourseModel("L1", CourseType.LABORATORY, String.valueOf(16), "Only for students with signature", subj1, user6);
         CourseModel c4 = new CourseModel("E1", CourseType.LECTURE, String.valueOf(120), "Only for students of BME VIK", subj3, user3);
 
-        List<String> myCourses = new LinkedList<>();
-        myCourses.add(c1.getPlutoCode());
-        myCourses.add(c3.getPlutoCode());
+        String[] rawCourses = new String[]{c1.getPlutoCode(), c3.getPlutoCode()};
+        StudentModel user1 = new StudentModel("piller.trisztan@simonyi.bme.hu", "Piller Trisztán", "123456", "1999-08-30", "Veszprém, Damjanich János utca 4/A", rawCourses);
 
         for (UserModel user : users) {
-            user.initCoursesAndSubjects(myCourses);
-            PlutoConsole.log("init courses or subjects of user: " + user.getName());
-            user.getMyCourses().forEach(c -> PlutoConsole.log("[MYCOURSE] " + c.getShortCode()));
+            user.initCoursesAndSubjects();
         }
 
-        PlutoConsole.log("number of courses in db: " + courses.size() + "\n");
         for (CourseModel course : courses) {
-            PlutoConsole.taglessLog(course.toString());
             course.initStudents();
-            PlutoConsole.log("init students of course: ", course.getShortCode());
-            course.getStudents().forEach(s -> PlutoConsole.log("[ATTENDEE] " + s.getName()));
         }
 
-        PlutoConsole.log("Database seed has successfully run");
+        PlutoConsole.log("Database seed has successfully run! :-)", "Here's one student to start testing with:");
+        PlutoConsole.taglessLog(user1.toString());
     }
 
     public static void reset() {

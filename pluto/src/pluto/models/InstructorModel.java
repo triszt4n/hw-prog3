@@ -9,7 +9,6 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.List;
 
 public class InstructorModel extends UserModel {
     private boolean isAccepted;
@@ -27,9 +26,9 @@ public class InstructorModel extends UserModel {
         isAccepted = isAcc;
     }
 
-    public InstructorModel(String email, String name, String dob, String addr, boolean isAcc, String pluto, String encryptedPw, String salt) throws ValidationException {
-        super(email, name, dob, addr, pluto, encryptedPw, salt);
-        isAccepted = isAcc;
+    public InstructorModel(JsonObject json) throws ValidationException {
+        super(json);
+        isAccepted = json.getBoolean("isAccepted");
     }
 
     @Override
@@ -53,7 +52,7 @@ public class InstructorModel extends UserModel {
     }
 
     @Override
-    public void initCoursesAndSubjects(List<String> plutoCodes) {
+    public void initCoursesAndSubjects() {
         mySubjects = Database.getSubjectsWhereCreatorUser(this);
     }
 
@@ -76,9 +75,11 @@ public class InstructorModel extends UserModel {
                 .add("name", name)
                 .add("dob", unparsedDob)
                 .add("address", address)
+                .add("isAccepted", isAccepted)
                 .add("credentials", Json.createObjectBuilder()
                         .add("password", Arrays.toString(encryptedPassword))
                         .add("salt", Arrays.toString(salt))
+                        .build()
                 )
                 .build();
     }

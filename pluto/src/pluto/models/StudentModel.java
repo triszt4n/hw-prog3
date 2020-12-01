@@ -6,18 +6,31 @@ import pluto.exceptions.ValidationException;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.json.JsonValue;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class StudentModel extends UserModel {
+    private final List<String> coursePlutoCodes;
+
     public StudentModel(String em, String na, String pw, String d, String addr) throws ValidationException, NoSuchAlgorithmException {
         super(em, na, pw, d, addr);
+        coursePlutoCodes = new LinkedList<>();
     }
 
-    public StudentModel(String email, String name, String dob, String addr, String pluto, String encryptedPw, String salt) throws ValidationException {
-        super(email, name, dob, addr, pluto, encryptedPw, salt);
+    public StudentModel(String em, String na, String pw, String d, String addr, String[] coursePlutoCodes) throws ValidationException, NoSuchAlgorithmException {
+        super(em, na, pw, d, addr);
+        this.coursePlutoCodes = Arrays.asList(coursePlutoCodes);
+    }
+
+    public StudentModel(JsonObject json) throws ValidationException {
+        super(json);
+        this.coursePlutoCodes = json.getJsonArray("courses").stream()
+                .map(JsonValue::toString)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -26,8 +39,8 @@ public class StudentModel extends UserModel {
     }
 
     @Override
-    public void initCoursesAndSubjects(List<String> plutoCodes) {
-        myCourses = Database.getCoursesWherePlutoCodeIn(plutoCodes);
+    public void initCoursesAndSubjects() {
+        myCourses = Database.getCoursesWherePlutoCodeIn(coursePlutoCodes);
         mySubjects = myCourses.stream()
                 .map(CourseModel::getSubject)
                 .distinct()
@@ -56,6 +69,7 @@ public class StudentModel extends UserModel {
                 .add("credentials", Json.createObjectBuilder()
                         .add("password", Arrays.toString(encryptedPassword))
                         .add("salt", Arrays.toString(salt))
+                        .build()
                 )
                 .add("courses", takenCoursesBuilder.build())
                 .build();

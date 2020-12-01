@@ -45,10 +45,13 @@ public class PlutoConsole {
         }
     }
 
+    /***
+     * Messages something to the user - this function is not dependent of the environment
+     *
+     * @param msg the message conveyed on stdout
+     */
     public static void msg(String msg) {
-        if (isDevEnv) {
-            System.out.println(TAG_PLUTO + " " + msg);
-        }
+        System.out.println(TAG_PLUTO + " " + msg);
     }
 
     public static String createLog(String... messages) {

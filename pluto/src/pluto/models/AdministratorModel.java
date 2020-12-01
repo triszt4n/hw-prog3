@@ -8,15 +8,18 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.List;
 
 public class AdministratorModel extends UserModel {
+    public AdministratorModel(String pluto, String em, String na, String pw, String d, String addr) throws ValidationException, NoSuchAlgorithmException {
+        super(pluto, em, na, pw, d, addr);
+    }
+
     public AdministratorModel(String em, String na, String pw, String d, String addr) throws ValidationException, NoSuchAlgorithmException {
         super(em, na, pw, d, addr);
     }
 
-    public AdministratorModel(String email, String name, String dob, String addr, String pluto, String encryptedPw, String salt) throws ValidationException {
-        super(email, name, dob, addr, pluto, encryptedPw, salt);
+    public AdministratorModel(JsonObject json) throws ValidationException {
+        super(json);
     }
 
     @Override
@@ -30,7 +33,7 @@ public class AdministratorModel extends UserModel {
     }
 
     @Override
-    public void initCoursesAndSubjects(List<String> plutoCodes) {
+    public void initCoursesAndSubjects() {
         mySubjects = Database.getSubjectsWhereCreatorUser(this);
     }
 
@@ -53,6 +56,7 @@ public class AdministratorModel extends UserModel {
                 .add("credentials", Json.createObjectBuilder()
                         .add("password", Arrays.toString(encryptedPassword))
                         .add("salt", Arrays.toString(salt))
+                        .build()
                 )
                 .build();
     }

@@ -4,6 +4,11 @@
 * Database is a de jure singleton class, realized its singletonness through the static fields and methods, like the linkedlists it stores during a session.
 * A jelszó titkosítása valójában egy vicc, mert a program eltárolja a nyers jelszót nagyon sok helyen is, így prone to memory extraction attacks.
 
+Uses:
+* (dotenv-java)[https://github.com/cdimascio/dotenv-java] *requires Java 8 or greater*
+* (javax.json)[https://mvnrepository.com/artifact/org.glassfish/javax.json/1.1.4]
+* (JUnit 5.4)[https://junit.org/junit5/docs/current/user-guide/]
+
 QUESTIONS:
 * Okoz-e problémát, hogy ennyire ráerőltettem-e a dologra az MVC megközelítést és a rétegezést? (sok view fieldje van UserControllernek) --> cél: bővíthetőség
 * Database egy singleton osztály, ezért mindene static basically, ez gond-e?

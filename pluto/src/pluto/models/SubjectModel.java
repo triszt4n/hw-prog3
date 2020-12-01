@@ -66,6 +66,13 @@ public class SubjectModel extends AbstractModel {
         this.credit = cr;
     }
 
+    public void setCredit(int credit) throws ValidationException {
+        if (credit > 100) {
+            throw new ValidationException("Are you sure about the number of credits?");
+        }
+        this.credit = credit;
+    }
+
     public void setRequirements(String requirements) throws ValidationException {
         StringValidator sv = new StringValidator();
         sv.validate(requirements, "Requirements")
@@ -86,6 +93,13 @@ public class SubjectModel extends AbstractModel {
             throw new ValidationException("Are you sure about the recommended semester number?");
         }
         this.semester = sem;
+    }
+
+    public void setSemester(int semester) throws ValidationException {
+        if (semester > 14) {
+            throw new ValidationException("Are you sure about the recommended semester number?");
+        }
+        this.semester = semester;
     }
 
     public void setCoordinator(UserModel coordinator) {
@@ -124,17 +138,16 @@ public class SubjectModel extends AbstractModel {
         courses = new LinkedList<>();
     }
 
-    public SubjectModel(String name, String credit, String requirements, String semester, String coordinatorPluto, boolean isOpened, String pluto) throws ValidationException, EntityNotFoundException {
-        plutoCode = pluto;
-        UserModel coordinator = UserModel.get(coordinatorPluto);
-        setName(name);
-        setCredit(credit);
-        setRequirements(requirements);
-        setSemester(semester);
+    public SubjectModel(JsonObject json) throws ValidationException, EntityNotFoundException {
+        plutoCode = json.getString("pluto");
+        setName(json.getString("name"));
+        setCredit(json.getInt("credit"));
+        setRequirements(json.getString("requirements"));
+        setSemester(json.getInt("semester"));
+        UserModel coordinator = UserModel.get(json.getString("coordinator"));
         setCoordinator(coordinator);
-        setOpened(isOpened, coordinator);
+        setOpened(json.getBoolean("isOpened"), coordinator);
         save();
-
         courses = new LinkedList<>();
     }
 

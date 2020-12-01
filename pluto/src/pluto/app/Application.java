@@ -1,6 +1,7 @@
 package pluto.app;
 
 
+import io.github.cdimascio.dotenv.DotenvException;
 import pluto.controllers.UserController;
 import pluto.database.Database;
 import pluto.exceptions.DatabaseDamagedException;
@@ -24,10 +25,16 @@ import java.security.NoSuchAlgorithmException;
 public class Application {
     public static void main(String[] args) {
         try {
+            Database.loadFromDotEnv();
+        } catch (NoSuchAlgorithmException | ValidationException | DotenvException e) {
+            e.printStackTrace();
+        }
+
+        try {
             Database.loadFromJsonFiles();
         } catch (DatabaseDamagedException | DatabaseNotFound e) {
             e.printStackTrace();
-            //System.exit(1);
+            System.exit(1);
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -40,14 +47,6 @@ public class Application {
                 }
             }
         });
-
-        // TEMPORARY
-        try {
-            Database.seed();
-        } catch (ValidationException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        // --------
 
         UserController userController = new UserController();
         userController.login();

@@ -115,7 +115,7 @@ public class UserModel extends AbstractModel {
         encryptedPassword = md.digest(rawPassword.getBytes(StandardCharsets.UTF_8));
     }
 
-    public void initCoursesAndSubjects(List<String> plutoCodes) { }
+    public void initCoursesAndSubjects() { }
 
     public void manageSubjectsAndCoursesBeforeDelete() throws EntityNotFoundException { }
 
@@ -142,14 +142,31 @@ public class UserModel extends AbstractModel {
         myCourses = new LinkedList<>();
     }
 
-    public UserModel(String email, String name, String dob, String addr, String pluto, String encryptedPw, String salt) throws ValidationException {
+    public UserModel(String plutoCode, String email, String name, String pw, String dob, String addr) throws ValidationException, NoSuchAlgorithmException {
+        encryptedPassword = null;
+
+        this.plutoCode = plutoCode;
         setEmail(email);
         setName(name);
+        setRawPassword(pw);
         setAddress(addr);
         setDob(dob);
-        plutoCode = pluto;
-        encryptedPassword = encryptedPw.getBytes();
-        this.salt = salt.getBytes();
+        save();
+
+        mySubjects = new LinkedList<>();
+        myCourses = new LinkedList<>();
+    }
+
+    public UserModel(JsonObject json) throws ValidationException {
+        plutoCode = json.getString("pluto");
+        setEmail(json.getString("email"));
+        setName(json.getString("name"));
+        setAddress(json.getString("address"));
+        setDob(json.getString("dob"));
+        JsonObject credentials = json.getJsonObject("credentials");
+
+        encryptedPassword = credentials.getString("password").getBytes();
+        this.salt = credentials.getString("salt").getBytes();
         save();
 
         mySubjects = new LinkedList<>();

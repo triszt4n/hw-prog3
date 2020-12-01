@@ -61,6 +61,10 @@ public class CourseModel extends AbstractModel {
         this.type = type;
     }
 
+    public void setType(int type) {
+        this.type = CourseType.values()[type];
+    }
+
     public void setMaxStudents(String maxStudents) throws ValidationException {
         int max;
         try {
@@ -76,6 +80,16 @@ public class CourseModel extends AbstractModel {
             throw new ValidationException("Course must be available to students!");
         }
         this.maxStudents = max;
+    }
+
+    public void setMaxStudents(int maxStudents) throws ValidationException {
+        if (maxStudents > 1000) {
+            throw new ValidationException("Are you sure about the maximum of attending students?");
+        }
+        else if (maxStudents < 1) {
+            throw new ValidationException("Course must be available to students!");
+        }
+        this.maxStudents = maxStudents;
     }
 
     public void setNotes(String notes) throws ValidationException {
@@ -105,15 +119,15 @@ public class CourseModel extends AbstractModel {
         students = new LinkedList<>();
     }
 
-    public CourseModel(String shortCode, int type, String maxStudents, String notes, String pluto, String subjectPluto, String instructorPluto) throws ValidationException, EntityNotFoundException {
-        plutoCode = pluto;
-        SubjectModel subject = SubjectModel.get(subjectPluto);
-        InstructorModel instructor = (InstructorModel) UserModel.get(instructorPluto);
+    public CourseModel(JsonObject json) throws ValidationException, EntityNotFoundException {
+        plutoCode = json.getString("pluto");
+        SubjectModel subject = SubjectModel.get(json.getString("subject"));
+        InstructorModel instructor = (InstructorModel) UserModel.get(json.getString("instructor"));
 
-        setShortCode(shortCode);
-        setType(CourseType.values()[type]);
-        setMaxStudents(maxStudents);
-        setNotes(notes);
+        setShortCode(json.getString("shortCode"));
+        setType(json.getInt("type"));
+        setMaxStudents(json.getInt("maxStudents"));
+        setNotes(json.getString("notes"));
         setSubject(subject);
         setInstructor(instructor);
         save();
