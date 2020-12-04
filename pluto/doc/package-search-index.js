@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"pluto.app"},{"l":"pluto.controllers"},{"l":"pluto.database"},{"l":"pluto.exceptions"},{"l":"pluto.models"},{"l":"pluto.models.helpers"},{"l":"pluto.views"},{"l":"pluto.views.helpers"}];updateSearchResults();
