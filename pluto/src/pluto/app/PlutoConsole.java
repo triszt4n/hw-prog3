@@ -10,7 +10,7 @@ public class PlutoConsole {
     private static String TAG_PLUTO;
     private static String TAG_DEV;
     private static String TAG_ERROR;
-    private static boolean isDevEnv = true;
+    private static boolean isDevEnv = false;
 
     public static void setup() {
         Dotenv dotenv = Dotenv.load();

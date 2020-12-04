@@ -6,6 +6,7 @@ import pluto.exceptions.AuthorizationException;
 import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
 import pluto.models.helpers.StringValidator;
+import pluto.models.helpers.UserType;
 
 import javax.json.*;
 import java.nio.charset.StandardCharsets;
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
 public class UserModel extends AbstractModel {
     protected String email;
     protected String name;
-    private String rawPassword;
     protected byte[] encryptedPassword;
     protected byte[] salt;
     protected String unparsedDob;
@@ -30,6 +30,8 @@ public class UserModel extends AbstractModel {
 
     protected List<SubjectModel> mySubjects;
     protected List<CourseModel> myCourses;
+
+    private static final String ALGORITHM_FOR_PW_HASHING = "SHA-256";
 
     public void setEmail(String email) throws ValidationException {
         StringValidator sv = new StringValidator();
@@ -61,18 +63,17 @@ public class UserModel extends AbstractModel {
         this.address = address;
     }
 
-    public void setRawPassword(String rawPassword) throws ValidationException, NoSuchAlgorithmException {
-        /// No need to change password, if already exists and no new password passed
-        if (this.rawPassword != null && rawPassword.equals("")) {
-            return;
-        }
-
+    public void setPassword(String rawPassword) throws ValidationException, NoSuchAlgorithmException {
         StringValidator sv = new StringValidator();
         sv.validate(rawPassword, "Password")
                 .checkLength(3, 200);
-        this.rawPassword = rawPassword;
 
-        generateSecurePw();
+        SecureRandom random = new SecureRandom();
+        salt = new byte[16];
+        random.nextBytes(salt);
+        MessageDigest md = MessageDigest.getInstance(ALGORITHM_FOR_PW_HASHING);
+        md.update(salt);
+        encryptedPassword = md.digest(rawPassword.getBytes(StandardCharsets.UTF_8));
     }
 
     public List<SubjectModel> getMySubjects() {
@@ -89,6 +90,9 @@ public class UserModel extends AbstractModel {
     public String getName() {
         return name;
     }
+    public byte[] getEncryptedPassword() {
+        return encryptedPassword;
+    }
     public Date getParsedDob() {
         return parsedDob;
     }
@@ -98,22 +102,11 @@ public class UserModel extends AbstractModel {
     public String getAddress() {
         return address;
     }
-    public String getTitle() {
+    public UserType getType() {
         return null;
     }
     public String getStatus() {
         return "";
-    }
-
-    private static final String ALGORITHM_FOR_PW_HASHING = "SHA-256";
-
-    private void generateSecurePw() throws NoSuchAlgorithmException {
-        SecureRandom random = new SecureRandom();
-        salt = new byte[16];
-        random.nextBytes(salt);
-        MessageDigest md = MessageDigest.getInstance(ALGORITHM_FOR_PW_HASHING);
-        md.update(salt);
-        encryptedPassword = md.digest(rawPassword.getBytes(StandardCharsets.UTF_8));
     }
 
     public void initCoursesAndSubjects() { }
@@ -134,7 +127,7 @@ public class UserModel extends AbstractModel {
 
         setEmail(email);
         setName(name);
-        setRawPassword(pw);
+        setPassword(pw);
         setAddress(addr);
         setDob(dob);
         save();
@@ -149,7 +142,7 @@ public class UserModel extends AbstractModel {
         this.plutoCode = plutoCode;
         setEmail(email);
         setName(name);
-        setRawPassword(pw);
+        setPassword(pw);
         setAddress(addr);
         setDob(dob);
         save();
@@ -230,11 +223,11 @@ public class UserModel extends AbstractModel {
     }
 
     public void update(String email, String name, String pw, String dob, String addr) throws ValidationException, NoSuchAlgorithmException {
-        encryptedPassword = null;
-
         setEmail(email);
         setName(name);
-        setRawPassword(pw);
+        if (!pw.equals("")) {
+            setPassword(pw);
+        }
         setAddress(addr);
         setDob(dob);
     }
@@ -244,8 +237,7 @@ public class UserModel extends AbstractModel {
         sv.validate(pw, "Password")
                 .checkLength(3, 200);
 
-        MessageDigest md = null;
-        md = MessageDigest.getInstance(ALGORITHM_FOR_PW_HASHING);
+        MessageDigest md = MessageDigest.getInstance(ALGORITHM_FOR_PW_HASHING);
         md.update(salt);
         byte[] pwToCheck = md.digest(pw.getBytes(StandardCharsets.UTF_8));
 
@@ -256,7 +248,7 @@ public class UserModel extends AbstractModel {
 
     @Override
     public String toString() {
-        return PlutoConsole.createLog("[USER] " + plutoCode, email, name, rawPassword, address);
+        return PlutoConsole.createLog("[USER] " + plutoCode, email, name, address);
     }
 
     @Override

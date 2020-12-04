@@ -5,6 +5,7 @@ import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
 import pluto.models.StudentModel;
 import pluto.models.SubjectModel;
+import pluto.models.helpers.UserType;
 import pluto.views.*;
 
 import javax.swing.*;
@@ -22,10 +23,10 @@ public class SubjectController extends AbstractController {
     }
 
     public void allForLoggedInUser() {
-        if (loggedInUser.getTitle().equals("Instructor")) {
+        if (loggedInUser.getType().equals(UserType.INSTRUCTOR)) {
             openChildPage(new SubjectIndexInstructorView(loggedInUser.getMySubjects(), loggedInUser, this));
         }
-        else if (loggedInUser.getTitle().equals("Student")) {
+        else if (loggedInUser.getType().equals(UserType.STUDENT)) {
             openChildPage(new SubjectIndexStudentView(loggedInUser.getMySubjects(), this));
         }
         else {
@@ -35,7 +36,7 @@ public class SubjectController extends AbstractController {
 
     @Override
     public void build() {
-        if (loggedInUser.getTitle().equals("Student")) {
+        if (loggedInUser.getType().equals(UserType.STUDENT)) {
             JOptionPane.showMessageDialog(null, "Can't create subject as a student!", "No permission", JOptionPane.INFORMATION_MESSAGE);
         }
         else {
@@ -107,7 +108,7 @@ public class SubjectController extends AbstractController {
         try {
             SubjectModel subject = SubjectModel.get(pluto);
 
-            if (loggedInUser.getTitle().equals("Student")) {
+            if (loggedInUser.getType().equals(UserType.STUDENT)) {
                 openChildPage(new CourseOfSubjectStudentView(subject.getCourses(), subject, courseController, (StudentModel)loggedInUser));
             }
             else {
@@ -137,7 +138,10 @@ public class SubjectController extends AbstractController {
         if (input == JOptionPane.YES_OPTION) {
             try {
                 SubjectModel subject = SubjectModel.get(pluto);
-                subject.getCourses().forEach(c -> c.removeStudent((StudentModel) loggedInUser));
+                subject.getCourses().forEach(c -> {
+                    c.removeStudent((StudentModel) loggedInUser);
+                    loggedInUser.removeCourse(c);
+                });
                 loggedInUser.removeSubject(subject);
             } catch (EntityNotFoundException e) {
                 JOptionPane.showMessageDialog(null, "Can't drop subject: " + e.getMessage(), "Not found", JOptionPane.ERROR_MESSAGE);

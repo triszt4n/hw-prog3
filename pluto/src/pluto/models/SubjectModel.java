@@ -5,6 +5,7 @@ import pluto.database.Database;
 import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
 import pluto.models.helpers.StringValidator;
+import pluto.models.helpers.UserType;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -109,7 +110,7 @@ public class SubjectModel extends AbstractModel {
     }
 
     public void setOpened(boolean opened, UserModel user) throws ValidationException {
-        if (!(user == coordinator || user.getTitle().equals("Administrator"))) {
+        if (!(user == coordinator || user.getType().equals(UserType.ADMINISTRATOR))) {
             throw new ValidationException("You have no permission to change this subject!");
         }
         else {

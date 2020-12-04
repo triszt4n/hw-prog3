@@ -3,6 +3,7 @@ package pluto.models;
 import pluto.database.Database;
 import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
+import pluto.models.helpers.UserType;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -24,13 +25,13 @@ public class AdministratorModel extends UserModel {
     }
 
     @Override
-    public String getTitle() {
-        return "Administrator";
+    public UserType getType() {
+        return UserType.ADMINISTRATOR;
     }
 
     @Override
     public String getStatus() {
-        return getTitle();
+        return getType().toString();
     }
 
     @Override

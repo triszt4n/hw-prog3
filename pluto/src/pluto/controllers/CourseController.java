@@ -7,6 +7,7 @@ import pluto.models.CourseModel;
 import pluto.models.InstructorModel;
 import pluto.models.StudentModel;
 import pluto.models.SubjectModel;
+import pluto.models.helpers.UserType;
 import pluto.views.*;
 
 import javax.swing.*;
@@ -26,10 +27,10 @@ public class CourseController extends AbstractController {
 
     @Override
     public void index() {
-        if (loggedInUser.getTitle().equals("Instructor")) {
+        if (loggedInUser.getType().equals(UserType.INSTRUCTOR)) {
             openChildPage(new CourseIndexInstructorView(loggedInUser.getMyCourses(), this, subjectController));
         }
-        else if (loggedInUser.getTitle().equals("Student")) {
+        else if (loggedInUser.getType().equals(UserType.STUDENT)) {
             openChildPage(new CourseIndexStudentView(loggedInUser.getMyCourses(), this, subjectController, (StudentModel)loggedInUser));
         }
         else {

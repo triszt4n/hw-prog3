@@ -2,6 +2,7 @@ package pluto.models;
 
 import pluto.database.Database;
 import pluto.exceptions.ValidationException;
+import pluto.models.helpers.UserType;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
@@ -36,8 +37,8 @@ public class StudentModel extends UserModel {
     }
 
     @Override
-    public String getTitle() {
-        return "Student";
+    public UserType getType() {
+        return UserType.STUDENT;
     }
 
     @Override

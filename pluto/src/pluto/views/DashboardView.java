@@ -4,6 +4,7 @@ import pluto.controllers.CourseController;
 import pluto.controllers.SubjectController;
 import pluto.controllers.UserController;
 import pluto.models.UserModel;
+import pluto.models.helpers.UserType;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -110,9 +111,9 @@ public class DashboardView extends AbstractView {
 
         JMenu subjectMenu = new JMenu("Subjects menu");
         manageSubjectBtn = new JMenuItem();
-        switch (user.getTitle()) {
-            case "Student": manageSubjectBtn.setText("Subjects of taken courses"); break;
-            case "Instructor": manageSubjectBtn.setText("Subjects coordinated by me"); break;
+        switch (user.getType()) {
+            case STUDENT: manageSubjectBtn.setText("Subjects of taken courses"); break;
+            case INSTRUCTOR: manageSubjectBtn.setText("Subjects coordinated by me"); break;
             default: manageSubjectBtn.setText("All subjects");
         }
 
@@ -126,9 +127,9 @@ public class DashboardView extends AbstractView {
         JMenu courseMenu = new JMenu("Courses menu");
         takeBtn = new JMenuItem("Browse subjects for taking courses...");
         manageCourseBtn = new JMenuItem();
-        switch (user.getTitle()) {
-            case "Student": manageCourseBtn.setText("Courses taken"); break;
-            case "Instructor": manageCourseBtn.setText("Courses instructed by me"); break;
+        switch (user.getType()) {
+            case STUDENT: manageCourseBtn.setText("Courses taken"); break;
+            case INSTRUCTOR: manageCourseBtn.setText("Courses instructed by me"); break;
             default: manageCourseBtn.setText("All courses");
         }
 
@@ -145,11 +146,11 @@ public class DashboardView extends AbstractView {
         dbMenu.add(resetBtn);
 
         // Restrict view:
-        if (!user.getTitle().equals("Administrator")) {
+        if (!user.getType().equals(UserType.ADMINISTRATOR)) {
             dbMenu.setVisible(false);
             regPeriodBtn.setVisible(false);
         }
-        if (user.getTitle().equals("Student")) {
+        if (user.getType().equals(UserType.STUDENT)) {
             newSubjectBtn.setVisible(false);
         }
 
@@ -160,7 +161,7 @@ public class DashboardView extends AbstractView {
         JLabel welcomeLabel = new JLabel("Hi, " + user.getName() + "!");
         welcomeLabel.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 30));
         JLabel promptLabel = new JLabel("Browse the menu bar for actions");
-        JLabel userTitleLabel = new JLabel(user.getTitle() + " ");
+        JLabel userTitleLabel = new JLabel(user.getType().toString() + " ");
         userTitleLabel.setFont(new Font(Font.SANS_SERIF, Font.ITALIC, 20));
         JPanel detailsPanel = createDetailsPanel();
 

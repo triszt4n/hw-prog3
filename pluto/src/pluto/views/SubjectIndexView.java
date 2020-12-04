@@ -18,7 +18,7 @@ public class SubjectIndexView extends AbstractView {
     private SubjectsTableModel data;
     private JTable table;
     private JButton backBtn;
-    private JButton takeBtn;
+    private JButton showCoursesBtn;
     private JLabel nameLabel;
 
     @Override
@@ -44,12 +44,12 @@ public class SubjectIndexView extends AbstractView {
 
         backBtn = new JButton("Back");
         nameLabel = new JLabel("", JLabel.RIGHT);
-        takeBtn = new JButton("Show subject");
-        takeBtn.setEnabled(false);
+        showCoursesBtn = new JButton("Show courses");
+        showCoursesBtn.setEnabled(false);
 
         modifyPanel.add(backBtn, BorderLayout.WEST);
         modifyPanel.add(nameLabel, BorderLayout.CENTER);
-        modifyPanel.add(takeBtn, BorderLayout.EAST);
+        modifyPanel.add(showCoursesBtn, BorderLayout.EAST);
 
         modifyPanel.setBorder(
                 new EmptyBorder(20,50,20,50)
@@ -66,11 +66,11 @@ public class SubjectIndexView extends AbstractView {
             public void valueChanged(ListSelectionEvent e) {
                 if (table.getSelectedRow() != -1) {
                     SubjectModel subject = subjects.get(table.getSelectedRow());
-                    takeBtn.setEnabled(subject.isOpened());
+                    showCoursesBtn.setEnabled(subject.isOpened());
                     nameLabel.setText(subject.getName() + (subject.isOpened()? "" : " CLOSED FOR STUDENTS"));
                 }
                 else {
-                    takeBtn.setEnabled(false);
+                    showCoursesBtn.setEnabled(false);
                     nameLabel.setText("");
                 }
             }
@@ -86,7 +86,7 @@ public class SubjectIndexView extends AbstractView {
             }
         });
 
-        takeBtn.addActionListener(new ActionListener() {
+        showCoursesBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String pluto = (String) table.getValueAt(table.getSelectedRow(), SubjectsTableModel.SubjectColumn.PLUTO.ordinal());

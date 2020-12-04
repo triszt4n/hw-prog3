@@ -4,6 +4,7 @@ import pluto.database.Database;
 import pluto.exceptions.AuthorizationException;
 import pluto.exceptions.EntityNotFoundException;
 import pluto.exceptions.ValidationException;
+import pluto.models.helpers.UserType;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -43,8 +44,8 @@ public class InstructorModel extends UserModel {
     }
 
     @Override
-    public String getTitle() {
-        return "Instructor";
+    public UserType getType() {
+        return UserType.INSTRUCTOR;
     }
 
     @Override

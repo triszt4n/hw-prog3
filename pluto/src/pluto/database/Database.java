@@ -6,6 +6,7 @@ import pluto.app.PlutoConsole;
 import pluto.exceptions.*;
 import pluto.models.*;
 import pluto.models.helpers.CourseType;
+import pluto.models.helpers.UserType;
 
 import javax.json.*;
 import java.io.*;
@@ -25,7 +26,7 @@ public class Database {
 
     public static List<InstructorModel> getAllInstructors() {
         return users.stream()
-                .filter(u -> u.getTitle().equals("Instructor"))
+                .filter(u -> u.getType().equals(UserType.INSTRUCTOR))
                 .map(u -> (InstructorModel)u)
                 .collect(Collectors.toList());
     }
@@ -107,7 +108,7 @@ public class Database {
 
     public static List<StudentModel> getStudentsWhereMyCoursesHas(CourseModel course) {
         return users.stream()
-                .filter(u -> u.getTitle().equals("Student") && u.getMyCourses().contains(course))
+                .filter(u -> u.getType().equals(UserType.STUDENT) && u.getMyCourses().contains(course))
                 .map(u -> (StudentModel) u)
                 .collect(Collectors.toList());
     }
@@ -211,23 +212,58 @@ public class Database {
 
     public static void seed() throws ValidationException, NoSuchAlgorithmException {
         AdministratorModel user2 = new AdministratorModel("admin@pluto.com", "Adam Ministrator", "123456", "1989-08-20", "");
-        InstructorModel user3 = new InstructorModel("tasnadi@math.bme.hu", "Tasnádi Tamás", "123456", "1972-03-14", "", false);
-        InstructorModel user4 = new InstructorModel("gajdos@db.bme.hu", "Gajdos Sándor", "123456", "1961-10-10", "", true);
-        InstructorModel user5 = new InstructorModel("youknowwho@slytherin.edu", "Lord Voldemort", "123456", "1972-12-20", "", true);
-        InstructorModel user6 = new InstructorModel("gyakvez@best.com", "Kovács Gyak Vezető", "123456", "1989-09-11", "Budapest 1111, Vezér utca 1.", true);
+        InstructorModel user3 = new InstructorModel("macdonell@math.pluto.edu", "Thomas Tasnadius", "123456", "1972-03-14", "1 University Road, MS, Boston", true);
+        InstructorModel user4 = new InstructorModel("gabriels@db.pluto.edu", "Sandor Gandolf", "123456", "1961-10-10", "4041 Ersel Street, MS, Levington", true);
+        InstructorModel user5 = new InstructorModel("joska@pluto.edu", "Jozsef Kovacs", "123456", "1972-12-20", "", true);
+        InstructorModel user6 = new InstructorModel("bazsika@pluto.com", "Balazs Takacs", "123456", "1989-09-11", "82931 Paris Str., TN, Crawford", true);
+        new InstructorModel("harper@pluto.com", "Alan Harper", "123456", "1979-01-01", "Green Houses Main Str., CA, Los Angeles", false);
 
-        SubjectModel subj1 = new SubjectModel("Adatbázisok", String.valueOf(5), "2/1/1/v", String.valueOf(3), user4, true);
-        SubjectModel subj2 = new SubjectModel("Analízis 1 informatikusoknak", String.valueOf(6), "4/2/0/v", String.valueOf(1), user3, true);
-        SubjectModel subj3 = new SubjectModel("Analízis 2 keresztfélév", String.valueOf(6), "4/2/0/f", String.valueOf(3), user3, true);
-        SubjectModel subj4 = new SubjectModel("Sötét bűbájok", String.valueOf(4), "2/0/2/s", String.valueOf(5), user5, false);
+        SubjectModel subj1 = new SubjectModel("Databases", String.valueOf(5), "2/1/1/v", String.valueOf(3), user4, true);
 
-        CourseModel c1 = new CourseModel("E1", CourseType.LECTURE, String.valueOf(200), "This is the main lecture", subj1, user4);
-        CourseModel c2 = new CourseModel("G1", CourseType.PRACTICE, String.valueOf(32), "", subj1, user6);
-        CourseModel c3 = new CourseModel("L1", CourseType.LABORATORY, String.valueOf(16), "Only for students with signature", subj1, user6);
-        CourseModel c4 = new CourseModel("E1", CourseType.LECTURE, String.valueOf(120), "Only for students of BME VIK", subj3, user3);
+        CourseModel c1 = new CourseModel("1", CourseType.LECTURE, String.valueOf(20), "This is the main lecture", subj1, user4);
+        new CourseModel("2-RUS", CourseType.LECTURE, String.valueOf(20), "Taught in Russian", subj1, user4);
+        CourseModel c2 = new CourseModel("P-1", CourseType.PRACTICE, String.valueOf(10), "", subj1, user3);
+        new CourseModel("P-2", CourseType.PRACTICE, String.valueOf(10), "", subj1, user5);
+        new CourseModel("P-3", CourseType.PRACTICE, String.valueOf(10), "", subj1, user4);
+        CourseModel c3 = new CourseModel("L-1", CourseType.LABORATORY, String.valueOf(10), "Only for students with signature", subj1, user6);
+        new CourseModel("L-2", CourseType.LABORATORY, String.valueOf(10), "Free to choose", subj1, user6);
+        new CourseModel("L-3", CourseType.LABORATORY, String.valueOf(15), "Free to choose", subj1, user6);
 
-        String[] rawCourses = new String[]{c1.getPlutoCode(), c3.getPlutoCode()};
-        StudentModel user1 = new StudentModel("piller.trisztan@simonyi.bme.hu", "Piller Trisztán", "123456", "1999-08-30", "Veszprém, Damjanich János utca 4/A", rawCourses);
+        SubjectModel subj2 = new SubjectModel("Calculus 101", String.valueOf(6), "4/2/0/v", String.valueOf(1), user3, true);
+
+        new CourseModel("L1", CourseType.LECTURE, String.valueOf(20), "Only for students of talent groups", subj2, user3);
+        new CourseModel("L2", CourseType.LECTURE, String.valueOf(20), "Only for students of normal groups", subj2, user4);
+        new CourseModel("PRAC", CourseType.PRACTICE, String.valueOf(40), "Only for students of normal groups", subj2, user4);
+
+        SubjectModel subj3 = new SubjectModel("Calculus 201", String.valueOf(6), "4/2/0/f", String.valueOf(3), user3, true);
+
+        CourseModel c5 = new CourseModel("L1", CourseType.LECTURE, String.valueOf(30), "", subj3, user3);
+        new CourseModel("L2", CourseType.LECTURE, String.valueOf(10), "", subj3, user6);
+        CourseModel c6 = new CourseModel("P1", CourseType.PRACTICE, String.valueOf(15), "", subj3, user3);
+        new CourseModel("P2", CourseType.PRACTICE, String.valueOf(25), "", subj3, user6);
+
+        SubjectModel subj4 = new SubjectModel("Computer Networks", String.valueOf(4), "2/0/2/s", String.valueOf(5), user5, false);
+
+        CourseModel c8 = new CourseModel("LEC", CourseType.LECTURE, String.valueOf(22), "", subj4, user5);
+        new CourseModel("L-HW", CourseType.LABORATORY, String.valueOf(3), "For students with signature", subj4, user5);
+        CourseModel c9 = new CourseModel("L-NORM", CourseType.LABORATORY, String.valueOf(19), "", subj4, user5);
+
+        SubjectModel subj5 = new SubjectModel("Information Theory", String.valueOf(4), "3/0/0/v", String.valueOf(3), user4, false);
+
+        CourseModel c7 = new CourseModel("COURSE", CourseType.LECTURE, String.valueOf(12), "", subj5, user5);
+
+        SubjectModel subj6 = new SubjectModel("Intro to Physics", String.valueOf(3), "0/3/0/v", String.valueOf(3), user2, false);
+
+        new CourseModel("SEM", CourseType.SEMINAR, String.valueOf(6), "", subj6, user5);
+
+
+        String[] rawCourses = new String[]{c1.getPlutoCode(), c2.getPlutoCode(), c3.getPlutoCode(), c8.getPlutoCode(), c9.getPlutoCode()};
+        String[] rawCourses2 = new String[]{c1.getPlutoCode(), c2.getPlutoCode(), c3.getPlutoCode(), c8.getPlutoCode(), c9.getPlutoCode(), c5.getPlutoCode(), c6.getPlutoCode(), c7.getPlutoCode()};
+        new StudentModel("154031@oxford.edu", "Ulrich Martens", "123456", "1998-01-01", "2399 Sundown Lane, Chatfield, TX", rawCourses);
+        new StudentModel("111111@oxford.edu", "Jeremy Ingvar", "123456", "1997-10-30", "", rawCourses);
+        new StudentModel("130411@oxford.edu", "Ursula Alois", "123456", "1997-10-30", "", rawCourses);
+        new StudentModel("151151@oxford.edu", "Jozefina Bellany", "123456", "1997-10-30", "", rawCourses);
+        StudentModel user1 = new StudentModel("191772@oxford.edu", "Tristan Mason", "123456", "1999-08-30", "21 University Str., NY, Albany", rawCourses2);
 
         for (UserModel user : users) {
             user.initCoursesAndSubjects();
@@ -245,7 +281,7 @@ public class Database {
     public static void reset() {
         List<UserModel> nonAdmins = new LinkedList<>();
         users.forEach(u -> {
-            if (!u.getTitle().equals("Administrator")) {
+            if (!u.getType().equals(UserType.ADMINISTRATOR)) {
                 nonAdmins.add(u);
             }
         });

@@ -3,6 +3,7 @@ package pluto.views;
 import pluto.controllers.UserController;
 import pluto.models.InstructorModel;
 import pluto.models.UserModel;
+import pluto.models.helpers.UserType;
 import pluto.views.helpers.UsersTableModel;
 
 import javax.swing.*;
@@ -80,9 +81,9 @@ public class UserIndexView extends AbstractView {
                     deleteBtn.setEnabled(true);
                     editBtn.setEnabled(true);
                     UserModel user = users.get(table.getSelectedRow());
-                    plutoLabel.setText(user.getName() + " - " + user.getTitle());
-                    acceptCheck.setEnabled(user.getTitle().equals("Instructor"));
-                    acceptCheck.setSelected(user.getTitle().equals("Instructor") && ((InstructorModel)user).isAccepted());
+                    plutoLabel.setText(user.getName() + " - " + user.getType().toString());
+                    acceptCheck.setEnabled(user.getType().equals(UserType.INSTRUCTOR));
+                    acceptCheck.setSelected(user.getType().equals(UserType.INSTRUCTOR) && ((InstructorModel)user).isAccepted());
                 }
                 else {
                     deleteBtn.setEnabled(false);
