@@ -14,6 +14,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
+/***
+ * View for the subjects coordinated by the instructor.
+ */
 public class SubjectIndexInstructorView extends AbstractView {
     private final SubjectController subjectController;
     private final UserModel user;

@@ -9,6 +9,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+/**
+ * "build" view for user resource
+ * Registration view is connected to login page
+ * @see pluto.controllers.UserController
+ */
 public class RegistrationView extends AbstractView {
     protected JButton backBtn;
     protected JButton saveBtn;

@@ -15,6 +15,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/***
+ * View for showing the courses of one subject.
+ * inherits the course index for student, but with different data and more function (join).
+ */
 public class CourseOfSubjectStudentView extends CourseIndexStudentView {
     private final SubjectModel subject;
     private JButton joinBtn;

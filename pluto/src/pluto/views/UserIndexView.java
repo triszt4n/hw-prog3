@@ -14,6 +14,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
+/**
+ * "index" view for user resource
+ * only admins see this
+ * @see pluto.controllers.UserController
+ */
 public class UserIndexView extends AbstractView {
     protected final List<? extends UserModel> users;
     private final UserController userController;

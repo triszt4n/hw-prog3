@@ -14,6 +14,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
+/***
+ * View for all the student's taken courses
+ */
 public class CourseIndexStudentView extends AbstractView {
     protected final List<CourseModel> courses;
     protected final CourseController courseController;

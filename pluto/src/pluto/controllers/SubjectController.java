@@ -10,18 +10,37 @@ import pluto.views.*;
 
 import javax.swing.*;
 
+/***
+ * The controller class for controlling the Subjects, it accepts interactions from the end user.
+ * Implements basic resource management methods
+ */
 public class SubjectController extends AbstractController {
+    /***
+     * Currently used course controller in the application
+     */
     private CourseController courseController;
 
+    /***
+     * Simple setter
+     * @param courseController
+     */
     public void setCourseController(CourseController courseController) {
         this.courseController = courseController;
     }
 
+    /***
+     * Path method for taking courses, this shows all the subjects in the database, student can go on choosing one and
+     * take courses of the subject.
+     */
     @Override
     public void index() {
         openChildPage(new SubjectIndexView(SubjectModel.all(), this));
     }
 
+    /***
+     * Path method for the users to show only their subjects. Student's see the subjects, of which courses they've taken,
+     * Instructor see the subjects they control, and Administrators see all the subjects.
+     */
     public void allForLoggedInUser() {
         if (loggedInUser.getType().equals(UserType.INSTRUCTOR)) {
             openChildPage(new SubjectIndexInstructorView(loggedInUser.getMySubjects(), loggedInUser, this));
@@ -34,6 +53,11 @@ public class SubjectController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * Watches out for permissions!
+     * @see AbstractController
+     */
     @Override
     public void build() {
         if (loggedInUser.getType().equals(UserType.STUDENT)) {
@@ -44,6 +68,10 @@ public class SubjectController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void create() {
         SubjectBuildView buildPage = (SubjectBuildView) pageStack.peek();
@@ -63,6 +91,10 @@ public class SubjectController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void edit(String pluto) {
         try {
@@ -73,6 +105,10 @@ public class SubjectController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void update(String pluto) {
         SubjectEditView editPage = (SubjectEditView) pageStack.peek();
@@ -91,6 +127,10 @@ public class SubjectController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void delete(String pluto) {
         int input = JOptionPane.showConfirmDialog(null, "Confirm deleting selected subject?");
@@ -103,6 +143,10 @@ public class SubjectController extends AbstractController {
         }
     }
 
+    /***
+     * This is a path method for showing the courses in the given subject
+     * @param pluto pluto code of the subject which we want to see the courses of
+     */
     @Override
     public void show(String pluto) {
         try {
@@ -119,6 +163,9 @@ public class SubjectController extends AbstractController {
         }
     }
 
+    /***
+     * Path method for realizing the closing down of all the subjects. Changes all the subjects' isOpened attribute to false
+     */
     public void closeAll() {
         int input = JOptionPane.showConfirmDialog(null, "This action will close all Subject for taking courses in. Continue?");
         if (input == JOptionPane.YES_OPTION) {
@@ -132,6 +179,11 @@ public class SubjectController extends AbstractController {
         }
     }
 
+    /***
+     * Path methods for students to drop all the courses (and the subject) under this subject they selected
+     *
+     * @param pluto pluto code of the subject which courses will lose student logged in
+     */
     public void drop(String pluto) {
         int input = JOptionPane.showConfirmDialog(null,
                 "Are you sure you want to drop every course you've taken under this subject?");

@@ -12,6 +12,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
+/***
+ * View for taking courses, shows the available subjects, can go on to take courses after selecting one subject.
+ */
 public class SubjectIndexView extends AbstractView {
     private final SubjectController subjectController;
     private final List<SubjectModel> subjects;

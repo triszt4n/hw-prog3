@@ -11,6 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/***
+ * View for showing the courses of one subject.
+ * inherits the course index for instructor, but with different data.
+ */
 public class CourseOfSubjectInstructorView extends CourseIndexInstructorView {
     private final SubjectModel subject;
 

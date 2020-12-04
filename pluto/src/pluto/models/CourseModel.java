@@ -12,14 +12,43 @@ import javax.json.JsonObject;
 import java.util.LinkedList;
 import java.util.List;
 
+/***
+ * Course entity representation.
+ */
 public class CourseModel extends AbstractModel {
+    /***
+     * A short code string for the course
+     */
     private String shortCode;
+
+    /***
+     * type of the course
+     */
     private CourseType type;
+
+    /***
+     * maximum number of students attending
+     */
     private int maxStudents;
+
+    /***
+     * other text notes to be attached to the course
+     */
     private String notes;
 
+    /***
+     * The parent subject of the course
+     */
     private SubjectModel subject;
+
+    /***
+     * attending students
+     */
     private List<StudentModel> students;
+
+    /***
+     * The instructor that instructs this course
+     */
     private InstructorModel instructor;
 
     public String getShortCode() {
@@ -50,6 +79,11 @@ public class CourseModel extends AbstractModel {
         return instructor;
     }
 
+    /**
+     * Validated setter
+     * @param shortCode
+     * @throws ValidationException
+     */
     public void setShortCode(String shortCode) throws ValidationException {
         StringValidator sv = new StringValidator();
         sv.validate(shortCode, "Short code")
@@ -57,14 +91,27 @@ public class CourseModel extends AbstractModel {
         this.shortCode = shortCode;
     }
 
+    /***
+     * Validated setter
+     * @param type
+     */
     public void setType(CourseType type) {
         this.type = type;
     }
 
+    /***
+     * Validated setter
+     * @param type
+     */
     public void setType(int type) {
         this.type = CourseType.values()[type];
     }
 
+    /***
+     * Validated setter
+     * @param maxStudents
+     * @throws ValidationException
+     */
     public void setMaxStudents(String maxStudents) throws ValidationException {
         int max;
         try {
@@ -82,6 +129,11 @@ public class CourseModel extends AbstractModel {
         this.maxStudents = max;
     }
 
+    /***
+     * Validated setter
+     * @param maxStudents
+     * @throws ValidationException
+     */
     public void setMaxStudents(int maxStudents) throws ValidationException {
         if (maxStudents > 1000) {
             throw new ValidationException("Are you sure about the maximum of attending students?");
@@ -92,6 +144,11 @@ public class CourseModel extends AbstractModel {
         this.maxStudents = maxStudents;
     }
 
+    /***
+     * Validated setter
+     * @param notes
+     * @throws ValidationException
+     */
     public void setNotes(String notes) throws ValidationException {
         StringValidator sv = new StringValidator();
         sv.validate(notes, "Notes")
@@ -135,6 +192,12 @@ public class CourseModel extends AbstractModel {
         students = new LinkedList<>();
     }
 
+    /***
+     * Static method that connects the query to the database.
+     * @param pluto pluto code of searched course
+     * @return the searched CourseModel
+     * @throws EntityNotFoundException if the pluto code belongs to no course
+     */
     public static CourseModel get(String pluto) throws EntityNotFoundException {
         CourseModel result = Database.getCourseWherePlutoCode(pluto);
         if (result == null) {
@@ -143,10 +206,19 @@ public class CourseModel extends AbstractModel {
         return result;
     }
 
+    /***
+     * Static method that connects the query to the database
+     * @return all the courses in db
+     */
     public static List<CourseModel> all() {
         return Database.getAllCourses();
     }
 
+    /***
+     * Static method that connects the query to the database
+     * @param pluto
+     * @throws EntityNotFoundException
+     */
     public static void delete(String pluto) throws EntityNotFoundException {
         CourseModel course = get(pluto);
 
@@ -161,6 +233,15 @@ public class CourseModel extends AbstractModel {
         Database.removeCourse(course);
     }
 
+    /***
+     * Updater method (modification)
+     * @param shortCode
+     * @param type
+     * @param maxStudents
+     * @param notes
+     * @param instructor
+     * @throws ValidationException
+     */
     public void update(String shortCode, CourseType type, String maxStudents, String notes, InstructorModel instructor) throws ValidationException {
         setShortCode(shortCode);
         setType(type);
@@ -169,6 +250,9 @@ public class CourseModel extends AbstractModel {
         setInstructor(instructor);
     }
 
+    /***
+     * Initializes the loading of associated/attending students from the database.
+     */
     public void initStudents() {
         students = Database.getStudentsWhereMyCoursesHas(this);
     }
@@ -189,6 +273,9 @@ public class CourseModel extends AbstractModel {
         students.remove(student);
     }
 
+    /**
+     * @see AbstractModel
+     */
     @Override
     protected void save() {
         if (plutoCode == null) {
@@ -200,6 +287,9 @@ public class CourseModel extends AbstractModel {
         subject.addCourse(this);
     }
 
+    /**
+     * @see AbstractModel
+     */
     @Override
     public String toString() {
         return PlutoConsole.createLog("[COURSE] " + plutoCode,
@@ -211,6 +301,9 @@ public class CourseModel extends AbstractModel {
         );
     }
 
+    /**
+     * @see AbstractModel
+     */
     @Override
     public JsonObject jsonify() {
         return Json.createObjectBuilder()

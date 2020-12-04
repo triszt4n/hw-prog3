@@ -1,5 +1,8 @@
 package pluto.models.helpers;
 
+/***
+ * String enumerator for the Student types
+ */
 public enum UserType {
     STUDENT("Student"),
     INSTRUCTOR("Instructor"),

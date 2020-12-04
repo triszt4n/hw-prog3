@@ -15,6 +15,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/***
+ * Representative singleton class of a database in real life. Instead of a query language it uses methods to get the important data.
+ * Utilizes lists for storing the data that can be used by the application.
+ */
 public class Database {
     private static final List<UserModel> users = new LinkedList<>();
     private static final List<SubjectModel> subjects = new LinkedList<>();
@@ -39,6 +43,12 @@ public class Database {
         return courses;
     }
 
+    /***
+     * Helper method for the other WherePlutoCode type search methods
+     * @param pluto pluto code of the entity searched
+     * @param list list of entities to be searched
+     * @return the entity that has the pluto code
+     */
     private static AbstractModel getEntityWherePlutoCode(String pluto, List<? extends AbstractModel> list) {
         return list.stream()
                 .filter(e -> e.getPlutoCode().equals(pluto))
@@ -113,6 +123,12 @@ public class Database {
                 .collect(Collectors.toList());
     }
 
+
+    /***
+     * Interprets the given json object and creates user entity
+     * @param object json object to be read
+     * @throws ValidationException if there is problem with json object
+     */
     private static void manageUserJson(JsonObject object) throws ValidationException {
         if (object.getString("type").equals("Student")) {
             new StudentModel(object);
@@ -125,14 +141,33 @@ public class Database {
         }
     }
 
+    /***
+     * Interprets the given json object and creates subject entity
+     * @param object json object to be read
+     * @throws ValidationException if there is problem with json object
+     * @throws EntityNotFoundException if instructor read from json is not in the db
+     */
     private static void manageSubjectJson(JsonObject object) throws ValidationException, EntityNotFoundException {
         new SubjectModel(object);
     }
 
+    /***
+     * Interprets the given json object and creates course entity
+     * @param object json object to be read
+     * @throws ValidationException if there is problem with json object
+     * @throws EntityNotFoundException if instructor read from json is not in the db
+     */
     private static void manageCourseJson(JsonObject object) throws ValidationException, EntityNotFoundException {
         new CourseModel(object);
     }
 
+    /***
+     * Realizes a json file reading
+     * @param fileName json file to be read
+     * @param managerFunction functional interface to apply it on the json object (for saving entity)
+     * @throws DatabaseNotFound if no file is found
+     * @throws DatabaseDamagedException if json is not okay
+     */
     private static void loadFromJsonFile(String fileName, ManagerFunction<JsonObject> managerFunction) throws DatabaseNotFound, DatabaseDamagedException {
         JsonReader reader = null;
         try {
@@ -155,6 +190,11 @@ public class Database {
         }
     }
 
+    /***
+     * Realizes the import from json files and makes the initialization of the associations in user and course entities
+     * @throws DatabaseNotFound if no file is found
+     * @throws DatabaseDamagedException if json is not okay
+     */
     public static void loadFromJsonFiles() throws DatabaseDamagedException, DatabaseNotFound {
         loadFromJsonFile("users", Database::manageUserJson);
         loadFromJsonFile("subjects", Database::manageSubjectJson);
@@ -168,6 +208,12 @@ public class Database {
         PlutoConsole.log("Database successfully loaded from files! :-)");
     }
 
+    /***
+     * Get an admin entity from the environment
+     * @throws ValidationException
+     * @throws NoSuchAlgorithmException
+     * @throws DotenvException
+     */
     public static void loadAdmin() throws ValidationException, NoSuchAlgorithmException, DotenvException {
         Dotenv dotenv = Dotenv.load();
         String pluto = dotenv.get("PLUTO_ADMIN_CODE");
@@ -184,6 +230,12 @@ public class Database {
         }
     }
 
+    /***
+     * Realizes a json file creation/modification
+     * @param fileName json file to be read
+     * @param list the entity list to be saved
+     * @throws DatabasePersistenceException if there's something wrong going on with the IO
+     */
     private static void saveToJsonFile(String fileName, List<? extends AbstractModel> list) throws DatabasePersistenceException {
         JsonWriter writer = null;
         try {
@@ -203,6 +255,10 @@ public class Database {
         }
     }
 
+    /***
+     * Saves database
+     * @throws DatabasePersistenceException if there's something wrong going on with the IO
+     */
     public static void saveToJsonFiles() throws DatabasePersistenceException {
         saveToJsonFile("users", users);
         saveToJsonFile("subjects", subjects);
@@ -210,6 +266,11 @@ public class Database {
         PlutoConsole.log("Database successfully saved to files! :-)");
     }
 
+    /***
+     * Seeds the database with consistent data to test (not real data)
+     * @throws ValidationException
+     * @throws NoSuchAlgorithmException
+     */
     public static void seed() throws ValidationException, NoSuchAlgorithmException {
         AdministratorModel user2 = new AdministratorModel("admin@pluto.com", "Adam Ministrator", "123456", "1989-08-20", "");
         InstructorModel user3 = new InstructorModel("macdonell@math.pluto.edu", "Thomas Tasnadius", "123456", "1972-03-14", "1 University Road, MS, Boston", true);
@@ -278,6 +339,9 @@ public class Database {
         PlutoConsole.taglessLog(user4.toString());
     }
 
+    /***
+     * Resets the db, but leaves admins alone.
+     */
     public static void reset() {
         List<UserModel> nonAdmins = new LinkedList<>();
         users.forEach(u -> {

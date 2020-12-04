@@ -19,20 +19,59 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/***
+ * User entity representation in the application.
+ */
 public class UserModel extends AbstractModel {
+    /***
+     * email address of the user
+     */
     protected String email;
+
+    /***
+     * name of the user
+     */
     protected String name;
+
+    /***
+     * encrypted byte array of the original password
+     */
     protected byte[] encryptedPassword;
+
+    /***
+     * salt to help the security
+     */
     protected byte[] salt;
+
     protected String unparsedDob;
+
+    /***
+     * date of birth for the user
+     */
     private Date parsedDob;
+
+    /***
+     * address of the user
+     */
     protected String address;
 
+    /***
+     * student: subject of taken courses, instructors: coordinated subjects
+     */
     protected List<SubjectModel> mySubjects;
+
+    /***
+     * student: courses taken, instructor: instructed courses
+     */
     protected List<CourseModel> myCourses;
 
     private static final String ALGORITHM_FOR_PW_HASHING = "SHA-256";
 
+    /***
+     * Validated setter
+     * @param email
+     * @throws ValidationException
+     */
     public void setEmail(String email) throws ValidationException {
         StringValidator sv = new StringValidator();
         sv.validate(email, "Email address")
@@ -41,6 +80,11 @@ public class UserModel extends AbstractModel {
         this.email = email;
     }
 
+    /***
+     * Validated setter
+     * @param name
+     * @throws ValidationException
+     */
     public void setName(String name) throws ValidationException {
         StringValidator sv = new StringValidator();
         sv.validate(name, "Name")
@@ -48,6 +92,12 @@ public class UserModel extends AbstractModel {
         this.name = name;
     }
 
+    /***
+     * Validated setter
+     * Sets both of the date of births
+     * @param dob String representation
+     * @throws ValidationException
+     */
     public void setDob(String dob) throws ValidationException {
         StringValidator sv = new StringValidator();
         parsedDob = sv.validate(dob, "Date of birth")
@@ -56,6 +106,11 @@ public class UserModel extends AbstractModel {
         unparsedDob = dob;
     }
 
+    /***
+     * Validates setter
+     * @param address
+     * @throws ValidationException
+     */
     public void setAddress(String address) throws ValidationException {
         StringValidator sv = new StringValidator();
         sv.validate(address, "Address")
@@ -63,6 +118,13 @@ public class UserModel extends AbstractModel {
         this.address = address;
     }
 
+    /***
+     * Validated setter
+     * Generates the encrypted password as well
+     * @param rawPassword
+     * @throws ValidationException
+     * @throws NoSuchAlgorithmException
+     */
     public void setPassword(String rawPassword) throws ValidationException, NoSuchAlgorithmException {
         StringValidator sv = new StringValidator();
         sv.validate(rawPassword, "Password")
@@ -109,10 +171,20 @@ public class UserModel extends AbstractModel {
         return "";
     }
 
+    /***
+     * Need to implement the procedure of loading in the associated courses and subjects of the user.
+     */
     public void initCoursesAndSubjects() { }
 
+    /***
+     * Needs to manage removal of associations between subjects, courses and users before the database removal.
+     * @throws EntityNotFoundException
+     */
     public void manageSubjectsAndCoursesBeforeDelete() throws EntityNotFoundException { }
 
+    /**
+     * @see AbstractModel
+     */
     public void save() {
         if (plutoCode == null) {
             generatePlutoCode();
@@ -199,6 +271,13 @@ public class UserModel extends AbstractModel {
         mySubjects.remove(subject);
     }
 
+    /***
+     * Static method that connects the query to the database.
+     * @param pluto pluto code of searched user
+     * @return the searched UserModel
+     * @throws EntityNotFoundException if the pluto code belongs to nobody
+     * @throws ValidationException if the pluto code is invalid
+     */
     public static UserModel get(String pluto) throws EntityNotFoundException, ValidationException {
         StringValidator sv = new StringValidator();
         sv.validate(pluto, "Pluto code")
@@ -212,16 +291,36 @@ public class UserModel extends AbstractModel {
         return result;
     }
 
+    /***
+     * Static method that connects the query to the database
+     * @param pluto pluto code of the user to be deleted from database
+     * @throws EntityNotFoundException if the pluto code belongs to nobody
+     * @throws ValidationException if the pluto code is invalid
+     */
     public static void delete(String pluto) throws EntityNotFoundException, ValidationException {
         UserModel user = get(pluto);
         user.manageSubjectsAndCoursesBeforeDelete();
         Database.removeUser(user);
     }
 
+    /***
+     * Static method that connects the query to the database (get all the users)
+     * @return the UserModels in the database
+     */
     public static List<UserModel> all() {
         return Database.getAllUsers();
     }
 
+    /***
+     * The method for one user to be updated with the given data (modification)
+     * @param email
+     * @param name
+     * @param pw
+     * @param dob
+     * @param addr
+     * @throws ValidationException
+     * @throws NoSuchAlgorithmException
+     */
     public void update(String email, String name, String pw, String dob, String addr) throws ValidationException, NoSuchAlgorithmException {
         setEmail(email);
         setName(name);
@@ -232,6 +331,13 @@ public class UserModel extends AbstractModel {
         setDob(dob);
     }
 
+    /***
+     * Checks if the password is the same as the user's
+     * @param pw raw password to be authorized with
+     * @throws AuthorizationException if the password is wrong
+     * @throws ValidationException is the password is invalid
+     * @throws NoSuchAlgorithmException
+     */
     public void authorize(String pw) throws AuthorizationException, ValidationException, NoSuchAlgorithmException {
         StringValidator sv = new StringValidator();
         sv.validate(pw, "Password")
@@ -246,11 +352,17 @@ public class UserModel extends AbstractModel {
         }
     }
 
+    /**
+     * @see AbstractModel
+     */
     @Override
     public String toString() {
         return PlutoConsole.createLog("[USER] " + plutoCode, email, name, address);
     }
 
+    /**
+     * @see AbstractModel
+     */
     @Override
     public JsonObject jsonify() {
         JsonArrayBuilder pwBuilder = Json.createArrayBuilder();

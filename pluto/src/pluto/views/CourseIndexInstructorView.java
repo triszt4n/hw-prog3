@@ -13,6 +13,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
+/***
+ * View for courses instructed by Instructor
+ */
 public class CourseIndexInstructorView extends AbstractView {
     protected final List<CourseModel> courses;
     protected final CourseController courseController;

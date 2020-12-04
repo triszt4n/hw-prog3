@@ -12,6 +12,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
 
+/***
+ * View for the subjects of taken courses by the student.
+ */
 public class SubjectIndexStudentView extends AbstractView {
     private final SubjectController subjectController;
     private final List<SubjectModel> subjects;

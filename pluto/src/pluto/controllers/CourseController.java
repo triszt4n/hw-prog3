@@ -13,18 +13,42 @@ import pluto.views.*;
 import javax.swing.*;
 import java.util.List;
 
+/***
+ * The controller class for controlling the Courses, it accepts interactions from the end user.
+ * Implements basic resource management methods
+ */
 public class CourseController extends AbstractController {
+    /***
+     * Currently used subject controller in the application.
+     */
     private SubjectController subjectController;
+
+    /***
+     * If a course is connected to a subject, it is stored here.
+     */
     private SubjectModel currentSubject;
 
+    /***
+     * Simple setter
+     * @param subjectController
+     */
     public void setSubjectController(SubjectController subjectController) {
         this.subjectController = subjectController;
     }
 
+    /***
+     * Simple setter
+     * @param subject
+     */
     public void setCurrentSubject(SubjectModel subject) {
         currentSubject = subject;
     }
 
+    /***
+     * Makes it possible for the end user to see all of their courses taken/instructed.
+     * Administrator gets all of the courses.
+     * @see AbstractController
+     */
     @Override
     public void index() {
         if (loggedInUser.getType().equals(UserType.INSTRUCTOR)) {
@@ -38,6 +62,10 @@ public class CourseController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void build() {
         List<InstructorModel> instructors = Database.getAllInstructors();
@@ -54,6 +82,10 @@ public class CourseController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void create() {
         CourseBuildView buildPage = (CourseBuildView) pageStack.peek();
@@ -74,6 +106,10 @@ public class CourseController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void edit(String pluto) {
         try {
@@ -91,6 +127,10 @@ public class CourseController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void update(String pluto) {
         CourseEditView editPage = (CourseEditView) pageStack.peek();
@@ -110,6 +150,10 @@ public class CourseController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void delete(String pluto) {
         int input = JOptionPane.showConfirmDialog(null, "Confirm deleting selected course?");
@@ -123,6 +167,10 @@ public class CourseController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void show(String pluto) {
         try {
@@ -134,6 +182,10 @@ public class CourseController extends AbstractController {
         }
     }
 
+    /***
+     * A path for the user to join an existing course as a student.
+     * @param pluto pluto code of the resource to join to
+     */
     public void join(String pluto) {
         int input = JOptionPane.showConfirmDialog(null,
                 "Take this course?");
@@ -149,6 +201,10 @@ public class CourseController extends AbstractController {
         }
     }
 
+    /***
+     * Reverse of join - a path for the user to drop course already taken before as a student.
+     * @param pluto pluto code of the resource to drop
+     */
     public void drop(String pluto) {
         int input = JOptionPane.showConfirmDialog(null,
                 "Are you sure you want to drop the selected course?");
@@ -164,6 +220,12 @@ public class CourseController extends AbstractController {
         }
     }
 
+    /***
+     * Path for the instructor/coordinator to kick a student from the course
+     *
+     * @param pluto pluto code of the course to manage
+     * @param student instance of the student to remove from the course
+     */
     public void kick(String pluto, StudentModel student) {
         int input = JOptionPane.showConfirmDialog(null,
                 "Are you sure you want to kick the selected student from this course?");

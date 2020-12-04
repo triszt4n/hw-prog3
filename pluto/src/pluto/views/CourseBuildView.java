@@ -15,6 +15,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
+/**
+ * "build" view for course resource
+ * @see pluto.controllers.AbstractController
+ */
 public class CourseBuildView extends AbstractView {
     protected final CourseController courseController;
     protected final SubjectModel subject;

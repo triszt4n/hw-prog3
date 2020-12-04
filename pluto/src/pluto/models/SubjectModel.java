@@ -15,13 +15,39 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SubjectModel extends AbstractModel {
+    /***
+     * Name for the subject
+     */
     private String name;
+
+    /***
+     * credit number of the subject
+     */
     private int credit;
+
+    /***
+     * Requirement formula of the subject
+     */
     private String requirements;
+
+    /***
+     * Number of the recommended semester
+     */
     private int semester;
+
+    /***
+     * The main coordinator of the subject, who created it
+     */
     private UserModel coordinator;
+
+    /***
+     * if the subject should be opened to the students
+     */
     private boolean isOpened;
 
+    /***
+     * Associated courses of the subject, all the courses that run under this subject.
+     */
     private final List<CourseModel> courses;
 
     public String getName() {
@@ -47,6 +73,11 @@ public class SubjectModel extends AbstractModel {
         return courses;
     }
 
+    /***
+     * Validated setter
+     * @param name
+     * @throws ValidationException
+     */
     public void setName(String name) throws ValidationException {
         StringValidator sv = new StringValidator();
         sv.validate(name, "Name")
@@ -54,6 +85,11 @@ public class SubjectModel extends AbstractModel {
         this.name = name;
     }
 
+    /**
+     * Validated setter
+     * @param credit
+     * @throws ValidationException
+     */
     public void setCredit(String credit) throws ValidationException {
         int cr;
         try {
@@ -69,6 +105,11 @@ public class SubjectModel extends AbstractModel {
         this.credit = cr;
     }
 
+    /**
+     * Validated setter
+     * @param credit
+     * @throws ValidationException
+     */
     public void setCredit(int credit) throws ValidationException {
         if (credit > 100) {
             throw new ValidationException("Are you sure about the number of credits?");
@@ -76,6 +117,11 @@ public class SubjectModel extends AbstractModel {
         this.credit = credit;
     }
 
+    /***
+     * Validated setter
+     * @param requirements
+     * @throws ValidationException
+     */
     public void setRequirements(String requirements) throws ValidationException {
         StringValidator sv = new StringValidator();
         sv.validate(requirements, "Requirements")
@@ -83,6 +129,11 @@ public class SubjectModel extends AbstractModel {
         this.requirements = requirements;
     }
 
+    /***
+     * Validated setter
+     * @param semester
+     * @throws ValidationException
+     */
     public void setSemester(String semester) throws ValidationException {
         int sem;
         try {
@@ -98,6 +149,11 @@ public class SubjectModel extends AbstractModel {
         this.semester = sem;
     }
 
+    /***
+     * Validated setter
+     * @param semester
+     * @throws ValidationException
+     */
     public void setSemester(int semester) throws ValidationException {
         if (semester > 14) {
             throw new ValidationException("Are you sure about the recommended semester number?");
@@ -109,6 +165,12 @@ public class SubjectModel extends AbstractModel {
         this.coordinator = coordinator;
     }
 
+    /***
+     * Validated setter
+     * @param opened
+     * @param user
+     * @throws ValidationException
+     */
     public void setOpened(boolean opened, UserModel user) throws ValidationException {
         if (!(user == coordinator || user.getType().equals(UserType.ADMINISTRATOR))) {
             throw new ValidationException("You have no permission to change this subject!");
@@ -118,6 +180,9 @@ public class SubjectModel extends AbstractModel {
         }
     }
 
+    /**
+     * @see AbstractModel
+     */
     @Override
     protected void save() {
         if (plutoCode == null) {
@@ -162,6 +227,15 @@ public class SubjectModel extends AbstractModel {
         courses.remove(course);
     }
 
+    /***
+     * Updater method (modification)
+     * @param name
+     * @param credit
+     * @param requirements
+     * @param semester
+     * @param isOpened
+     * @throws ValidationException
+     */
     public void update(String name, String credit, String requirements, String semester, boolean isOpened) throws ValidationException {
         setName(name);
         setCredit(credit);
@@ -170,6 +244,12 @@ public class SubjectModel extends AbstractModel {
         setOpened(isOpened, coordinator);
     }
 
+    /***
+     * Static method that connects the query to the database.
+     * @param pluto pluto code of searched subject
+     * @return the searched SubjectModel
+     * @throws EntityNotFoundException if the pluto code belongs to no subject in db
+     */
     public static SubjectModel get(String pluto) throws EntityNotFoundException {
         SubjectModel result = Database.getSubjectWherePlutoCode(pluto);
         if (result == null) {
@@ -178,6 +258,11 @@ public class SubjectModel extends AbstractModel {
         return result;
     }
 
+    /***
+     * Static method that connects the query to the database
+     * @param pluto
+     * @throws EntityNotFoundException
+     */
     public static void delete(String pluto) throws EntityNotFoundException {
         SubjectModel subject = get(pluto);
         List<StudentModel> students = new LinkedList<>();
@@ -201,10 +286,17 @@ public class SubjectModel extends AbstractModel {
         Database.removeSubject(subject);
     }
 
+    /***
+     * Static method that connects the query to the database
+     * @return all the subjects
+     */
     public static List<SubjectModel> all() {
         return Database.getAllSubjects();
     }
 
+    /**
+     * @see AbstractModel
+     */
     @Override
     public String toString() {
         return PlutoConsole.createLog(
@@ -218,6 +310,9 @@ public class SubjectModel extends AbstractModel {
         );
     }
 
+    /**
+     * @see AbstractModel
+     */
     @Override
     public JsonObject jsonify() {
         return Json.createObjectBuilder()

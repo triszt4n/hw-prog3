@@ -12,7 +12,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.LinkedList;
 
+/**
+ * Representation of an instructor in the application system.
+ * They coordinate subjects (create), and instruct courses.
+ */
 public class InstructorModel extends UserModel {
+    /**
+     * if the instructor is accepted by an admin into the application
+     */
     private boolean isAccepted;
 
     public boolean isAccepted() {
@@ -33,6 +40,13 @@ public class InstructorModel extends UserModel {
         isAccepted = json.getBoolean("isAccepted");
     }
 
+    /***
+     * @see UserModel
+     * @param pw raw password to be authorized with
+     * @throws AuthorizationException
+     * @throws ValidationException
+     * @throws NoSuchAlgorithmException
+     */
     @Override
     public void authorize(String pw) throws AuthorizationException, ValidationException, NoSuchAlgorithmException {
         if (!isAccepted) {
@@ -53,11 +67,19 @@ public class InstructorModel extends UserModel {
         return isAccepted? "Accepted instructor" : "Non-accepted instructor";
     }
 
+    /***
+     * Sets all the subjects that they created/coordinate
+     */
     @Override
     public void initCoursesAndSubjects() {
         mySubjects = Database.getSubjectsWhereCreatorUser(this);
     }
 
+    /***
+     * With the help of shallow copies, the method deletes all the courses where instructor was instructor, and
+     * deletes all the subjects where they were coordinator
+     * @throws EntityNotFoundException
+     */
     @Override
     public void manageSubjectsAndCoursesBeforeDelete() throws EntityNotFoundException {
         LinkedList<CourseModel> shallowCopyCourses = new LinkedList<>(myCourses);

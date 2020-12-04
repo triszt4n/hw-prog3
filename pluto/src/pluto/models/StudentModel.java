@@ -13,7 +13,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/***
+ * Representation of a student in the system.
+ * They can manage their courses that they've taken and see subjects of those.
+ */
 public class StudentModel extends UserModel {
+    /***
+     * Helper list of the json objects listed pluto codes of courses taken
+     */
     private final List<String> coursePlutoCodes;
 
     public StudentModel(String em, String na, String pw, String d, String addr) throws ValidationException, NoSuchAlgorithmException {
@@ -41,6 +48,9 @@ public class StudentModel extends UserModel {
         return UserType.STUDENT;
     }
 
+    /***
+     * Sets the courses taken and subjects of those
+     */
     @Override
     public void initCoursesAndSubjects() {
         myCourses = Database.getCoursesWherePlutoCodeIn(coursePlutoCodes);
@@ -50,6 +60,9 @@ public class StudentModel extends UserModel {
                 .collect(Collectors.toList());
     }
 
+    /***
+     * Method removes the student from the student list of the courses
+     */
     @Override
     public void manageSubjectsAndCoursesBeforeDelete() {
         for (CourseModel c : myCourses) {

@@ -6,6 +6,10 @@ import pluto.models.SubjectModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * "edit" view for subject resource
+ * @see pluto.controllers.AbstractController
+ */
 public class SubjectEditView extends SubjectBuildView {
     private final SubjectModel subject;
 

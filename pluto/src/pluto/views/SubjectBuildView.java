@@ -9,6 +9,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+/**
+ * "build" view for subject resource
+ * @see pluto.controllers.AbstractController
+ */
 public class SubjectBuildView extends AbstractView {
     protected final SubjectController subjectController;
 

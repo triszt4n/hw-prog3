@@ -16,22 +16,44 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.security.NoSuchAlgorithmException;
 
+/***
+ * The controller class for controlling the Users, it accepts interactions from the end user.
+ * Implements basic resource management methods and authorization methods.
+ * Most important controller of the application.
+ */
 public class UserController extends AbstractController {
+    /***
+     * Path method to show the page for logging into the application.
+     */
     public void login() {
         pageStack.push(new LoginView(this));
         pageStack.peek().open();
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void index() {
         openChildPage(new UserIndexView(UserModel.all(),this));
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void build() {
         openChildPage(new RegistrationView(this));
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * Different functionality depending on if the user registering wanted to be an instructor or not.
+     *
+     * @see AbstractController
+     */
     @Override
     public void create() {
         RegistrationView regPage = (RegistrationView) pageStack.peek();
@@ -68,6 +90,10 @@ public class UserController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void edit(String pluto) {
         UserModel user = null;
@@ -79,6 +105,10 @@ public class UserController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void update(String pluto) {
         UserEditView editPage = (UserEditView) pageStack.peek();
@@ -97,6 +127,10 @@ public class UserController extends AbstractController {
         }
     }
 
+    /***
+     * AbstractController's method with the same name, applied to the Courses as resource
+     * @see AbstractController
+     */
     @Override
     public void delete(String pluto) {
         int input = JOptionPane.showConfirmDialog(null, "I hope you know what you are doing... Delete user?",
@@ -110,9 +144,17 @@ public class UserController extends AbstractController {
         }
     }
 
+    /***
+     * No need for this method to be used yet.
+     * @param pluto pluto code of the resource
+     */
     @Override
     public void show(String pluto) { }
 
+    /***
+     * Path method for realizing the authorization of a user. Checks if pluto code is valid and checks the password, then
+     * lets the user to begin managing courses in the application (gateway method).
+     */
     public void auth() {
         LoginView loginPage = (LoginView) pageStack.peek();
         UserModel user = null;
@@ -130,11 +172,17 @@ public class UserController extends AbstractController {
         }
     }
 
+    /***
+     * Path method for logging out of the course management.
+     */
     public void logout() {
         loggedInUser = null;
         changePage(new LoginView(this));
     }
 
+    /***
+     * Lets Administrators initialize a seeding of the database.
+     */
     public void seed() {
         int input = JOptionPane.showConfirmDialog(null, "This action will add mocked data to the database. Continue?");
         if (input == JOptionPane.YES_OPTION) {
@@ -147,6 +195,9 @@ public class UserController extends AbstractController {
         }
     }
 
+    /***
+     * Lets the Administrator initialize a reset of the database (this is a dangerous path).
+     */
     public void dbReset() {
         int input = JOptionPane.showConfirmDialog(null, "Are you sure? This action will delete everything except Administrators");
         if (input == JOptionPane.YES_OPTION) Database.reset();

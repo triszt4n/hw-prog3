@@ -7,6 +7,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 
+/**
+ * "edit" view for user resource
+ * won't show password field for the administrator (they can edit any user)
+ * @see pluto.controllers.UserController
+ */
 public class UserEditView extends RegistrationView {
     private final UserModel user;
 

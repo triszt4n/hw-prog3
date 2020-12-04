@@ -8,6 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+/**
+ * "edit" view for course resource
+ * inherits the build view, but loads in the data
+ * @see pluto.controllers.AbstractController
+ */
 public class CourseEditView extends CourseBuildView {
     private final CourseModel course;
 

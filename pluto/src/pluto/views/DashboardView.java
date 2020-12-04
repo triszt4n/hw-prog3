@@ -13,6 +13,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/***
+ * Welcome view for the user.
+ * Menu is given, details are shared.
+ */
 public class DashboardView extends AbstractView {
     private final UserController userController;
     private final CourseController courseController;

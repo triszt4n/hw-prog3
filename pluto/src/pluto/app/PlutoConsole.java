@@ -2,6 +2,9 @@ package pluto.app;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
+/***
+ * Singleton System.out wrapper class, used for custom console logging.
+ */
 public class PlutoConsole {
     public static String ANSI_RESET;
     public static String ANSI_RED;
@@ -10,8 +13,16 @@ public class PlutoConsole {
     private static String TAG_PLUTO;
     private static String TAG_DEV;
     private static String TAG_ERROR;
+
+    /***
+     * A flag for deciding whether we want to see logs while running.
+     */
     private static boolean isDevEnv = false;
 
+    /***
+     * Reads environment variables and sets up the class for further work.
+     * This method needs to be called before using PlutoConsole efficiently.
+     */
     public static void setup() {
         Dotenv dotenv = Dotenv.load();
         boolean useColor = dotenv.get("PLUTO_CONSOLE_COLORFUL").equals("TRUE");
@@ -25,6 +36,11 @@ public class PlutoConsole {
         TAG_ERROR = ANSI_RED + "[ERROR]" + ANSI_RESET;
     }
 
+    /***
+     * Simple logger function with Pluto trademark signal.
+     *
+     * @param messages vararg that accepts String messages
+     */
     public static void log(String... messages) {
         if (isDevEnv) {
             System.out.print(TAG_PLUTO + " " + TAG_DEV);
@@ -35,6 +51,11 @@ public class PlutoConsole {
         }
     }
 
+    /***
+     * Same as log() but does not show the trademark signal.
+     *
+     * @param messages vararg that accepts String messages
+     */
     public static void taglessLog(String... messages) {
         if (isDevEnv) {
             for (String msg : messages) {
@@ -44,6 +65,11 @@ public class PlutoConsole {
         }
     }
 
+    /***
+     * Same as log() but shows an error tag as an extra.
+     *
+     * @param messages vararg that accepts String messages
+     */
     public static void err(String... messages) {
         if (isDevEnv) {
             System.out.print(TAG_PLUTO + " " + TAG_DEV + " " + TAG_ERROR + " ");
@@ -63,6 +89,13 @@ public class PlutoConsole {
         System.out.println(TAG_PLUTO + " " + msg);
     }
 
+    /***
+     * Method creates a Pluto trademark signalled string from arguments given.
+     * Might be used for PlutoConsole's log later on.
+     *
+     * @param messages vararg that accepts String messages
+     * @return concatenated String containing the "plutonized" messages
+     */
     public static String createLog(String... messages) {
         if (isDevEnv) {
             String result = "";

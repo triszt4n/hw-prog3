@@ -7,6 +7,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * "login" view for user resource
+ * @see pluto.controllers.UserController
+ */
 public class LoginView extends AbstractView {
     private JButton loginBtn;
     private JButton regBtn;

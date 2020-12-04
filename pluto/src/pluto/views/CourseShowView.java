@@ -13,6 +13,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * "show" view for course resource
+ * Actually shows the students that took this course
+ * @see pluto.controllers.CourseController
+ */
 public class CourseShowView extends UserIndexView {
     private final CourseController courseController;
     private final CourseModel course;
