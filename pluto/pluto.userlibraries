@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eclipse-userlibraries>
+  <library name="io.github.cdimascio:dotenv-java:2.2.0">
+    <archive path="C:/Users/Trisztan/Documents/PROGRAMMING/hw-prog3/pluto/lib/dotenv-java-2.2.0.jar" />
+  </library>
+  <library name="org.glassfish:javax.json:1.1.4">
+    <archive path="C:/Users/Trisztan/Documents/PROGRAMMING/hw-prog3/pluto/lib/javax.json-1.1.4.jar" />
+  </library>
+  <library name="org.junit.jupiter:junit-jupiter:5.4.2">
+    <archive path="C:/Users/Trisztan/Documents/PROGRAMMING/hw-prog3/pluto/lib/junit-jupiter-5.4.2.jar" />
+    <archive path="C:/Users/Trisztan/Documents/PROGRAMMING/hw-prog3/pluto/lib/junit-jupiter-api-5.4.2.jar" />
+    <archive path="C:/Users/Trisztan/Documents/PROGRAMMING/hw-prog3/pluto/lib/apiguardian-api-1.0.0.jar" />
+    <archive path="C:/Users/Trisztan/Documents/PROGRAMMING/hw-prog3/pluto/lib/opentest4j-1.1.1.jar" />
+    <archive path="C:/Users/Trisztan/Documents/PROGRAMMING/hw-prog3/pluto/lib/junit-platform-commons-1.4.2.jar" />
+    <archive path="C:/Users/Trisztan/Documents/PROGRAMMING/hw-prog3/pluto/lib/junit-jupiter-params-5.4.2.jar" />
+    <archive path="C:/Users/Trisztan/Documents/PROGRAMMING/hw-prog3/pluto/lib/junit-jupiter-engine-5.4.2.jar" />
+    <archive path="C:/Users/Trisztan/Documents/PROGRAMMING/hw-prog3/pluto/lib/junit-platform-engine-1.4.2.jar" />
+  </library>
+</eclipse-userlibraries>
+
