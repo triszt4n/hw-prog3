@@ -8,8 +8,8 @@ import java.util.Stack;
 /***
  * Abstract class for controller classes in the MVC desing pattern.
  * Uses a page stack and makes it possible to arrange those pages all around in the application.
- * Usually this is the communaction layer between Models and the end user, this instantiates the Views and
- * makes commands to the Database through the Models.
+ * Usually this is the communication layer between Models and the end user, this instantiates the Views and
+ * makes commands to the Database through the Models. This layer processes the exceptions and creates dialogs from them.
  */
 public abstract class AbstractController {
     /***

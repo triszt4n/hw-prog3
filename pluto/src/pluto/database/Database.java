@@ -210,9 +210,9 @@ public class Database {
 
     /***
      * Get an admin entity from the environment
-     * @throws ValidationException
-     * @throws NoSuchAlgorithmException
-     * @throws DotenvException
+     * @throws ValidationException if pluto code in non-conform
+     * @throws NoSuchAlgorithmException if password hashing algorithm is badly set
+     * @throws DotenvException if environment variable query fails
      */
     public static void loadAdmin() throws ValidationException, NoSuchAlgorithmException, DotenvException {
         Dotenv dotenv = Dotenv.load();
@@ -268,8 +268,8 @@ public class Database {
 
     /***
      * Seeds the database with consistent data to test (not real data)
-     * @throws ValidationException
-     * @throws NoSuchAlgorithmException
+     * @throws ValidationException if entity creation fails with validation
+     * @throws NoSuchAlgorithmException if password hashing algorithm is badly set
      */
     public static void seed() throws ValidationException, NoSuchAlgorithmException {
         AdministratorModel user2 = new AdministratorModel("admin@pluto.com", "Adam Ministrator", "123456", "1989-08-20", "");

@@ -1,7 +1,7 @@
 package pluto.models.helpers;
 
 /***
- * String enumerator for the Course types
+ * String enumerator for the Course types.
  */
 public enum CourseType {
     LECTURE("Lecture"),

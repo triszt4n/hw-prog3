@@ -18,8 +18,8 @@ import java.security.NoSuchAlgorithmException;
 
 /***
  * The controller class for controlling the Users, it accepts interactions from the end user.
- * Implements basic resource management methods and authorization methods.
- * Most important controller of the application.
+ * Implements basic resource management methods (CRUD) and authorization methods.
+ * Most important controller of the application. Application starts with instantiation of this class.
  */
 public class UserController extends AbstractController {
     /***
@@ -31,7 +31,9 @@ public class UserController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to the Users as resource.
+     * Accessible by administrators (secured on view side).
+     *
      * @see AbstractController
      */
     @Override
@@ -40,7 +42,7 @@ public class UserController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to the Users as resource.
      * @see AbstractController
      */
     @Override
@@ -91,7 +93,7 @@ public class UserController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to the Users as resource.
      * @see AbstractController
      */
     @Override
@@ -106,7 +108,7 @@ public class UserController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to the Users as resource.
      * @see AbstractController
      */
     @Override
@@ -128,7 +130,7 @@ public class UserController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to the Users as resource.
      * @see AbstractController
      */
     @Override
@@ -173,7 +175,7 @@ public class UserController extends AbstractController {
     }
 
     /***
-     * Path method for logging out of the course management.
+     * Path method for logging out of the dashboard. Leads back to the login page.
      */
     public void logout() {
         loggedInUser = null;

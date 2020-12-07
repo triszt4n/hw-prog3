@@ -12,24 +12,24 @@ import javax.swing.*;
 
 /***
  * The controller class for controlling the Subjects, it accepts interactions from the end user.
- * Implements basic resource management methods
+ * Implements basic resource management (CRUD) methods.
  */
 public class SubjectController extends AbstractController {
     /***
-     * Currently used course controller in the application
+     * Currently used course controller in the application.
      */
     private CourseController courseController;
 
     /***
-     * Simple setter
-     * @param courseController
+     * Simple setter. Sets up the already instantiated CourseController in application for use by this SubjectController.
+     * @param courseController the CourseController in application
      */
     public void setCourseController(CourseController courseController) {
         this.courseController = courseController;
     }
 
     /***
-     * Path method for taking courses, this shows all the subjects in the database, student can go on choosing one and
+     * Path method for taking courses. This shows all the subjects in the database, student can go on choosing one and
      * take courses of the subject.
      */
     @Override
@@ -54,8 +54,9 @@ public class SubjectController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to Subjects as the resource.
      * Watches out for permissions!
+     *
      * @see AbstractController
      */
     @Override
@@ -69,7 +70,8 @@ public class SubjectController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to Subjects as the resource.
+     *
      * @see AbstractController
      */
     @Override
@@ -92,7 +94,8 @@ public class SubjectController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to Subjects as the resource.
+     *
      * @see AbstractController
      */
     @Override
@@ -106,7 +109,8 @@ public class SubjectController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to Subjects as the resource.
+     *
      * @see AbstractController
      */
     @Override
@@ -128,7 +132,7 @@ public class SubjectController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to Subjects as the resource.
      * @see AbstractController
      */
     @Override
@@ -144,7 +148,7 @@ public class SubjectController extends AbstractController {
     }
 
     /***
-     * This is a path method for showing the courses in the given subject
+     * Path method for showing the courses in the given subject. De facto gateway to CourseController.
      * @param pluto pluto code of the subject which we want to see the courses of
      */
     @Override
@@ -164,7 +168,7 @@ public class SubjectController extends AbstractController {
     }
 
     /***
-     * Path method for realizing the closing down of all the subjects. Changes all the subjects' isOpened attribute to false
+     * Path method for realizing the closing down of all the subjects. Changes all the subjects' isOpened attribute to false.
      */
     public void closeAll() {
         int input = JOptionPane.showConfirmDialog(null, "This action will close all Subject for taking courses in. Continue?");
@@ -180,7 +184,8 @@ public class SubjectController extends AbstractController {
     }
 
     /***
-     * Path methods for students to drop all the courses (and the subject) under this subject they selected
+     * Path methods for students to drop all the courses (and the subject) under this subject they selected.
+     * Accessible by students only (secured on view side).
      *
      * @param pluto pluto code of the subject which courses will lose student logged in
      */

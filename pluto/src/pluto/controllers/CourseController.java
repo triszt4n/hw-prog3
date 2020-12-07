@@ -15,7 +15,7 @@ import java.util.List;
 
 /***
  * The controller class for controlling the Courses, it accepts interactions from the end user.
- * Implements basic resource management methods
+ * Implements basic resource management (CRUD) methods.
  */
 public class CourseController extends AbstractController {
     /***
@@ -29,16 +29,20 @@ public class CourseController extends AbstractController {
     private SubjectModel currentSubject;
 
     /***
-     * Simple setter
-     * @param subjectController
+     * Simple setter. After instantiating a CourseController, one must set the already existing subjectController for
+     * CourseController to work.
+     *
+     * @param subjectController the SubjectController used in the application
      */
     public void setSubjectController(SubjectController subjectController) {
         this.subjectController = subjectController;
     }
 
     /***
-     * Simple setter
-     * @param subject
+     * Simple setter. Helps joining the courses to the currently chosen subject, useful in cases e.g.: creating a course
+     * under a subject (by an instructor).
+     *
+     * @param subject subject selected in the application
      */
     public void setCurrentSubject(SubjectModel subject) {
         currentSubject = subject;
@@ -47,6 +51,7 @@ public class CourseController extends AbstractController {
     /***
      * Makes it possible for the end user to see all of their courses taken/instructed.
      * Administrator gets all of the courses.
+     *
      * @see AbstractController
      */
     @Override
@@ -63,7 +68,8 @@ public class CourseController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to the Courses as the resource.
+     *
      * @see AbstractController
      */
     @Override
@@ -83,7 +89,8 @@ public class CourseController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to the Courses as the resource.
+     *
      * @see AbstractController
      */
     @Override
@@ -107,7 +114,8 @@ public class CourseController extends AbstractController {
     }
 
     /***
-     * AbstractController's method with the same name, applied to the Courses as resource
+     * AbstractController's method with the same name, applied to the Courses as the resource.
+     *
      * @see AbstractController
      */
     @Override
@@ -129,6 +137,7 @@ public class CourseController extends AbstractController {
 
     /***
      * AbstractController's method with the same name, applied to the Courses as resource
+     *
      * @see AbstractController
      */
     @Override
@@ -152,6 +161,7 @@ public class CourseController extends AbstractController {
 
     /***
      * AbstractController's method with the same name, applied to the Courses as resource
+     *
      * @see AbstractController
      */
     @Override
@@ -169,6 +179,7 @@ public class CourseController extends AbstractController {
 
     /***
      * AbstractController's method with the same name, applied to the Courses as resource
+     *
      * @see AbstractController
      */
     @Override
@@ -183,7 +194,9 @@ public class CourseController extends AbstractController {
     }
 
     /***
-     * A path for the user to join an existing course as a student.
+     * Path method for the user to join an existing course as a student.
+     * Strictly accessible by students (secured on view side)
+     *
      * @param pluto pluto code of the resource to join to
      */
     public void join(String pluto) {
@@ -196,13 +209,15 @@ public class CourseController extends AbstractController {
                 loggedInUser.addCourse(course);
             } catch (EntityNotFoundException | ValidationException e) {
                 JOptionPane.showMessageDialog(null, "Error joining course: " + e.getMessage(),
-                        "Not found error", JOptionPane.ERROR_MESSAGE);
+                        "Validation", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     /***
-     * Reverse of join - a path for the user to drop course already taken before as a student.
+     * Inverse of join - Path method for the student to drop course already taken before.
+     * Strictly accessible by students (secured on view side)
+     *
      * @param pluto pluto code of the resource to drop
      */
     public void drop(String pluto) {
@@ -221,7 +236,8 @@ public class CourseController extends AbstractController {
     }
 
     /***
-     * Path for the instructor/coordinator to kick a student from the course
+     * Path method for the instructor/coordinator to kick a student from the course
+     * Strictly accessible by instructors and admins (secured on view side)
      *
      * @param pluto pluto code of the course to manage
      * @param student instance of the student to remove from the course

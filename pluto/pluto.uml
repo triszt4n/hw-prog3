@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>pluto</OriginalElement>
+  <nodes>
+    <node x="942.0" y="1196.0">pluto.models.AdministratorModel</node>
+    <node x="1283.0" y="1196.0">pluto.models.InstructorModel</node>
+    <node x="2731.0" y="1759.0">pluto.views.RegistrationView</node>
+    <node x="505.0" y="1759.0">pluto.views.CourseIndexInstructorView</node>
+    <node x="4245.0" y="1759.0">pluto.views.SubjectIndexStudentView</node>
+    <node x="0.0" y="2476.0">pluto.controllers.AbstractController</node>
+    <node x="1624.0" y="1196.0">pluto.models.StudentModel</node>
+    <node x="209.0" y="1759.0">pluto.views.SubjectIndexInstructorView</node>
+    <node x="3732.0" y="2137.0">pluto.views.CourseShowView</node>
+    <node x="1965.0" y="246.0">pluto.models.CourseModel</node>
+    <node x="0.0" y="1491.0">pluto.views.AbstractView</node>
+    <node x="1959.0" y="2203.0">pluto.views.SubjectEditView</node>
+    <node x="4002.0" y="1759.0">pluto.views.LoginView</node>
+    <node x="2171.0" y="1759.0">pluto.views.CourseBuildView</node>
+    <node x="473.0" y="2854.0">pluto.controllers.CourseController</node>
+    <node x="1113.0" y="1759.0">pluto.views.CourseIndexStudentView</node>
+    <node x="795.0" y="2854.0">pluto.controllers.SubjectController</node>
+    <node x="2983.0" y="2313.0">pluto.views.UserEditView</node>
+    <node x="0.0" y="0.0">pluto.models.AbstractModel</node>
+    <node x="1684.0" y="1759.0">pluto.views.SubjectBuildView</node>
+    <node x="601.0" y="246.0">pluto.models.UserModel</node>
+    <node x="3195.0" y="1759.0">pluto.views.SubjectIndexView</node>
+    <node x="2519.0" y="2247.0">pluto.views.CourseEditView</node>
+    <node x="3470.0" y="1759.0">pluto.views.UserIndexView</node>
+    <node x="793.0" y="2181.0">pluto.views.CourseOfSubjectInstructorView</node>
+    <node x="1118.0" y="2476.0">pluto.database.Database</node>
+    <node x="1388.0" y="2181.0">pluto.views.CourseOfSubjectStudentView</node>
+    <node x="273.0" y="2854.0">pluto.controllers.UserController</node>
+    <node x="4520.0" y="1759.0">pluto.views.DashboardView</node>
+    <node x="250.0" y="246.0">pluto.models.SubjectModel</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="pluto.controllers.UserController" target="pluto.controllers.AbstractController">
+      <point x="0.0" y="0.0" />
+      <point x="353.0" y="2645.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.SubjectBuildView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="1801.5" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.DashboardView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="4637.5" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.CourseIndexStudentView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="1230.5" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.models.AdministratorModel" target="pluto.models.UserModel">
+      <point x="0.0" y="0.0" />
+      <point x="1092.5" y="701.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.SubjectIndexView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="3312.5" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.CourseIndexInstructorView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="629.0" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.CourseEditView" target="pluto.views.CourseBuildView">
+      <point x="0.0" y="0.0" />
+      <point x="2605.0" y="1983.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.CourseBuildView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="2325.0" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.UserEditView" target="pluto.views.RegistrationView">
+      <point x="0.0" y="0.0" />
+      <point x="3069.0" y="2016.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.CourseOfSubjectStudentView" target="pluto.views.CourseIndexStudentView">
+      <point x="0.0" y="0.0" />
+      <point x="1516.0" y="1950.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.UserIndexView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="3581.0" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.controllers.SubjectController" target="pluto.controllers.AbstractController">
+      <point x="0.0" y="0.0" />
+      <point x="934.0" y="2645.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.CourseOfSubjectInstructorView" target="pluto.views.CourseIndexInstructorView">
+      <point x="0.0" y="0.0" />
+      <point x="933.0" y="1950.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.LoginView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="4103.5" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.models.StudentModel" target="pluto.models.UserModel">
+      <point x="0.0" y="0.0" />
+      <point x="1774.5" y="701.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.SubjectIndexInstructorView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="337.0" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.models.InstructorModel" target="pluto.models.UserModel">
+      <point x="0.0" y="0.0" />
+      <point x="1433.5" y="701.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.SubjectEditView" target="pluto.views.SubjectBuildView">
+      <point x="0.0" y="0.0" />
+      <point x="2045.0" y="1961.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.CourseShowView" target="pluto.views.UserIndexView">
+      <point x="0.0" y="0.0" />
+      <point x="3847.0" y="1928.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.models.SubjectModel" target="pluto.models.AbstractModel">
+      <point x="0.0" y="0.0" />
+      <point x="405.5" y="103.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.models.CourseModel" target="pluto.models.AbstractModel">
+      <point x="0.0" y="0.0" />
+      <point x="2157.0" y="103.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.models.UserModel" target="pluto.models.AbstractModel">
+      <point x="0.0" y="0.0" />
+      <point x="751.5" y="103.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.controllers.CourseController" target="pluto.controllers.AbstractController">
+      <point x="0.0" y="0.0" />
+      <point x="614.0" y="2645.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.SubjectIndexStudentView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="4362.5" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="pluto.views.RegistrationView" target="pluto.views.AbstractView">
+      <point x="0.0" y="0.0" />
+      <point x="2837.0" y="1605.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Tree" zoom="0.30000000000000016" x="2034.9999999999989" y="1456.6666666666658" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
