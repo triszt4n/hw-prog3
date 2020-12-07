@@ -7,6 +7,9 @@ import pluto.models.UserModel;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
+/***
+ * Table model used widely by views in which courses get to be on display.
+ */
 public class CoursesTableModel extends AbstractTableModel {
     private final List<CourseModel> courses;
     private final UserModel student;

@@ -1,17 +1,18 @@
 package pluto.views;
 
+import pluto.controllers.AbstractController;
 import pluto.views.helpers.PaddedFrame;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /***
  * Abstract class of views in the MVC design pattern.
  * They show the interface for the end user, and have the interaction buttons/field for the end user to give commands to the
  * controller.
  */
-public abstract class AbstractView {
-    protected JFrame main;
-
+public abstract class AbstractView extends PaddedFrame {
     /***
      * Method inits the components used in the view
      */
@@ -22,38 +23,24 @@ public abstract class AbstractView {
      */
     protected abstract void initListeners();
 
+    /**
+     * Method inits the window listener for closing the window
+     *
+     * @param mainController the controller which's back method is used for moving back one page
+     */
+    protected void initCloseListener(AbstractController mainController) {
+        addWindowListener(new WindowAdapter(){
+            @Override
+            public void windowClosing(WindowEvent e){
+                mainController.back();
+            }
+        });
+    }
+
     public AbstractView() {
-        main = new PaddedFrame();
-        main.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        main.setVisible(false);
-    }
-
-    /***
-     * opens up page
-     */
-    public void open() {
-        main.setVisible(true);
-    }
-
-    /***
-     * closes the page
-     */
-    public void close() {
-        main.setVisible(false);
-    }
-
-    /***
-     * makes the page disabled
-     */
-    public void disable() {
-        main.setEnabled(false);
-    }
-
-    /***
-     * makes the page enabled
-     */
-    public void enable() {
-        main.setEnabled(true);
+        super();
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setVisible(false);
     }
 
     /***

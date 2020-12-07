@@ -4,10 +4,6 @@ import pluto.controllers.SubjectController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 /**
  * "build" view for subject resource
@@ -44,17 +40,11 @@ public class SubjectBuildView extends AbstractView {
     public SubjectBuildView(SubjectController subjectController) {
         super();
         this.subjectController = subjectController;
-        main.setTitle("Pluto | Create new subject");
+        setTitle("Pluto | Create new subject");
         initComponents();
-        main.pack();
-        main.setLocationRelativeTo(null);
-
-        main.addWindowListener(new WindowAdapter(){
-            @Override
-            public void windowClosing(WindowEvent e){
-                subjectController.back();
-            }
-        });
+        pack();
+        setLocationRelativeTo(null);
+        initCloseListener(subjectController);
     }
 
     @Override
@@ -141,25 +131,15 @@ public class SubjectBuildView extends AbstractView {
                         )
                 )
         );
-        main.add(formPanel, BorderLayout.CENTER);
+        add(formPanel, BorderLayout.CENTER);
         initListeners();
-        main.getRootPane().setDefaultButton(saveBtn);
+        getRootPane().setDefaultButton(saveBtn);
     }
 
     @Override
     protected void initListeners() {
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                subjectController.back();
-            }
-        });
+        backBtn.addActionListener(e -> subjectController.back());
 
-        saveBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                subjectController.create();
-            }
-        });
+        saveBtn.addActionListener(e -> subjectController.create());
     }
 }

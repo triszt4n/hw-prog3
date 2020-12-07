@@ -19,7 +19,6 @@ class CourseModelTest {
     private InstructorModel instr;
     private StudentModel stud;
     private CourseModel c1, c2;
-    private String pluto;
 
     @BeforeEach
     void setup() throws ValidationException, NoSuchAlgorithmException {
@@ -50,18 +49,10 @@ class CourseModelTest {
     @Test
     @DisplayName("Creating courses with missing field")
     void createCoursesMissingField() {
-        assertThrows(ValidationException.class, () -> {
-            new CourseModel("", CourseType.LECTURE, "3", "", subj, instr);
-        }, "Short code should be given");
-        assertThrows(ValidationException.class, () -> {
-            new CourseModel("E", CourseType.LECTURE, "", "", subj, instr);
-        }, "Max students should be given");
-        assertThrows(ValidationException.class, () -> {
-            new CourseModel("E", CourseType.LECTURE, "asd", "", subj, instr);
-        }, "Max students should be valid number");
-        assertThrows(ValidationException.class, () -> {
-            new CourseModel("E", CourseType.LECTURE, "0", "", subj, instr);
-        }, "Max students should be at least 1");
+        assertThrows(ValidationException.class, () -> new CourseModel("", CourseType.LECTURE, "3", "", subj, instr), "Short code should be given");
+        assertThrows(ValidationException.class, () -> new CourseModel("E", CourseType.LECTURE, "", "", subj, instr), "Max students should be given");
+        assertThrows(ValidationException.class, () -> new CourseModel("E", CourseType.LECTURE, "asd", "", subj, instr), "Max students should be valid number");
+        assertThrows(ValidationException.class, () -> new CourseModel("E", CourseType.LECTURE, "0", "", subj, instr), "Max students should be at least 1");
         assertDoesNotThrow(() -> {
             new CourseModel("E", CourseType.LECTURE, "5", "", subj, instr);
         }, "Blank notes shouldn't be a problem");
@@ -73,37 +64,23 @@ class CourseModelTest {
         assertDoesNotThrow(() -> {
             c2 = CourseModel.get(c1.getPlutoCode());
         }, "Should find existing course");
-        assertThrows(EntityNotFoundException.class, () -> {
-            CourseModel.get("FALSE9PLUTO9");
-        }, "Shouldn't find with not existing pluto code");
+        assertThrows(EntityNotFoundException.class, () -> CourseModel.get("FALSE9PLUTO9"), "Shouldn't find with not existing pluto code");
     }
 
     @Test
     @DisplayName("Testing the static delete method")
     void deleteCourse() {
-        assertDoesNotThrow(() -> {
-            CourseModel.delete(c2.getPlutoCode());
-        }, "Should find course to delete");
+        assertDoesNotThrow(() -> CourseModel.delete(c2.getPlutoCode()), "Should find course to delete");
     }
 
     @Test
     @DisplayName("Updating course")
     void updateCourse() {
-        assertThrows(ValidationException.class, () -> {
-            c1.update("", CourseType.LECTURE, "3", "", instr);
-        }, "Short code should be given");
-        assertThrows(ValidationException.class, () -> {
-            c1.update("E", CourseType.LECTURE, "", "", instr);
-        }, "Max students should be given");
-        assertThrows(ValidationException.class, () -> {
-            c1.update("E", CourseType.LECTURE, "asd", "", instr);
-        }, "Max students should be valid number");
-        assertThrows(ValidationException.class, () -> {
-            c1.update("E", CourseType.LECTURE, "0", "", instr);
-        }, "Max students should be at least 1");
-        assertDoesNotThrow(() -> {
-            c1.update("E", CourseType.LECTURE, "5", "", instr);
-        }, "Blank notes shouldn't be a problem");
+        assertThrows(ValidationException.class, () -> c1.update("", CourseType.LECTURE, "3", "", instr), "Short code should be given");
+        assertThrows(ValidationException.class, () -> c1.update("E", CourseType.LECTURE, "", "", instr), "Max students should be given");
+        assertThrows(ValidationException.class, () -> c1.update("E", CourseType.LECTURE, "asd", "", instr), "Max students should be valid number");
+        assertThrows(ValidationException.class, () -> c1.update("E", CourseType.LECTURE, "0", "", instr), "Max students should be at least 1");
+        assertDoesNotThrow(() -> c1.update("E", CourseType.LECTURE, "5", "", instr), "Blank notes shouldn't be a problem");
     }
 
     @Test

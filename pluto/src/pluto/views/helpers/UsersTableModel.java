@@ -5,6 +5,9 @@ import pluto.models.UserModel;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
+/***
+ * Table model used widely by views in which users get to be on display.
+ */
 public class UsersTableModel extends AbstractTableModel {
     private final List<? extends UserModel> users;
 

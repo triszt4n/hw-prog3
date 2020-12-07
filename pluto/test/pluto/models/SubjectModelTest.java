@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class SubjectModelTest {
     private SubjectModel subj, subj2;
     private InstructorModel instr;
-    private StudentModel stud;
     private CourseModel c1, c2;
 
     @BeforeEach
@@ -27,7 +26,7 @@ class SubjectModelTest {
         subj = new SubjectModel("Main Subject", String.valueOf(5), "2/2/0/v", String.valueOf(3), instr, true);
         c1 = new CourseModel("C1", CourseType.LECTURE, String.valueOf(3), "", subj, instr);
         c2 = new CourseModel("C2", CourseType.PRACTICE, String.valueOf(3), "", subj, instr);
-        stud = new StudentModel( "pluto@pluto.edu", "Pluto Student", "password", "1970-01-01", "User Address", new String[]{c1.getPlutoCode()});
+        StudentModel stud = new StudentModel("pluto@pluto.edu", "Pluto Student", "password", "1970-01-01", "User Address", new String[]{c1.getPlutoCode()});
         stud.initCoursesAndSubjects();
         c1.initStudents();
     }
@@ -58,21 +57,11 @@ class SubjectModelTest {
     @Test
     @DisplayName("Creating subjects with missing field")
     void createSubjectsMissingField() {
-        assertThrows(ValidationException.class, () -> {
-            new SubjectModel("", "5", "2/2/0/v", String.valueOf(3), instr, false);
-        }, "Name should be given");
-        assertThrows(ValidationException.class, () -> {
-            new SubjectModel("Generic subject", "", "2/2/0/v", String.valueOf(3), instr, false);
-        }, "Credit should be given");
-        assertThrows(ValidationException.class, () -> {
-            new SubjectModel("Generic subject", "asd", "2/2/0/v", String.valueOf(3), instr, false);
-        }, "Credit should be number");
-        assertThrows(ValidationException.class, () -> {
-            new SubjectModel("Generic subject", "5", "only exam", String.valueOf(3), instr, false);
-        }, "Requirements should be valid to format");
-        assertThrows(ValidationException.class, () -> {
-            new SubjectModel("Generic subject", "5", "2/2/0/v", "", instr, false);
-        }, "Semester should be given");
+        assertThrows(ValidationException.class, () -> new SubjectModel("", "5", "2/2/0/v", String.valueOf(3), instr, false), "Name should be given");
+        assertThrows(ValidationException.class, () -> new SubjectModel("Generic subject", "", "2/2/0/v", String.valueOf(3), instr, false), "Credit should be given");
+        assertThrows(ValidationException.class, () -> new SubjectModel("Generic subject", "asd", "2/2/0/v", String.valueOf(3), instr, false), "Credit should be number");
+        assertThrows(ValidationException.class, () -> new SubjectModel("Generic subject", "5", "only exam", String.valueOf(3), instr, false), "Requirements should be valid to format");
+        assertThrows(ValidationException.class, () -> new SubjectModel("Generic subject", "5", "2/2/0/v", "", instr, false), "Semester should be given");
         assertDoesNotThrow(() -> {
             new SubjectModel("Generic subject", "5", "2/2/0/v", "3", instr, false);
         }, "Everything should be valid");
@@ -84,40 +73,24 @@ class SubjectModelTest {
         assertDoesNotThrow(() -> {
             subj2 = SubjectModel.get(subj.getPlutoCode());
         }, "Should find existing course");
-        assertThrows(EntityNotFoundException.class, () -> {
-            CourseModel.get("FALSE9PLUTO9");
-        }, "Shouldn't find with not existing pluto code");
+        assertThrows(EntityNotFoundException.class, () -> CourseModel.get("FALSE9PLUTO9"), "Shouldn't find with not existing pluto code");
     }
 
     @Test
     @DisplayName("Testing the static delete method")
     void deleteSubject() {
-        assertDoesNotThrow(() -> {
-            SubjectModel.delete(subj.getPlutoCode());
-        }, "Should find course to delete");
+        assertDoesNotThrow(() -> SubjectModel.delete(subj.getPlutoCode()), "Should find course to delete");
     }
 
     @Test
     @DisplayName("Updating subject")
     void updateSubject() {
-        assertThrows(ValidationException.class, () -> {
-            subj.update("", "5", "2/2/0/v", String.valueOf(3), false);
-        }, "Name should be given");
-        assertThrows(ValidationException.class, () -> {
-            subj.update("Generic subject", "", "2/2/0/v", String.valueOf(3), false);
-        }, "Credit should be given");
-        assertThrows(ValidationException.class, () -> {
-            subj.update("Generic subject", "asd", "2/2/0/v", String.valueOf(3), false);
-        }, "Credit should be number");
-        assertThrows(ValidationException.class, () -> {
-            subj.update("Generic subject", "5", "only exam", String.valueOf(3), false);
-        }, "Requirements should be valid to format");
-        assertThrows(ValidationException.class, () -> {
-            subj.update("Generic subject", "5", "2/2/0/v", "", false);
-        }, "Semester should be given");
-        assertDoesNotThrow(() -> {
-            subj.update("Generic subject", "5", "2/2/0/v", "3", false);
-        }, "Everything should be valid");
+        assertThrows(ValidationException.class, () -> subj.update("", "5", "2/2/0/v", String.valueOf(3), false), "Name should be given");
+        assertThrows(ValidationException.class, () -> subj.update("Generic subject", "", "2/2/0/v", String.valueOf(3), false), "Credit should be given");
+        assertThrows(ValidationException.class, () -> subj.update("Generic subject", "asd", "2/2/0/v", String.valueOf(3), false), "Credit should be number");
+        assertThrows(ValidationException.class, () -> subj.update("Generic subject", "5", "only exam", String.valueOf(3), false), "Requirements should be valid to format");
+        assertThrows(ValidationException.class, () -> subj.update("Generic subject", "5", "2/2/0/v", "", false), "Semester should be given");
+        assertDoesNotThrow(() -> subj.update("Generic subject", "5", "2/2/0/v", "3", false), "Everything should be valid");
     }
 
     @Test

@@ -3,8 +3,6 @@ package pluto.views;
 import pluto.controllers.UserController;
 import pluto.models.UserModel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 
 /**
@@ -22,27 +20,17 @@ public class UserEditView extends RegistrationView {
         nameField.setText(user.getName());
         isInstructorCheck.setVisible(false);
 
-        main.setTitle("Pluto | Edit user");
+        setTitle("Pluto | Edit user");
         promptLabel.setText("Fill in the form to edit user data");
         saveBtn.setText("Save");
-        main.getRootPane().setDefaultButton(saveBtn);
+        getRootPane().setDefaultButton(saveBtn);
     }
 
     @Override
     protected void initListeners() {
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.back();
-            }
-        });
+        backBtn.addActionListener(e -> userController.back());
 
-        saveBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.update(user.getPlutoCode());
-            }
-        });
+        saveBtn.addActionListener(e -> userController.update(user.getPlutoCode()));
     }
 
     public UserEditView(UserModel user, UserController userCtrl, boolean canChangePassword) {
@@ -53,6 +41,6 @@ public class UserEditView extends RegistrationView {
             pwField.setVisible(false);
             pwLabel.setVisible(false);
         }
-        main.pack();
+        pack();
     }
 }

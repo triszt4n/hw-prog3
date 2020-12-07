@@ -5,6 +5,9 @@ import pluto.models.helpers.CourseType;
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
 
+/***
+ * Checkbox model used widely by views in which courses get to be edited or created.
+ */
 public class CourseTypeComboBoxModel implements ComboBoxModel<CourseType> {
     private CourseType item;
 

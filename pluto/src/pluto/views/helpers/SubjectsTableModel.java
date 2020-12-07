@@ -5,6 +5,9 @@ import pluto.models.SubjectModel;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
+/***
+ * Table model used widely by views in which subjects get to be on display.
+ */
 public class SubjectsTableModel extends AbstractTableModel {
     private final List<SubjectModel> subjects;
 

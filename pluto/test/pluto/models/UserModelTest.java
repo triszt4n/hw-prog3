@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserModelTest {
     private UserModel user, user2;
-    private String pluto;
 
     @BeforeEach
     void setup() throws ValidationException, NoSuchAlgorithmException {
@@ -43,21 +42,11 @@ class UserModelTest {
     @Test
     @DisplayName("Creating users with missing field")
     void createUsersMissingField() {
-        assertThrows(ValidationException.class, () -> {
-            new StudentModel( "", "Paula Anderson", "password", "1999-08-30", "Some address to be added");
-        }, "Email should be given");
-        assertThrows(ValidationException.class, () -> {
-            new StudentModel( "paul@anderson.org", "", "password", "1999-08-30", "Some address to be added");
-        }, "Name should be given");
-        assertThrows(ValidationException.class, () -> {
-            new StudentModel( "paul@anderson.org", "Paula Anderson", "", "1999-08-30", "Some address to be added");
-        }, "Password should be given");
-        assertThrows(ValidationException.class, () -> {
-            new StudentModel( "this_is_not_an_email", "Paula Anderson", "password", "1999-08-30", "Some address to be added");
-        }, "Correct email should be given");
-        assertThrows(ValidationException.class, () -> {
-            new StudentModel( "paul@anderson.org", "Paula Anderson", "password", "1999.08.30", "Some address to be added");
-        }, "Format of date of birth is strictly yyyy-MM-dd");
+        assertThrows(ValidationException.class, () -> new StudentModel( "", "Paula Anderson", "password", "1999-08-30", "Some address to be added"), "Email should be given");
+        assertThrows(ValidationException.class, () -> new StudentModel( "paul@anderson.org", "", "password", "1999-08-30", "Some address to be added"), "Name should be given");
+        assertThrows(ValidationException.class, () -> new StudentModel( "paul@anderson.org", "Paula Anderson", "", "1999-08-30", "Some address to be added"), "Password should be given");
+        assertThrows(ValidationException.class, () -> new StudentModel( "this_is_not_an_email", "Paula Anderson", "password", "1999-08-30", "Some address to be added"), "Correct email should be given");
+        assertThrows(ValidationException.class, () -> new StudentModel( "paul@anderson.org", "Paula Anderson", "password", "1999.08.30", "Some address to be added"), "Format of date of birth is strictly yyyy-MM-dd");
         assertDoesNotThrow(() -> {
             new StudentModel( "paul@anderson.org", "Paula Anderson", "password", "1999-08-30", "");
         }, "Blank address shouldn't be a problem");
@@ -69,55 +58,33 @@ class UserModelTest {
         assertDoesNotThrow(() -> {
             user2 = UserModel.get(user.getPlutoCode());
         }, "Should find existing user");
-        assertThrows(EntityNotFoundException.class, () -> {
-            UserModel.get("FALSE9PLUTO9");
-        }, "Shouldn't find with not existing pluto code");
+        assertThrows(EntityNotFoundException.class, () -> UserModel.get("FALSE9PLUTO9"), "Shouldn't find with not existing pluto code");
         assertEquals(user.getName(), user2.getName());
     }
 
     @Test
     @DisplayName("Testing the static delete method")
     void deleteUser() {
-        assertDoesNotThrow(() -> {
-            UserModel.delete(user.getPlutoCode());
-        }, "Should find user to delete");
+        assertDoesNotThrow(() -> UserModel.delete(user.getPlutoCode()), "Should find user to delete");
     }
 
     @Test
     @DisplayName("Updating user")
     void updateUser() {
-        assertThrows(ValidationException.class, () -> {
-            user.update( "", "Paula Anderson", "password", "1999-08-30", "Some address to be added");
-        }, "Email should be given");
-        assertThrows(ValidationException.class, () -> {
-            user.update( "paul@anderson.org", "", "password", "1999-08-30", "Some address to be added");
-        }, "Name should be given");
-        assertDoesNotThrow(() -> {
-            user.update( "paul@anderson.org", "Paula Anderson", "", "1999-08-30", "Some address to be added");
-        }, "Password can be left blank");
-        assertThrows(ValidationException.class, () -> {
-            user.update( "this_is_not_an_email", "Paula Anderson", "password", "1999-08-30", "Some address to be added");
-        }, "Correct email should be given");
-        assertThrows(ValidationException.class, () -> {
-            user.update( "paul@anderson.org", "Paula Anderson", "password", "1999.08.30", "Some address to be added");
-        }, "Format of date of birth is strictly yyyy-MM-dd");
-        assertDoesNotThrow(() -> {
-            user.update( "paul@anderson.org", "Paula Anderson", "password", "1999-08-30", "");
-        }, "Blank address shouldn't be a problem");
+        assertThrows(ValidationException.class, () -> user.update( "", "Paula Anderson", "password", "1999-08-30", "Some address to be added"), "Email should be given");
+        assertThrows(ValidationException.class, () -> user.update( "paul@anderson.org", "", "password", "1999-08-30", "Some address to be added"), "Name should be given");
+        assertDoesNotThrow(() -> user.update( "paul@anderson.org", "Paula Anderson", "", "1999-08-30", "Some address to be added"), "Password can be left blank");
+        assertThrows(ValidationException.class, () -> user.update( "this_is_not_an_email", "Paula Anderson", "password", "1999-08-30", "Some address to be added"), "Correct email should be given");
+        assertThrows(ValidationException.class, () -> user.update( "paul@anderson.org", "Paula Anderson", "password", "1999.08.30", "Some address to be added"), "Format of date of birth is strictly yyyy-MM-dd");
+        assertDoesNotThrow(() -> user.update( "paul@anderson.org", "Paula Anderson", "password", "1999-08-30", ""), "Blank address shouldn't be a problem");
     }
 
     @Test
     @DisplayName("Changing password")
     void changePw() {
-        assertDoesNotThrow(() -> {
-            user.update( "paul@anderson.org", "Paula Anderson", "new_pass", "1999-08-30", "Some address to be added");
-        }, "Valid password should be accepted");
-        assertDoesNotThrow(() -> {
-            user.authorize("new_pass");
-        }, "Should access new password");
-        assertThrows(AuthorizationException.class, () -> {
-            user.authorize("password");
-        }, "Shouldn't accept old password");
+        assertDoesNotThrow(() -> user.update( "paul@anderson.org", "Paula Anderson", "new_pass", "1999-08-30", "Some address to be added"), "Valid password should be accepted");
+        assertDoesNotThrow(() -> user.authorize("new_pass"), "Should access new password");
+        assertThrows(AuthorizationException.class, () -> user.authorize("password"), "Shouldn't accept old password");
     }
 
     @Test
@@ -139,15 +106,9 @@ class UserModelTest {
     @Test
     @DisplayName("Test successful and unsuccessful authorization")
     void testAuthorization() {
-        assertDoesNotThrow(() -> {
-            user.authorize("password");
-        }, "Should access original password");
-        assertThrows(AuthorizationException.class, () -> {
-            user.authorize("notmypassword");
-        }, "Shouldn't access foreign password");
-        assertThrows(ValidationException.class, () -> {
-            user.authorize("");
-        }, "Non-valid password code won't even get trough validation");
+        assertDoesNotThrow(() -> user.authorize("password"), "Should access original password");
+        assertThrows(AuthorizationException.class, () -> user.authorize("notmypassword"), "Shouldn't access foreign password");
+        assertThrows(ValidationException.class, () -> user.authorize(""), "Non-valid password code won't even get trough validation");
     }
 
     @Test
@@ -165,12 +126,8 @@ class UserModelTest {
                 () -> assertEquals(user.getUnparsedDob(), user2.getUnparsedDob()),
                 () -> assertEquals(new String(user.getEncryptedPassword()), new String(user2.getEncryptedPassword()))
         );
-        assertDoesNotThrow(() -> {
-            user2.authorize("password");
-        });
-        assertThrows(AuthorizationException.class, () -> {
-            user2.authorize("random pw");
-        });
+        assertDoesNotThrow(() -> user2.authorize("password"));
+        assertThrows(AuthorizationException.class, () -> user2.authorize("random pw"));
     }
 
     @AfterEach

@@ -10,8 +10,6 @@ import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /***
  * Welcome view for the user.
@@ -160,7 +158,7 @@ public class DashboardView extends AbstractView {
 
         mb.add(dbMenu);
 
-        main.setJMenuBar(mb);
+        setJMenuBar(mb);
 
         JLabel welcomeLabel = new JLabel("Hi, " + user.getName() + "!");
         welcomeLabel.setFont(new Font(Font.SANS_SERIF,  Font.BOLD, 30));
@@ -200,81 +198,31 @@ public class DashboardView extends AbstractView {
                         .addComponent(detailsPanel)
                 )
         );
-        main.add(mainPanel, BorderLayout.CENTER);
+        add(mainPanel, BorderLayout.CENTER);
         initListeners();
     }
 
     @Override
     protected void initListeners() {
-        logoutBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.logout();
-            }
-        });
+        logoutBtn.addActionListener(e -> userController.logout());
 
-        usersBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.index();
-            }
-        });
+        usersBtn.addActionListener(e -> userController.index());
 
-        manageUserBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.edit(null);
-            }
-        });
+        manageUserBtn.addActionListener(e -> userController.edit(null));
 
-        manageSubjectBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                subjectController.allForLoggedInUser();
-            }
-        });
+        manageSubjectBtn.addActionListener(e -> subjectController.allForLoggedInUser());
 
-        newSubjectBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                subjectController.build();
-            }
-        });
+        newSubjectBtn.addActionListener(e -> subjectController.build());
 
-        takeBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                subjectController.index();
-            }
-        });
+        takeBtn.addActionListener(e -> subjectController.index());
 
-        manageCourseBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                courseController.index();
-            }
-        });
+        manageCourseBtn.addActionListener(e -> courseController.index());
 
-        seedBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.seed();
-            }
-        });
+        seedBtn.addActionListener(e -> userController.seed());
 
-        resetBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.dbReset();
-            }
-        });
+        resetBtn.addActionListener(e -> userController.dbReset());
 
-        regPeriodBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                subjectController.closeAll();
-            }
-        });
+        regPeriodBtn.addActionListener(e -> subjectController.closeAll());
     }
 
     public DashboardView(UserModel user, UserController userCtrl, SubjectController subjectCtrl, CourseController courseCtrl) {
@@ -284,10 +232,10 @@ public class DashboardView extends AbstractView {
         subjectController = subjectCtrl;
         courseController = courseCtrl;
 
-        main.setTitle("Pluto | Dashboard");
-        main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Pluto | Dashboard");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
-        main.pack();
-        main.setLocationRelativeTo(null);
+        pack();
+        setLocationRelativeTo(null);
     }
 }

@@ -28,8 +28,8 @@ public abstract class AbstractController {
      */
     protected void changePage(AbstractView newPage) {
         AbstractView oldPage = pageStack.pop();
-        oldPage.close();
-        newPage.open();
+        oldPage.setVisible(false);
+        newPage.setVisible(true);
         pageStack.push(newPage);
     }
 
@@ -39,8 +39,8 @@ public abstract class AbstractController {
      */
     protected void openChildPage(AbstractView newPage) {
         AbstractView oldPage = pageStack.peek();
-        oldPage.disable();
-        newPage.open();
+        oldPage.setEnabled(false);
+        newPage.setVisible(true);
         pageStack.push(newPage);
     }
 
@@ -49,8 +49,8 @@ public abstract class AbstractController {
      */
     protected void closeChildPage() {
         AbstractView currentPage = pageStack.pop();
-        pageStack.peek().enable();
-        currentPage.close();
+        pageStack.peek().setEnabled(true);
+        currentPage.setVisible(false);
     }
 
     /***

@@ -3,9 +3,6 @@ package pluto.views;
 import pluto.controllers.SubjectController;
 import pluto.models.SubjectModel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 /**
  * "edit" view for subject resource
  * @see pluto.controllers.AbstractController
@@ -20,7 +17,7 @@ public class SubjectEditView extends SubjectBuildView {
     }
 
     private void editComponents() {
-        main.setTitle("Pluto | Edit subject");
+        setTitle("Pluto | Edit subject");
         promptLabel.setText("Editing subject: " + subject.getPlutoCode());
         reqField.setText(subject.getRequirements());
         nameField.setText(subject.getName());
@@ -31,18 +28,8 @@ public class SubjectEditView extends SubjectBuildView {
 
     @Override
     protected void initListeners() {
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                subjectController.back();
-            }
-        });
+        backBtn.addActionListener(e -> subjectController.back());
 
-        saveBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                subjectController.update(subject.getPlutoCode());
-            }
-        });
+        saveBtn.addActionListener(e -> subjectController.update(subject.getPlutoCode()));
     }
 }

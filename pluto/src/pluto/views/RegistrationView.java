@@ -4,10 +4,6 @@ import pluto.controllers.UserController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 /**
  * "build" view for user resource
@@ -145,52 +141,26 @@ public class RegistrationView extends AbstractView {
                         )
                 )
         );
-        main.add(formPanel, BorderLayout.CENTER);
+        add(formPanel, BorderLayout.CENTER);
         initListeners();
-        main.getRootPane().setDefaultButton(saveBtn);
+        getRootPane().setDefaultButton(saveBtn);
     }
 
     @Override
     protected void initListeners() {
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.back();
-            }
-        });
+        backBtn.addActionListener(e -> userController.back());
 
-        saveBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.create();
-            }
-        });
+        saveBtn.addActionListener(e -> userController.create());
     }
 
     public RegistrationView(UserController userCtrl) {
         super();
         userController = userCtrl;
 
-        main.setTitle("Pluto | Register");
+        setTitle("Pluto | Register");
         initComponents();
-        main.pack();
-        main.setLocationRelativeTo(null);
-
-        main.addWindowListener(new WindowAdapter(){
-            @Override
-            public void windowClosing(WindowEvent e){
-                userController.back();
-            }
-        });
-    }
-
-    @Override
-    public void open() {
-        main.setVisible(true);
-    }
-
-    @Override
-    public void close() {
-        main.setVisible(false);
+        pack();
+        setLocationRelativeTo(null);
+        initCloseListener(userCtrl);
     }
 }

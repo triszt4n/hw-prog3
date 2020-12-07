@@ -27,7 +27,7 @@ public class UserController extends AbstractController {
      */
     public void login() {
         pageStack.push(new LoginView(this));
-        pageStack.peek().open();
+        pageStack.peek().setVisible(true);
     }
 
     /***

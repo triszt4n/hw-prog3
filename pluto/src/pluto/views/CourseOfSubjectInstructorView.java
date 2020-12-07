@@ -7,8 +7,6 @@ import pluto.models.SubjectModel;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 /***
@@ -36,21 +34,16 @@ public class CourseOfSubjectInstructorView extends CourseIndexInstructorView {
         promptPanel.setBorder(
                 new EmptyBorder(20,50,20,50)
         );
-        main.add(promptPanel, BorderLayout.NORTH);
+        add(promptPanel, BorderLayout.NORTH);
 
-        createBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                courseController.build();
-            }
-        });
+        createBtn.addActionListener(e -> courseController.build());
 
         showSubjectBtn.setVisible(false);
     }
 
     public CourseOfSubjectInstructorView(List<CourseModel> courses, SubjectModel subject, CourseController courseController) {
         super(courses, courseController, null);
-        main.setTitle("Pluto | Administration: Courses of subject (Instructor mode)");
+        setTitle("Pluto | Administration: Courses of subject (Instructor mode)");
         this.subject = subject;
         courseController.setCurrentSubject(subject);
         editComponents();

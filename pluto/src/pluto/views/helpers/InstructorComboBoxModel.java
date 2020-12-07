@@ -6,6 +6,9 @@ import javax.swing.*;
 import javax.swing.event.ListDataListener;
 import java.util.List;
 
+/***
+ * Checkbox model used widely by views in which instructors get to be edited or created.
+ */
 public class InstructorComboBoxModel implements ComboBoxModel<InstructorModel> {
     private InstructorModel item;
     private final List<InstructorModel> instructors;

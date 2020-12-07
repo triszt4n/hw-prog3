@@ -3,6 +3,9 @@ package pluto.views.helpers;
 import javax.swing.*;
 import java.awt.*;
 
+/***
+ * A JFrame extension which fills the border layout with blank panels to function as padding around the display.
+ */
 public class PaddedFrame extends JFrame {
     public PaddedFrame() {
         super();

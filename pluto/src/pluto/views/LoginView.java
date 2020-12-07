@@ -4,8 +4,6 @@ import pluto.controllers.UserController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * "login" view for user resource
@@ -97,47 +95,24 @@ public class LoginView extends AbstractView {
                 )
         );
         initListeners();
-        main.add(formPanel, BorderLayout.CENTER);
-
-        main.getRootPane().setDefaultButton(loginBtn);
+        add(formPanel, BorderLayout.CENTER);
+        getRootPane().setDefaultButton(loginBtn);
     }
 
     @Override
     protected void initListeners() {
-        loginBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.auth();
-            }
-        });
+        loginBtn.addActionListener(e -> userController.auth());
 
-        regBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userController.build();
-            }
-        });
+        regBtn.addActionListener(e -> userController.build());
     }
 
     public LoginView(UserController userCtrl) {
         super();
-        main.setTitle("Pluto | Log in");
-        main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Pluto | Log in");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
-        main.pack();
-        main.setLocationRelativeTo(null);
-
+        pack();
+        setLocationRelativeTo(null);
         userController = userCtrl;
     }
-
-    @Override
-    public void open() {
-        main.setVisible(true);
-    }
-
-    @Override
-    public void close() {
-        main.setVisible(false);
-    }
-
 }

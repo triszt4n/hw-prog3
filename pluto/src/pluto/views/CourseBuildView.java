@@ -9,10 +9,6 @@ import pluto.views.helpers.InstructorComboBoxModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.List;
 
 /**
@@ -147,26 +143,16 @@ public class CourseBuildView extends AbstractView {
                         )
                 )
         );
-        main.add(formPanel, BorderLayout.CENTER);
+        add(formPanel, BorderLayout.CENTER);
         initListeners();
-        main.getRootPane().setDefaultButton(saveBtn);
+        getRootPane().setDefaultButton(saveBtn);
     }
 
     @Override
     protected void initListeners() {
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                courseController.back();
-            }
-        });
+        backBtn.addActionListener(e -> courseController.back());
 
-        saveBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                courseController.create();
-            }
-        });
+        saveBtn.addActionListener(e -> courseController.create());
     }
 
     public CourseBuildView(CourseController courseController, SubjectModel subject, List<InstructorModel> instructors) {
@@ -174,16 +160,10 @@ public class CourseBuildView extends AbstractView {
         this.instructors = instructors;
         this.subject = subject;
         this.courseController = courseController;
-        main.setTitle("Pluto | Create new course");
+        setTitle("Pluto | Create new course");
         initComponents();
-        main.pack();
-        main.setLocationRelativeTo(null);
-
-        main.addWindowListener(new WindowAdapter(){
-            @Override
-            public void windowClosing(WindowEvent e){
-                courseController.back();
-            }
-        });
+        pack();
+        setLocationRelativeTo(null);
+        initCloseListener(courseController);
     }
 }
